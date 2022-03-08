@@ -13,10 +13,15 @@ import PlainCard from "@/components/shared/PlainCard";
 import SourceStatus from "@/components/shared/SourceStatus";
 import { REVALIDATE_TIME } from "@/constants";
 import { useUser } from "@/contexts/AuthContext";
+import withRedirect from "@/hocs/withRedirect";
 import dayjs from "@/lib/dayjs";
 import supabase from "@/lib/supabase";
-import { Anime, Comment } from "@/types";
-import { numberWithCommas, parseNumbersFromString } from "@/utils";
+import { Anime } from "@/types";
+import {
+  numberWithCommas,
+  parseNumbersFromString,
+  vietnameseSlug,
+} from "@/utils";
 import { convert, getTitle } from "@/utils/data";
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import Link from "next/link";
@@ -232,7 +237,9 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
   );
 };
 
-export const getStaticProps: GetStaticProps = async ({ params }) => {
+export const getStaticProps: GetStaticProps = async ({
+  params: { params },
+}) => {
   const { data, error } = await supabase
     .from("kaguya_anime")
     .select(
@@ -245,7 +252,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         episodes:kaguya_episodes!mediaId(*, source:kaguya_sources(id, name))
       `
     )
-    .eq("id", Number(params.id))
+    .eq("id", Number(params[0]))
     .single();
 
   if (error) {
@@ -270,10 +277,23 @@ export const getStaticPaths: GetStaticPaths = async () => {
     .limit(20);
 
   const paths = data.map((anime: Anime) => ({
-    params: { id: anime.id.toString() },
+    params: { params: [anime.id.toString()] },
   }));
 
   return { paths, fallback: "blocking" };
 };
 
-export default DetailsPage;
+export default withRedirect(DetailsPage, (router, props) => {
+  const { params } = router.query;
+  const [id, slug] = params as string[];
+  const title = getTitle(props.anime);
+
+  if (slug) return null;
+
+  return {
+    url: `/anime/details/${id}/${vietnameseSlug(title)}`,
+    options: {
+      shallow: true,
+    },
+  };
+});
