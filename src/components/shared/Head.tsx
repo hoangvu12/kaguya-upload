@@ -13,11 +13,13 @@ interface HeadProps {
 const Head: React.FC<HeadProps> = (props) => {
   const {
     title = "Kaguya",
-    description = "Website xem anime hoàn toàn miễn phí, không quảng cáo.",
+    description = "Anime and Manga streaming website. Provide a lot of anime and manga for free",
     image = "https://i.ibb.co/JnDDN9j/localhost-3000-2.png",
   } = props;
 
-  const { asPath } = useRouter();
+  const { asPath, locale } = useRouter();
+
+  const url = `${WEBSITE_URL}${locale === "en" ? "" : "/" + locale}${asPath}`;
 
   return (
     <NextHead>
@@ -37,13 +39,13 @@ const Head: React.FC<HeadProps> = (props) => {
       <meta name="description" content={description} />
 
       <meta property="og:type" content="website" />
-      <meta property="og:url" content={WEBSITE_URL + asPath} />
+      <meta property="og:url" content={url} />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:image" content={image} />
 
       <meta property="twitter:card" content="summary_large_image" />
-      <meta property="twitter:url" content={WEBSITE_URL + asPath} />
+      <meta property="twitter:url" content={url} />
       <meta property="twitter:title" content={title} />
       <meta property="twitter:description" content={description} />
       <meta property="twitter:image" content={image} />
@@ -60,7 +62,7 @@ const Head: React.FC<HeadProps> = (props) => {
       />
       <meta name="msapplication-starturl" content="/" />
 
-      <link rel="canonical" href={WEBSITE_URL + asPath} />
+      <link rel="canonical" href={url} />
 
       {props.children}
     </NextHead>
