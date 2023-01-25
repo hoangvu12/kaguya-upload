@@ -1,3 +1,4 @@
+import { GA_TRACKING_ID } from "@/lib/gtag";
 import Document, { Html, Head, Main, NextScript } from "next/document";
 
 class MyDocument extends Document {
@@ -9,7 +10,7 @@ class MyDocument extends Document {
           <link rel="shortcut icon" href="/favicon.ico" />
           <link rel="icon" href="/favicon.ico" type="image/ico" />
 
-          <script
+          {/* <script
             data-partytown-config
             dangerouslySetInnerHTML={{
               __html: `
@@ -18,6 +19,24 @@ class MyDocument extends Document {
                   forward: ["gtag", "dataLayer.push"]
                 };
               `,
+            }}
+          /> */}
+
+          <script
+            async
+            src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
+          />
+          <script
+            // eslint-disable-next-line react/no-danger
+            dangerouslySetInnerHTML={{
+              __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${GA_TRACKING_ID}', {
+                page_path: window.location.pathname,
+              });
+            `,
             }}
           />
         </Head>

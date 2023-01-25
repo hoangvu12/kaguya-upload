@@ -81,7 +81,7 @@ function App({ Component, pageProps, router, err }: WorkaroundAppProps) {
       {/* A placeholder to integrate MAL-Sync (https://github.com/MALSync/MALSync)*/}
       <script id="syncData" type="application/json"></script>
 
-      <Script
+      {/* <Script
         // strategy="worker"
         id="google-analytics"
         src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
@@ -100,7 +100,7 @@ function App({ Component, pageProps, router, err }: WorkaroundAppProps) {
             });
           `,
         }}
-      />
+      /> */}
 
       <ToastContainer
         position="bottom-left"
