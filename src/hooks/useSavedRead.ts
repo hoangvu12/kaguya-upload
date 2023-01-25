@@ -1,22 +1,28 @@
 import { useUser } from "@/contexts/AuthContext";
-import { useSupabaseSingleQuery } from "@/utils/supabase";
 import supabaseClient from "@/lib/supabase";
 
 import { Read } from "@/types";
+import { useQuery } from "react-query";
 
 const useSavedRead = (mangaId: number) => {
   const user = useUser();
 
-  return useSupabaseSingleQuery(
+  // Use useQuery instead of useSupabaseSingleQuery because useSupabaseSingleQuery doesn't re-render the query.
+  return useQuery(
     ["read", mangaId],
-    () =>
-      supabaseClient
+    async () => {
+      const { data, error } = await supabaseClient
         .from<Read>("kaguya_read")
         .select("chapter:chapterId(*)")
         .eq("mediaId", mangaId)
         .eq("userId", user.id)
         .limit(1)
-        .single(),
+        .single();
+
+      if (error) throw error;
+
+      return data;
+    },
     {
       enabled: !!user,
       retry: 0,
