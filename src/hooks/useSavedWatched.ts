@@ -2,21 +2,27 @@ import { useUser } from "@/contexts/AuthContext";
 import supabaseClient from "@/lib/supabase";
 
 import { Watched } from "@/types";
-import { useSupabaseSingleQuery } from "@/utils/supabase";
+import { useQuery } from "react-query";
 
 const useSavedWatched = (animeId: number) => {
   const user = useUser();
 
-  return useSupabaseSingleQuery(
+  // Use useQuery instead of useSupabaseSingleQuery because useSupabaseSingleQuery doesn't re-render the query.
+  return useQuery(
     ["watched", animeId],
-    () =>
-      supabaseClient
+    async () => {
+      const { data, error } = await supabaseClient
         .from<Watched>("kaguya_watched")
         .select("episode:episodeId(*), watchedTime, episodeNumber")
         .eq("mediaId", animeId)
         .eq("userId", user.id)
         .limit(1)
-        .single(),
+        .single();
+
+      if (error) throw error;
+
+      return data;
+    },
     {
       enabled: !!user,
       refetchOnMount: true,
