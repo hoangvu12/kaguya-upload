@@ -6,15 +6,12 @@ import Portal from "@/components/shared/Portal";
 import { ReadContextProvider } from "@/contexts/ReadContext";
 import { ReadSettingsContextProvider } from "@/contexts/ReadSettingsContext";
 import useFetchImages from "@/hooks/useFetchImages";
-import useMediaDetails from "@/hooks/useMediaDetails";
 import useSavedRead from "@/hooks/useSavedRead";
 import useSaveRead from "@/hooks/useSaveRead";
-import { Chapter, MangaSourceConnection } from "@/types";
-import { Media, MediaType } from "@/types/anilist";
-import { parseNumberFromString } from "@/utils";
+import { Chapter } from "@/types";
+import { Media } from "@/types/anilist";
 import { getDescription, getTitle, sortMediaUnit } from "@/utils/data";
-import { supabaseClient } from "@supabase/auth-helpers-nextjs";
-import { GetServerSideProps, NextPage } from "next";
+import { NextPage } from "next";
 import { useTranslation } from "next-i18next";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
@@ -127,7 +124,7 @@ const ReadPage: NextPage<ReadPageProps> = ({ chapters, media: manga }) => {
     )
       return;
 
-    if (currentChapter.sourceChapterId === readChapter?.sourceChapterId) {
+    if (currentChapter.chapterNumber >= readChapter?.chapterNumber) {
       setDeclinedReread(true);
 
       return;
@@ -135,7 +132,8 @@ const ReadPage: NextPage<ReadPageProps> = ({ chapters, media: manga }) => {
 
     setShowReadOverlay(true);
   }, [
-    currentChapter.sourceChapterId,
+    currentChapter?.chapterNumber,
+    currentChapter?.sourceChapterId,
     declinedReread,
     isSavedDataError,
     isSavedDataLoading,
@@ -152,7 +150,6 @@ const ReadPage: NextPage<ReadPageProps> = ({ chapters, media: manga }) => {
         saveReadMutation.mutate({
           chapter_id: `${currentChapter.source.id}-${currentChapter.sourceChapterId}`,
           media_id: Number(mangaId),
-          chapter_number: parseNumberFromString(currentChapter.name, 0),
         }),
       10000
     );
@@ -262,37 +259,5 @@ const ReadPage: NextPage<ReadPageProps> = ({ chapters, media: manga }) => {
     </ReadContextProvider>
   );
 };
-
-// export const getServerSideProps: GetServerSideProps = async ({
-//   params: { params },
-// }) => {
-//   try {
-//     const { data, error } = await supabaseClient
-//       .from<MangaSourceConnection>("kaguya_manga_source")
-//       .select(
-//         `
-//          chapters:kaguya_chapters(*, source:kaguya_sources(*))
-//         `
-//       )
-//       .eq("mediaId", Number(params[0]));
-
-//     if (error) throw error;
-
-//     const chapters = data.flatMap((connection) => connection.chapters);
-
-//     return {
-//       props: {
-//         chapters,
-//       },
-//     };
-//   } catch (err) {
-//     console.log(err);
-
-//     return { notFound: true };
-//   }
-// };
-
-// // @ts-ignore
-// ReadPage.getLayout = (page) => page;
 
 export default ReadPage;
