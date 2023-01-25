@@ -82,14 +82,14 @@ function App({ Component, pageProps, router, err }: WorkaroundAppProps) {
       <script id="syncData" type="application/json"></script>
 
       <Script
-        strategy="worker"
+        // strategy="worker"
         id="google-analytics"
         src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
       />
 
       <Script
         id="google-analytics-init"
-        strategy="worker"
+        // strategy="worker"
         dangerouslySetInnerHTML={{
           __html: `
             window.dataLayer = window.dataLayer || [];
