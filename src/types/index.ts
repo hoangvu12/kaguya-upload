@@ -126,6 +126,7 @@ export interface Read {
   userId: string;
   updated_at?: string;
   created_at?: string;
+  chapterNumber?: number;
 }
 
 export interface Reaction {

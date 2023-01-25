@@ -7,6 +7,7 @@ import { useMutation, useQueryClient } from "react-query";
 interface MutationInput {
   media_id: number;
   chapter_id: string;
+  chapter_number: number;
 }
 
 const useSaveRead = () => {
@@ -16,7 +17,7 @@ const useSaveRead = () => {
   return useMutation(async (data: MutationInput) => {
     if (!user) return;
 
-    const { chapter_id, media_id } = data;
+    const { chapter_id, media_id, chapter_number } = data;
 
     const sourceStatus = queryClient.getQueryData<
       SourceStatus<MediaType.Manga>
@@ -37,6 +38,7 @@ const useSaveRead = () => {
           mediaId: media_id,
           userId: user.id,
           chapterId: chapter_id,
+          chapterNumber: chapter_number,
         },
         { returning: "minimal" }
       );

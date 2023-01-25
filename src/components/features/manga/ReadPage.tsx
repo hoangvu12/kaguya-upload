@@ -11,6 +11,7 @@ import useSavedRead from "@/hooks/useSavedRead";
 import useSaveRead from "@/hooks/useSaveRead";
 import { Chapter, MangaSourceConnection } from "@/types";
 import { Media, MediaType } from "@/types/anilist";
+import { parseNumberFromString } from "@/utils";
 import { getDescription, getTitle, sortMediaUnit } from "@/utils/data";
 import { supabaseClient } from "@supabase/auth-helpers-nextjs";
 import { GetServerSideProps, NextPage } from "next";
@@ -151,6 +152,7 @@ const ReadPage: NextPage<ReadPageProps> = ({ chapters, media: manga }) => {
         saveReadMutation.mutate({
           chapter_id: `${currentChapter.source.id}-${currentChapter.sourceChapterId}`,
           media_id: Number(mangaId),
+          chapter_number: parseNumberFromString(currentChapter.name, 0),
         }),
       10000
     );
