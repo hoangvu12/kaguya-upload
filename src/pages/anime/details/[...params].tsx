@@ -43,6 +43,7 @@ import { AiOutlineUpload } from "react-icons/ai";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { BsFillPlayFill } from "react-icons/bs";
 import TopBanner from "@/components/features/ads/TopBanner";
+import useSavedWatched from "@/hooks/useSavedWatched";
 
 interface DetailsPageProps {
   anime: Media;
@@ -54,6 +55,9 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
   const { t } = useTranslation("anime_details");
 
   const { data: episodes, isLoading } = useEpisodes(anime.id);
+  const { data: watchedData, isLoading: watchedLoading } = useSavedWatched(
+    anime.id
+  );
 
   const nextAiringSchedule = useMemo(
     () =>
@@ -429,12 +433,17 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
               title={t("episodes_section")}
               className="overflow-hidden"
             >
-              {isLoading ? (
+              {isLoading || watchedLoading ? (
                 <div className="h-full w-full flex items-center justify-center">
                   <Spinner />
                 </div>
               ) : (
-                <LocaleEpisodeSelector mediaId={anime.id} episodes={episodes} />
+                <LocaleEpisodeSelector
+                  watchedData={watchedData}
+                  mediaId={anime.id}
+                  episodes={episodes}
+                  media={anime}
+                />
               )}
             </DetailsSection>
 

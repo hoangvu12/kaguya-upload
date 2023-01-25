@@ -3,7 +3,8 @@ import ArrowSwiper, {
   SwiperSlide,
 } from "@/components/shared/ArrowSwiper";
 import Link from "@/components/shared/Link";
-import { Episode } from "@/types";
+import { Episode, Watched } from "@/types";
+import { Media } from "@/types/anilist";
 import { chunk, groupBy, parseNumberFromString } from "@/utils";
 import classNames from "classnames";
 import { LinkProps } from "next/link";
@@ -18,35 +19,74 @@ export interface EpisodeSelectorProps {
   episodeLinkProps?: Omit<LinkProps, "href">;
   onEachEpisode?: (episode: Episode) => React.ReactNode;
   episodeChunk?: number;
+  watchedData?: Watched;
+  media?: Media;
 }
 
 const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
   const {
+    watchedData,
     episodes,
+    media,
     activeEpisode,
     chunkSwiperProps,
     episodeLinkProps,
-    episodeChunk = isMobileOnly ? 6 : 18,
-    onEachEpisode = (episode) => (
-      <Link
-        href={`/anime/watch/${props.mediaId}/${episode.sourceId}/${episode.sourceEpisodeId}`}
-        key={episode.sourceEpisodeId}
-        shallow
-        {...episodeLinkProps}
-      >
-        <a
-          className={classNames(
-            "rounded-md bg-background-800 col-span-1 aspect-w-2 aspect-h-1 group",
-            episode.sourceEpisodeId === activeEpisode?.sourceEpisodeId &&
-              "text-primary-300"
-          )}
+    episodeChunk = isMobileOnly ? 12 : 24,
+    onEachEpisode = (episode) => {
+      const watchProgressPercent = (() => {
+        if (watchedData?.episode?.episodeNumber === episode.episodeNumber) {
+          if (media?.duration === null) return 100;
+
+          const duration = media.duration * 1000;
+
+          if (duration < watchedData?.watchedTime) return 100;
+
+          const percent = (watchedData?.watchedTime / duration) * 100;
+
+          return percent < 10 ? 10 : percent;
+        }
+
+        // If episodeNumber is 0, it mean it is a special episode.
+        if (episode.episodeNumber === 0 && episodes.length > 1) return 0;
+
+        if (episode.episodeNumber < watchedData?.episode?.episodeNumber)
+          return 100;
+
+        return 0;
+      })();
+
+      return (
+        <Link
+          href={`/anime/watch/${props.mediaId}/${episode.sourceId}/${episode.sourceEpisodeId}`}
+          key={episode.sourceEpisodeId}
+          shallow
+          {...episodeLinkProps}
         >
-          <div className="flex items-center justify-center w-full h-full group-hover:bg-white/10 rounded-md transition duration-300">
-            <p>{episode.name}</p>
-          </div>
-        </a>
-      </Link>
-    ),
+          <a
+            className={classNames(
+              "relative rounded-md bg-background-800 col-span-1 aspect-w-2 aspect-h-1 group",
+              episode.sourceEpisodeId === activeEpisode?.sourceEpisodeId
+                ? "text-primary-300"
+                : watchedData?.episode?.episodeNumber >=
+                    episode.episodeNumber && "text-white/70"
+            )}
+          >
+            <div className="flex items-center justify-center w-full h-full group-hover:bg-white/10 rounded-md transition duration-300">
+              <p>{episode.name}</p>
+            </div>
+
+            <div className="absolute w-full h-full">
+              {watchedData?.episode?.episodeNumber >= episode.episodeNumber && (
+                <div
+                  className="absolute bottom-0 h-0.5 bg-primary-500"
+                  style={{ width: `${watchProgressPercent}%` }}
+                ></div>
+              )}
+            </div>
+          </a>
+        </Link>
+      );
+    },
   } = props;
 
   const chunks = useMemo(
@@ -115,6 +155,16 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
       </ArrowSwiper>
 
       <div className="mt-10 space-y-4">
+        {watchedData?.episode && (
+          <div className="flex items-center gap-4">
+            <p className="shrink-0">Continue watching: </p>
+
+            <div className="grid grid-cols-1 w-28">
+              {onEachEpisode(watchedData.episode)}
+            </div>
+          </div>
+        )}
+
         {Object.keys(sections).map((section) => {
           const episodes = sections[section];
 
