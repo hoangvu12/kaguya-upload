@@ -1,17 +1,16 @@
-import ArrowSwiper, { SwiperSlide } from "@/components/shared/ArrowSwiper";
 import CircleButton from "@/components/shared/CircleButton";
-import Select from "@/components/shared/Select";
-import { Chapter } from "@/types";
-import { groupBy, sortObjectByValue } from "@/utils";
-import classNames from "classnames";
-import { AnimatePresence, motion } from "framer-motion";
 import Link from "@/components/shared/Link";
+import Select from "@/components/shared/Select";
+import { Chapter, Read } from "@/types";
+import { groupBy, sortObjectByValue } from "@/utils";
+import { motion } from "framer-motion";
 import React, { useEffect, useMemo, useState } from "react";
 import { BsChevronDown, BsChevronUp } from "react-icons/bs";
 
 export interface ChapterSelectorProps {
   chapters: Chapter[];
   mediaId: number;
+  readData?: Read;
 }
 
 const sourcesToOptions = (sources: string[]) =>
@@ -20,6 +19,7 @@ const sourcesToOptions = (sources: string[]) =>
 const ChapterSelector: React.FC<ChapterSelectorProps> = ({
   chapters,
   mediaId,
+  readData,
 }) => {
   const [isChapterExpanded, setIsChapterExpanded] = useState(false);
 
@@ -82,6 +82,27 @@ const ChapterSelector: React.FC<ChapterSelectorProps> = ({
     }
   }, [activeSource, sources]);
 
+  const onEachChapter = (chapter: Chapter) => {
+    const isRead = chapter.chapterNumber <= readData?.chapter?.chapterNumber;
+
+    return (
+      <Link
+        href={`/manga/read/${mediaId}/${chapter.sourceId}/${chapter.sourceChapterId}`}
+        key={chapter.sourceChapterId}
+      >
+        <a className="relative block">
+          <p className="line-clamp-1 bg-background-800 p-2 text-sm font-semibold hover:bg-white/20 duration-300 transition">
+            {chapter.name}
+          </p>
+
+          {isRead && (
+            <div className="absolute left-0 top-0 w-0.5 h-full bg-primary-500"></div>
+          )}
+        </a>
+      </Link>
+    );
+  };
+
   return (
     <React.Fragment>
       <div className="flex justify-end w-full mx-auto mb-8">
@@ -126,18 +147,15 @@ const ChapterSelector: React.FC<ChapterSelectorProps> = ({
         transition={{ ease: "linear" }}
         animate={isChapterExpanded ? "animate" : "initial"}
       >
-        {sourceChapters.map((chapter) => (
-          <Link
-            href={`/manga/read/${mediaId}/${chapter.sourceId}/${chapter.sourceChapterId}`}
-            key={chapter.sourceChapterId}
-          >
-            <a className="block">
-              <p className="line-clamp-1 bg-background-900 p-2 text-sm font-semibold hover:bg-white/20 duration-300 transition">
-                {chapter.name}
-              </p>
-            </a>
-          </Link>
-        ))}
+        {readData?.chapter && (
+          <div className="flex items-center gap-4">
+            <p className="shrink-0">Continue reading: </p>
+
+            <div className="w-full">{onEachChapter(readData.chapter)}</div>
+          </div>
+        )}
+
+        {sourceChapters.map(onEachChapter)}
       </motion.div>
 
       {chapters.length > 7 && (

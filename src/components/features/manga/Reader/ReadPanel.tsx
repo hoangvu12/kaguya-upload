@@ -2,7 +2,6 @@ import { ReadPanelContextProvider } from "@/contexts/ReadPanelContext";
 import React from "react";
 import Sidebar from "./Sidebar";
 import ViewPanel from "./ViewPanel";
-import ImageNavigator from "./ImageNavigator";
 
 interface ReadPanelProps {
   children: React.ReactNode;

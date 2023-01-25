@@ -38,6 +38,7 @@ import { AiOutlineUpload } from "react-icons/ai";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { BsFillPlayFill } from "react-icons/bs";
 import TopBanner from "@/components/features/ads/TopBanner";
+import useSavedRead from "@/hooks/useSavedRead";
 
 interface DetailsPageProps {
   manga: Media;
@@ -48,6 +49,7 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
   const { locale } = useRouter();
   const { t } = useTranslation("manga_details");
   const { data: chapters, isLoading } = useChapters(manga.id);
+  const { data: readData, isLoading: readLoading } = useSavedRead(manga.id);
 
   const title = useMemo(() => getTitle(manga, locale), [manga, locale]);
   const description = useMemo(
@@ -307,12 +309,16 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
             <TopBanner />
 
             <DetailsSection title={t("chapters_section")} className="relative">
-              {isLoading ? (
+              {isLoading || readLoading ? (
                 <div className="h-full w-full flex items-center justify-center">
                   <Spinner />
                 </div>
               ) : (
-                <LocaleChapterSelector mediaId={manga.id} chapters={chapters} />
+                <LocaleChapterSelector
+                  readData={readData}
+                  mediaId={manga.id}
+                  chapters={chapters}
+                />
               )}
             </DetailsSection>
 
