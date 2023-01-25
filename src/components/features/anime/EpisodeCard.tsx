@@ -18,10 +18,13 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
   duration = 0,
   ...props
 }) => {
-  const watchProgressPercent = useMemo(
-    () => (duration === 0 ? 0 : (watchedTime / duration) * 100),
-    [watchedTime, duration]
-  );
+  const watchProgressPercent = useMemo(() => {
+    if (duration === 0) return 0;
+
+    if (duration < watchedTime) return 100;
+
+    return (watchedTime / duration) * 100;
+  }, [watchedTime, duration]);
 
   return (
     <div
