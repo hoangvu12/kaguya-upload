@@ -196,7 +196,7 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
     )
       return;
 
-    if (currentEpisode.sourceEpisodeId === watchedEpisode?.sourceEpisodeId) {
+    if (currentEpisode.episodeNumber >= watchedEpisode?.episodeNumber) {
       setDeclinedRewatch(true);
 
       return;
@@ -204,7 +204,9 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
 
     setShowWatchedOverlay(true);
   }, [
-    currentEpisode.sourceEpisodeId,
+    currentEpisode?.episodeNumber,
+    currentEpisode?.sourceEpisodeId,
+    currentEpisode?.title,
     declinedRewatch,
     isSavedDataError,
     isSavedDataLoading,
@@ -225,7 +227,6 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
           media_id: Number(animeId),
           episode_id: `${currentEpisode.sourceId}-${currentEpisode.sourceEpisodeId}`,
           watched_time: videoRef.current?.currentTime,
-          episode_number: parseNumberFromString(currentEpisode?.name, 0),
         });
       }, 30000);
     };
@@ -246,11 +247,9 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
 
     if (!watchedEpisodeData?.watchedTime) return;
 
-    if (!currentEpisode?.name) return;
+    if (currentEpisode?.episodeNumber === null) return;
 
-    const currentEpisodeNumber = parseNumberFromString(currentEpisode.name, 0);
-
-    if (currentEpisodeNumber !== watchedEpisodeData.episodeNumber) return;
+    if (currentEpisode.episodeNumber !== watchedEpisode.episodeNumber) return;
 
     const handleCanPlay = () => {
       const handleVideoPlay = () => {

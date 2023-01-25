@@ -77,6 +77,7 @@ export type Episode = {
   published: boolean;
   section: string;
   title?: string;
+  episodeNumber: number;
 };
 
 export type Chapter = {
@@ -92,6 +93,7 @@ export type Chapter = {
     images: Attachment[];
   }[];
   published: boolean;
+  chapterNumber: number;
 };
 
 export interface Section<T> {
@@ -115,7 +117,6 @@ export interface Watched {
   updated_at?: string;
   created_at?: string;
   watchedTime?: number;
-  episodeNumber?: number;
 }
 
 export interface Read {
@@ -126,7 +127,6 @@ export interface Read {
   userId: string;
   updated_at?: string;
   created_at?: string;
-  chapterNumber?: number;
 }
 
 export interface Reaction {
