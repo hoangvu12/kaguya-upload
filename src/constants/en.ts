@@ -218,11 +218,23 @@ export const WATCH_STATUS = [
   },
   {
     value: "PLANNING",
-    label: "Planning",
+    label: "Planned to watch",
   },
   {
     value: "COMPLETED",
     label: "Completed",
+  },
+  {
+    value: "DROPPED",
+    label: "Dropped",
+  },
+  {
+    value: "PAUSED",
+    label: "Paused",
+  },
+  {
+    value: "REPEATING",
+    label: "Repeating",
   },
 ];
 
@@ -233,11 +245,23 @@ export const READ_STATUS = [
   },
   {
     value: "PLANNING",
-    label: "Planning",
+    label: "Planned to read",
   },
   {
     value: "COMPLETED",
     label: "Completed",
+  },
+  {
+    value: "DROPPED",
+    label: "Dropped",
+  },
+  {
+    value: "PAUSED",
+    label: "Paused",
+  },
+  {
+    value: "REPEATING",
+    label: "Repeating",
   },
 ];
 

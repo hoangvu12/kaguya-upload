@@ -20,14 +20,14 @@ interface WatchListProps {
 const WatchList: React.FC<WatchListProps> = ({ user }) => {
   const { WATCH_STATUS } = useConstantTranslation();
 
-  type WatchStatus = typeof WATCH_STATUS[number];
+  type WatchStatus = (typeof WATCH_STATUS)[number];
 
   const getStatus = (status: Status) => {
     return WATCH_STATUS.find((watchStatus) => watchStatus.value === status);
   };
 
   const [activeTab, setActiveTab] = useState<WatchStatus>(
-    getStatus(STATUS.Watching)
+    getStatus(STATUS.Current)
   );
   const { t } = useTranslation("common");
 
@@ -58,36 +58,19 @@ const WatchList: React.FC<WatchListProps> = ({ user }) => {
   return (
     <div>
       <div className="snap-x overflow-x-auto flex items-center gap-3">
-        <Button
-          className={classNames(
-            activeTab.value === STATUS.Watching
-              ? "bg-primary-600"
-              : "bg-background-500"
-          )}
-          onClick={handleChangeTab(STATUS.Watching)}
-        >
-          {getStatus(STATUS.Watching).label}
-        </Button>
-        <Button
-          className={classNames(
-            activeTab.value === STATUS.Completed
-              ? "bg-primary-600"
-              : "bg-background-500"
-          )}
-          onClick={handleChangeTab(STATUS.Completed)}
-        >
-          {getStatus(STATUS.Completed).label}
-        </Button>
-        <Button
-          className={classNames(
-            activeTab.value === STATUS.Planning
-              ? "bg-primary-600"
-              : "bg-background-500"
-          )}
-          onClick={handleChangeTab(STATUS.Planning)}
-        >
-          {getStatus(STATUS.Planning).label}
-        </Button>
+        {WATCH_STATUS.map((status) => (
+          <Button
+            key={status.value}
+            className={classNames(
+              activeTab.value === status.value
+                ? "bg-primary-600"
+                : "bg-background-500"
+            )}
+            onClick={handleChangeTab(status.value as Status)}
+          >
+            {status.label}
+          </Button>
+        ))}
       </div>
 
       <div className="mt-8">

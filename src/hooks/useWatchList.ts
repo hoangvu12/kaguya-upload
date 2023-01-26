@@ -6,12 +6,16 @@ import { getPagination, parseNumberFromString } from "@/utils";
 import { useInfiniteQuery } from "react-query";
 
 export const STATUS = {
-  Watching: "WATCHING",
+  Current: "CURRENT",
   Completed: "COMPLETED",
   Planning: "PLANNING",
+  Dropped: "DROPPED",
+  Paused: "PAUSED",
+  Repeating: "REPEATING",
 } as const;
+
 export type StatusKey = keyof typeof STATUS;
-export type Status = typeof STATUS[StatusKey];
+export type Status = (typeof STATUS)[StatusKey];
 
 interface MediaWithWatchedTime extends Media {
   watchedTime: number;

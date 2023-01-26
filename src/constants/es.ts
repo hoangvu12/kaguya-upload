@@ -224,6 +224,18 @@ export const WATCH_STATUS = [
     value: "COMPLETED",
     label: "Completado",
   },
+  {
+    value: "DROPPED",
+    label: "Dropped",
+  },
+  {
+    value: "PAUSED",
+    label: "Paused",
+  },
+  {
+    value: "REPEATING",
+    label: "Repeating",
+  },
 ];
 
 export const READ_STATUS = [
@@ -238,6 +250,18 @@ export const READ_STATUS = [
   {
     value: "COMPLETED",
     label: "Completado",
+  },
+  {
+    value: "DROPPED",
+    label: "Dropped",
+  },
+  {
+    value: "PAUSED",
+    label: "Paused",
+  },
+  {
+    value: "REPEATING",
+    label: "Repeating",
   },
 ];
 

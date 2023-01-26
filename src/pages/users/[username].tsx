@@ -1,23 +1,22 @@
 import EditProfileModal from "@/components/features/users/EditProfileModal";
+import ReadList from "@/components/features/users/ReadList";
 import UpdateAvatar from "@/components/features/users/UpdateAvatar";
 import UpdateBanner from "@/components/features/users/UpdateBanner";
+import WatchList from "@/components/features/users/WatchList";
 import Avatar from "@/components/shared/Avatar";
+import Button from "@/components/shared/Button";
 import Description from "@/components/shared/Description";
 import Head from "@/components/shared/Head";
 import Section from "@/components/shared/Section";
 import { useUser } from "@/contexts/AuthContext";
+import useConstantTranslation from "@/hooks/useConstantTranslation";
 import useUserProfile from "@/hooks/useUserProfile";
 import supabaseClient from "@/lib/supabase";
-import { AdditionalUser, SourceStatus } from "@/types";
-import { GetServerSideProps, NextPage } from "next";
-import React, { useMemo, useState } from "react";
-import WatchList from "@/components/features/users/WatchList";
-import { MediaType } from "@/types/anilist";
-import ReadList from "@/components/features/users/ReadList";
-import Button from "@/components/shared/Button";
+import { AdditionalUser } from "@/types";
 import classNames from "classnames";
-import useConstantTranslation from "@/hooks/useConstantTranslation";
+import { GetServerSideProps, NextPage } from "next";
 import { useTranslation } from "next-i18next";
+import React, { useMemo, useState } from "react";
 
 interface UserPageProps {
   user: AdditionalUser;
@@ -29,7 +28,7 @@ const LISTS = {
 } as const;
 
 type ListKey = keyof typeof LISTS;
-type List = typeof LISTS[ListKey];
+type List = (typeof LISTS)[ListKey];
 
 const UserPage: NextPage<UserPageProps> = ({ user }) => {
   const currentUser = useUser();
@@ -38,7 +37,7 @@ const UserPage: NextPage<UserPageProps> = ({ user }) => {
 
   const { t } = useTranslation("user_profile");
 
-  type UserList = typeof USER_LIST[number];
+  type UserList = (typeof USER_LIST)[number];
 
   const getList = (list: List) => {
     return USER_LIST.find((userList) => userList.value === list);

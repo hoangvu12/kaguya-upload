@@ -18,14 +18,14 @@ interface ReadListProps {
 const ReadList: React.FC<ReadListProps> = ({ user }) => {
   const { READ_STATUS } = useConstantTranslation();
 
-  type ReadStatus = typeof READ_STATUS[number];
+  type ReadStatus = (typeof READ_STATUS)[number];
 
   const getStatus = (status: Status) => {
-    return READ_STATUS.find((watchStatus) => watchStatus.value === status);
+    return READ_STATUS.find((readStatus) => readStatus.value === status);
   };
 
   const [activeTab, setActiveTab] = useState<ReadStatus>(
-    getStatus(STATUS.Reading)
+    getStatus(STATUS.Current)
   );
 
   const { t } = useTranslation("common");
@@ -57,36 +57,19 @@ const ReadList: React.FC<ReadListProps> = ({ user }) => {
   return (
     <div>
       <div className="snap-x overflow-x-auto flex items-center gap-3">
-        <Button
-          className={classNames(
-            activeTab.value === STATUS.Reading
-              ? "bg-primary-600"
-              : "bg-background-500"
-          )}
-          onClick={handleChangeTab(STATUS.Reading)}
-        >
-          {getStatus(STATUS.Reading).label}
-        </Button>
-        <Button
-          className={classNames(
-            activeTab.value === STATUS.Completed
-              ? "bg-primary-600"
-              : "bg-background-500"
-          )}
-          onClick={handleChangeTab(STATUS.Completed)}
-        >
-          {getStatus(STATUS.Completed).label}
-        </Button>
-        <Button
-          className={classNames(
-            activeTab.value === STATUS.Planning
-              ? "bg-primary-600"
-              : "bg-background-500"
-          )}
-          onClick={handleChangeTab(STATUS.Planning)}
-        >
-          {getStatus(STATUS.Planning).label}
-        </Button>
+        {READ_STATUS.map((status) => (
+          <Button
+            key={status.value}
+            className={classNames(
+              activeTab.value === status.value
+                ? "bg-primary-600"
+                : "bg-background-500"
+            )}
+            onClick={handleChangeTab(status.value as Status)}
+          >
+            {status.label}
+          </Button>
+        ))}
       </div>
 
       <div className="mt-8">

@@ -213,7 +213,7 @@ export const CHARACTERS_ROLES = [
 
 export const WATCH_STATUS = [
   {
-    value: "WATCHING",
+    value: "CURRENT",
     label: "Đang xem",
   },
   {
@@ -224,11 +224,23 @@ export const WATCH_STATUS = [
     value: "COMPLETED",
     label: "Đã xem",
   },
+  {
+    value: "DROPPED",
+    label: "Đã bỏ xem",
+  },
+  {
+    value: "PAUSED",
+    label: "Đang tạm dừng",
+  },
+  {
+    value: "REPEATING",
+    label: "Đang xem lại",
+  },
 ];
 
 export const READ_STATUS = [
   {
-    value: "READING",
+    value: "CURRENT",
     label: "Đang đọc",
   },
   {
@@ -238,6 +250,18 @@ export const READ_STATUS = [
   {
     value: "COMPLETED",
     label: "Đã đọc",
+  },
+  {
+    value: "DROPPED",
+    label: "Đã bỏ đọc",
+  },
+  {
+    value: "PAUSED",
+    label: "Đang tạm dừng",
+  },
+  {
+    value: "REPEATING",
+    label: "Đang đọc lại",
   },
 ];
 
