@@ -19,6 +19,16 @@ const LocaleChapterSelector: React.FC<LocaleChapterSelectorProps> = ({
     [router.locale]
   );
 
+  const localesHasChapters = useMemo(() => {
+    return locales.filter((locale) =>
+      chapters?.some((chapter) =>
+        chapter?.source?.locales.some(
+          (sourceLocale) => sourceLocale === locale.locale
+        )
+      )
+    );
+  }, [chapters]);
+
   return (
     <React.Fragment>
       <Tabs
@@ -26,7 +36,7 @@ const LocaleChapterSelector: React.FC<LocaleChapterSelectorProps> = ({
         selectedTabClassName="bg-white !text-black"
       >
         <TabList className="flex items-center justify-end gap-x-1">
-          {locales.map(({ locale }, index) => {
+          {localesHasChapters.map(({ locale }, index) => {
             return (
               <Tab
                 key={index}
