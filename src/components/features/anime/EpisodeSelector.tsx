@@ -1,21 +1,17 @@
-import ArrowSwiper, {
-  SwiperProps,
-  SwiperSlide,
-} from "@/components/shared/ArrowSwiper";
 import Link from "@/components/shared/Link";
+import Select from "@/components/shared/Select";
 import { Episode, Watched } from "@/types";
 import { Media } from "@/types/anilist";
 import { chunk, groupBy, parseNumberFromString } from "@/utils";
 import classNames from "classnames";
 import { LinkProps } from "next/link";
-import React, { useMemo } from "react";
+import React, { useLayoutEffect, useMemo, useState } from "react";
 import { isMobileOnly } from "react-device-detect";
 
 export interface EpisodeSelectorProps {
   episodes: Episode[];
   mediaId?: number;
   activeEpisode?: Episode;
-  chunkSwiperProps?: SwiperProps;
   episodeLinkProps?: Omit<LinkProps, "href">;
   onEachEpisode?: (episode: Episode) => React.ReactNode;
   episodeChunk?: number;
@@ -29,7 +25,6 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
     episodes,
     media,
     activeEpisode,
-    chunkSwiperProps,
     episodeLinkProps,
     episodeChunk = isMobileOnly ? 12 : 24,
     onEachEpisode = (episode) => {
@@ -94,67 +89,84 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
     [episodeChunk, episodes]
   );
 
-  const [activeTabIndex, setActiveTabIndex] = React.useState(() => {
-    const index = chunks.findIndex((chunk) =>
-      chunk.some(
-        (episode) =>
-          episode.sourceEpisodeId === activeEpisode?.sourceEpisodeId ||
-          episode.episodeNumber === watchedData?.episode?.episodeNumber
-      )
-    );
+  const [videoContainer, setVideoContainer] = useState<HTMLElement>();
 
-    return index === -1 ? 0 : index;
+  const [activeChunk, setActiveChunk] = useState(() => {
+    return (
+      chunks.find((chunk) =>
+        chunk.some(
+          (episode) =>
+            episode.sourceEpisodeId === activeEpisode?.sourceEpisodeId ||
+            episode.episodeNumber === watchedData?.episode?.episodeNumber
+        )
+      ) || chunks[0]
+    );
   });
 
-  const realActiveTabIndex = useMemo(
-    () => (activeTabIndex > chunks.length - 1 ? 0 : activeTabIndex),
-    [activeTabIndex, chunks.length]
+  const sections = useMemo(
+    () => groupBy(activeChunk, (episode) => episode.section),
+    [activeChunk]
   );
 
-  const sections = useMemo(
-    () => groupBy(chunks[realActiveTabIndex], (episode) => episode.section),
-    [chunks, realActiveTabIndex]
-  );
+  const chunkOptions = useMemo(() => {
+    const options = chunks.map((chunk, i) => {
+      const firstEpisodeName = parseNumberFromString(
+        chunk[0].name,
+        chunk[0].name
+      );
+      const lastEpisodeName = parseNumberFromString(
+        chunk[chunk.length - 1].name,
+        chunk[chunk.length - 1].name
+      );
+
+      const title =
+        chunk.length === 1
+          ? `${firstEpisodeName}`
+          : `${firstEpisodeName} - ${lastEpisodeName}`;
+
+      return {
+        value: chunk,
+        label: title,
+      };
+    });
+
+    return options;
+  }, [chunks]);
+
+  const activeChunkOption = useMemo(() => {
+    return chunkOptions.find((option) => option.value === activeChunk);
+  }, [activeChunk, chunkOptions]);
+
+  const onChange = ({ value }) => {
+    setActiveChunk(value);
+  };
+
+  useLayoutEffect(() => {
+    const videoElement: HTMLDivElement = document.querySelector(
+      ".netplayer-container"
+    );
+
+    if (!videoElement) {
+      setVideoContainer(document.body);
+
+      return;
+    }
+
+    setVideoContainer(videoElement);
+  }, []);
 
   return (
     <React.Fragment>
-      <ArrowSwiper
-        isOverflowHidden={false}
-        className="w-11/12 mx-auto"
-        defaultActiveSlide={realActiveTabIndex}
-        {...chunkSwiperProps}
-      >
-        {chunks.map((chunk, i) => {
-          const firstEpisodeName = parseNumberFromString(
-            chunk[0].name,
-            chunk[0].name
-          );
-          const lastEpisodeName = parseNumberFromString(
-            chunk[chunk.length - 1].name,
-            chunk[chunk.length - 1].name
-          );
-
-          const title =
-            chunk.length === 1
-              ? `${firstEpisodeName}`
-              : `${firstEpisodeName} - ${lastEpisodeName}`;
-
-          return (
-            <SwiperSlide onClick={() => setActiveTabIndex(i)} key={i}>
-              <div
-                className={classNames(
-                  "text-gray-300 cursor-pointer mx-auto rounded-[18px] px-2 py-1 w-[max-content] duration-300 transition",
-                  realActiveTabIndex === i
-                    ? "bg-white text-black"
-                    : "hover:text-white"
-                )}
-              >
-                {title}
-              </div>
-            </SwiperSlide>
-          );
-        })}
-      </ArrowSwiper>
+      <div className="flex justify-end">
+        <Select
+          options={chunkOptions}
+          className="ml-auto"
+          isClearable={false}
+          defaultValue={activeChunkOption}
+          onChange={onChange}
+          menuPortalTarget={videoContainer}
+        />
+      </div>
 
       <div className="mt-10 space-y-4">
         {watchedData?.episode && (
