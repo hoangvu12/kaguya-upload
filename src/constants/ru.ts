@@ -213,7 +213,7 @@ export const CHARACTERS_ROLES = [
 
 export const WATCH_STATUS = [
   {
-    value: "WATCHING",
+    value: "CURRENT",
     label: "Смотрю",
   },
   {
@@ -240,7 +240,7 @@ export const WATCH_STATUS = [
 
 export const READ_STATUS = [
   {
-    value: "READING",
+    value: "CURRENT",
     label: "Читаю",
   },
   {
