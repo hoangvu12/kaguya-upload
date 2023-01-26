@@ -26,6 +26,10 @@ const VerticalContainer: React.FC = () => {
     setChapter(sourceChapters[index]);
   };
 
+  const nextChapter = useMemo(() => {
+    return sourceChapters?.[currentChapterIndex + 1];
+  }, [currentChapterIndex, sourceChapters]);
+
   useEffect(() => {
     const currentImageElement: HTMLImageElement = document.querySelector(
       `[data-index="${state.activeImageIndex}"]`
@@ -62,7 +66,12 @@ const VerticalContainer: React.FC = () => {
             onClick={handleChangeChapter(currentChapterIndex + 1)}
             className="w-full h-full border-2 border-dashed border-gray-600 text-gray-600 hover:border-white hover:text-white transition duration-300 flex items-center justify-center"
           >
-            <p className="text-2xl">Chapter tiếp theo</p>
+            <p
+              title={`Next chapter - ${nextChapter.name}`}
+              className="text-center text-2xl"
+            >
+              {nextChapter.name}
+            </p>
           </button>
         </div>
       )}
