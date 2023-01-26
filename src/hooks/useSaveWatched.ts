@@ -27,7 +27,7 @@ const useSaveWatched = () => {
       await supabaseClient.from("kaguya_watch_status").upsert({
         userId: user.id,
         mediaId: media_id,
-        status: "WATCHING",
+        status: "CURRENT",
       });
     }
 
