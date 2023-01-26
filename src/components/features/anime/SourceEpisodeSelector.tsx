@@ -11,6 +11,7 @@ const sourcesToOptions = (sources: string[]) =>
 const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
   episodes,
   activeEpisode,
+  watchedData,
   ...episodeSelectorProps
 }) => {
   const [videoContainer, setVideoContainer] = useState<HTMLElement>();
@@ -57,10 +58,15 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
       Object.keys(sources).find((source) =>
         sources[source].some(
           (episode) =>
-            episode.sourceEpisodeId === activeEpisode?.sourceEpisodeId
+            episode.sourceEpisodeId === activeEpisode?.sourceEpisodeId ||
+            episode.sourceEpisodeId === watchedData?.episode?.sourceEpisodeId
         )
       ),
-    [sources, activeEpisode?.sourceEpisodeId]
+    [
+      sources,
+      activeEpisode?.sourceEpisodeId,
+      watchedData?.episode?.sourceEpisodeId,
+    ]
   );
 
   const [activeSource, setActiveSource] = useState(
@@ -120,6 +126,7 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
       <EpisodeSelector
         episodes={sourceEpisodes}
         activeEpisode={activeEpisode}
+        watchedData={watchedData}
         {...episodeSelectorProps}
       />
     </React.Fragment>

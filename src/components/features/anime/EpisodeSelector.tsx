@@ -97,7 +97,9 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
   const [activeTabIndex, setActiveTabIndex] = React.useState(() => {
     const index = chunks.findIndex((chunk) =>
       chunk.some(
-        (episode) => episode.sourceEpisodeId === activeEpisode?.sourceEpisodeId
+        (episode) =>
+          episode.sourceEpisodeId === activeEpisode?.sourceEpisodeId ||
+          episode.episodeNumber === watchedData?.episode?.episodeNumber
       )
     );
 
