@@ -58,7 +58,9 @@ const useReadList = (sourceType: Status, user: AdditionalUser) => {
 
       const { data: read } = await supabaseClient
         .from<Read>("kaguya_read")
-        .select("mediaId, chapter:kaguya_chapters!chapterId(name)")
+        .select(
+          "mediaId, chapter:kaguya_chapters!chapterId(name, chapterNumber)"
+        )
         .eq("userId", user.id)
         .in("mediaId", ids)
         .order("updated_at", { ascending: false });
@@ -92,7 +94,7 @@ const useReadList = (sourceType: Status, user: AdditionalUser) => {
 
           return {
             ...m,
-            readChapter: parseNumberFromString(readData?.chapter?.name || "0"),
+            readChapter: readData?.chapter?.chapterNumber || 0,
           };
         });
 
