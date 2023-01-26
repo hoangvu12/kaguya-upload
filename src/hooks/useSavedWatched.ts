@@ -13,7 +13,7 @@ const useSavedWatched = (animeId: number) => {
     async () => {
       const { data, error } = await supabaseClient
         .from<Watched>("kaguya_watched")
-        .select("episode:episodeId(*), watchedTime, episodeNumber")
+        .select("episode:episodeId(*), watchedTime")
         .eq("mediaId", animeId)
         .eq("userId", user.id)
         .limit(1)
