@@ -19,6 +19,16 @@ const LocaleEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
     [router.locale]
   );
 
+  const localesHasEpisodes = useMemo(() => {
+    return locales.filter((locale) =>
+      episodes?.some((episode) =>
+        episode?.source?.locales.some(
+          (sourceLocale) => sourceLocale === locale.locale
+        )
+      )
+    );
+  }, [episodes]);
+
   return (
     <React.Fragment>
       <Tabs
@@ -26,7 +36,7 @@ const LocaleEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
         selectedTabClassName="bg-white !text-black"
       >
         <TabList className="flex items-center justify-end gap-x-1">
-          {locales.map(({ locale }) => {
+          {localesHasEpisodes.map(({ locale }) => {
             return (
               <Tab
                 key={locale}
