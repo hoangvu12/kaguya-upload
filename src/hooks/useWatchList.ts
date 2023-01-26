@@ -60,7 +60,7 @@ const useWatchList = (sourceType: Status, user: AdditionalUser) => {
       const { data: watched } = await supabaseClient
         .from<Watched>("kaguya_watched")
         .select(
-          "mediaId, episode:kaguya_episodes!episodeId(name), watchedTime, updated_at"
+          "mediaId, episode:kaguya_episodes!episodeId(name, episodeNumber), watchedTime, updated_at"
         )
         .eq("userId", user.id)
         .in("mediaId", ids)
@@ -96,9 +96,7 @@ const useWatchList = (sourceType: Status, user: AdditionalUser) => {
           return {
             ...m,
             watchedTime: watchedData?.watchedTime || 0,
-            watchedEpisode: parseNumberFromString(
-              watchedData?.episode?.name || "0"
-            ),
+            watchedEpisode: watchedData?.episode?.episodeNumber || 0,
           };
         });
 

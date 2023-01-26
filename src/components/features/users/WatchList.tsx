@@ -84,10 +84,13 @@ const WatchList: React.FC<WatchListProps> = ({ user }) => {
               {(node) => {
                 const durationTime = node.duration * 60;
 
-                const watchProgressPercent =
-                  durationTime === 0
-                    ? 0
-                    : (node.watchedTime / durationTime) * 100;
+                const watchProgressPercent = (() => {
+                  if (durationTime === 0) return 0;
+
+                  if (durationTime < node.watchedTime) return 100;
+
+                  return (node.watchedTime / durationTime) * 100;
+                })();
 
                 const now = dayjs();
 
