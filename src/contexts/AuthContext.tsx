@@ -45,8 +45,6 @@ export const AuthContextProvider: React.FC<{}> = ({ children }) => {
   // Set cookies on auth state change
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
-      const user = supabase.auth.user();
-
       if (!session) {
         setUser(null);
 
@@ -58,14 +56,6 @@ export const AuthContextProvider: React.FC<{}> = ({ children }) => {
 
       if (event === "SIGNED_OUT") {
         setUser(null);
-      } else {
-        const { data: profileUser } = await supabaseClient
-          .from<AdditionalUser>("users")
-          .select("*")
-          .eq("id", user?.id)
-          .single();
-
-        setUser(profileUser);
       }
 
       const token = session.access_token;

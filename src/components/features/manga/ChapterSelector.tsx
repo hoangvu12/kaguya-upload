@@ -2,15 +2,22 @@ import CircleButton from "@/components/shared/CircleButton";
 import Link from "@/components/shared/Link";
 import Select from "@/components/shared/Select";
 import { Chapter, Read } from "@/types";
-import { groupBy, sortObjectByValue } from "@/utils";
+import {
+  chunk,
+  groupBy,
+  parseNumberFromString,
+  sortObjectByValue,
+} from "@/utils";
 import { motion } from "framer-motion";
 import React, { useEffect, useMemo, useState } from "react";
+import { isMobileOnly } from "react-device-detect";
 import { BsChevronDown, BsChevronUp } from "react-icons/bs";
 
 export interface ChapterSelectorProps {
   chapters: Chapter[];
   mediaId: number;
   readData?: Read;
+  chapterChunk?: number;
 }
 
 const sourcesToOptions = (sources: string[]) =>
@@ -20,18 +27,13 @@ const ChapterSelector: React.FC<ChapterSelectorProps> = ({
   chapters,
   mediaId,
   readData,
+  chapterChunk = isMobileOnly ? 5 : 10,
 }) => {
-  const [isChapterExpanded, setIsChapterExpanded] = useState(false);
-
   const [activeSource, setActiveSource] = useState(chapters[0].source.name);
 
   const sourceChapters = useMemo(
-    () =>
-      chapters
-        .filter((chapter) => chapter.source.name === activeSource)
-        .reverse()
-        .slice(0, isChapterExpanded ? undefined : 10),
-    [activeSource, chapters, isChapterExpanded]
+    () => chapters.filter((chapter) => chapter.source.name === activeSource),
+    [activeSource, chapters]
   );
 
   const sources = useMemo(
@@ -72,6 +74,51 @@ const ChapterSelector: React.FC<ChapterSelectorProps> = ({
     return sortedSources;
   }, [chapters]);
 
+  const chunks = useMemo(
+    () => chunk(sourceChapters, chapterChunk),
+    [chapterChunk, sourceChapters]
+  );
+
+  const [activeChunk, setActiveChunk] = useState(() => {
+    return (
+      chunks.find((chunk) =>
+        chunk.some(
+          (chapter) =>
+            chapter.chapterNumber === readData?.chapter?.chapterNumber
+        )
+      ) || chunks[0]
+    );
+  });
+
+  const chunkOptions = useMemo(() => {
+    const options = chunks.map((chunk, i) => {
+      const firstChapterName = parseNumberFromString(
+        chunk[0].name,
+        chunk[0].name
+      );
+      const lastChapterName = parseNumberFromString(
+        chunk[chunk.length - 1].name,
+        chunk[chunk.length - 1].name
+      );
+
+      const title =
+        chunk.length === 1
+          ? `${firstChapterName}`
+          : `${firstChapterName} - ${lastChapterName}`;
+
+      return {
+        value: chunk,
+        label: title,
+      };
+    });
+
+    return options;
+  }, [chunks]);
+
+  const activeChunkOption = useMemo(() => {
+    return chunkOptions.find((option) => option.value === activeChunk);
+  }, [activeChunk, chunkOptions]);
+
   useEffect(() => {
     const sourceKeys = Object.keys(sources);
 
@@ -81,6 +128,17 @@ const ChapterSelector: React.FC<ChapterSelectorProps> = ({
       setActiveSource(sourceKeys[0]);
     }
   }, [activeSource, sources]);
+
+  useEffect(() => {
+    setActiveChunk(
+      chunks.find((chunk) =>
+        chunk.some(
+          (chapter) =>
+            chapter.chapterNumber === readData?.chapter?.chapterNumber
+        )
+      ) || chunks[0]
+    );
+  }, [chunks, readData?.chapter?.chapterNumber]);
 
   const onEachChapter = (chapter: Chapter) => {
     const isRead = chapter.chapterNumber <= readData?.chapter?.chapterNumber;
@@ -130,23 +188,21 @@ const ChapterSelector: React.FC<ChapterSelectorProps> = ({
             isClearable={false}
             isSearchable={false}
           />
+
+          <Select
+            value={activeChunkOption}
+            options={chunkOptions}
+            className="ml-auto"
+            isClearable={false}
+            defaultValue={activeChunkOption}
+            onChange={({ value }) => {
+              setActiveChunk(value);
+            }}
+          />
         </div>
       </div>
 
-      <motion.div
-        className="space-y-2 overflow-hidden"
-        variants={{
-          animate: {
-            height: "100%",
-          },
-
-          initial: {
-            height: chapters.length <= 7 ? "100%" : 300,
-          },
-        }}
-        transition={{ ease: "linear" }}
-        animate={isChapterExpanded ? "animate" : "initial"}
-      >
+      <div className="space-y-2 overflow-hidden">
         {readData?.chapter && (
           <div className="flex items-center gap-4">
             <p className="shrink-0">Continue reading: </p>
@@ -155,17 +211,8 @@ const ChapterSelector: React.FC<ChapterSelectorProps> = ({
           </div>
         )}
 
-        {sourceChapters.map(onEachChapter)}
-      </motion.div>
-
-      {chapters.length > 7 && (
-        <CircleButton
-          onClick={() => setIsChapterExpanded(!isChapterExpanded)}
-          outline
-          className="absolute top-full mt-4 left-1/2 -translate-x-1/2"
-          LeftIcon={isChapterExpanded ? BsChevronUp : BsChevronDown}
-        />
-      )}
+        {activeChunk.map(onEachChapter)}
+      </div>
     </React.Fragment>
   );
 };
