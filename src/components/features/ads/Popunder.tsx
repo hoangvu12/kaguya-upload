@@ -3,7 +3,6 @@ import nookies from "nookies";
 import { useEffect, useState } from "react";
 
 const POPUNDER_COOKIE = "kaguya_popunder";
-
 const USER_COOKIE = "sb-access-token";
 
 const Popunder = () => {
@@ -12,43 +11,18 @@ const Popunder = () => {
   useEffect(() => {
     const cookies = nookies.get(null);
 
-    if (cookies[USER_COOKIE]) return;
+    const isLoggedIn = cookies[USER_COOKIE];
+
+    if (cookies[POPUNDER_COOKIE]) return;
 
     nookies.set(null, POPUNDER_COOKIE, "1", {
-      // 1 hour
-      maxAge: 1 * 60 * 60,
+      // 1 day
+      maxAge: isLoggedIn ? 1 * 60 * 60 : 24 * 60 * 60,
       path: "/",
     });
 
     setIsShow(true);
   }, []);
-
-  // useEffect(() => {
-  //   window.addEventListener("click", () => {
-  //     const cookies = nookies.get(null, "");
-
-  //     if (cookies[USER_COOKIE]) {
-  //       return;
-  //     }
-
-  //     if (!cookies[POPUNDER_COOKIE]) {
-  //       const pop = window.open(
-  //         "https://expressalike.com/ix11ckfx?key=74c92179396e4e64485963798b0f0996",
-  //         "kaguya_popunder"
-  //       );
-
-  //       pop.blur();
-
-  //       window.focus();
-
-  //       nookies.set(null, POPUNDER_COOKIE, "1", {
-  //         // 3 hours
-  //         maxAge: 3 * 60 * 60,
-  //         path: "/",
-  //       });
-  //     }
-  //   });
-  // }, []);
 
   return isShow ? (
     <Script
