@@ -37,7 +37,7 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
         if (watchedData?.episode?.episodeNumber === episode.episodeNumber) {
           if (media?.duration === null) return 100;
 
-          const duration = media.duration * 1000;
+          const duration = media.duration * 60;
 
           if (duration < watchedData?.watchedTime) return 100;
 
