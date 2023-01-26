@@ -26,7 +26,7 @@ const useSaveRead = () => {
       await supabaseClient.from("kaguya_read_status").upsert({
         userId: user.id,
         mediaId: media_id,
-        status: "READING",
+        status: "CURRENT",
       });
     }
 
