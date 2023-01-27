@@ -67,7 +67,7 @@ const BrowsePage = ({ query: baseQuery }) => {
     keyword = "",
     season = undefined,
     seasonYear = undefined,
-    sort = "popularity",
+    sort = MediaSort.Trending_desc,
     genres = [],
     tags = [],
     countries = [],
@@ -83,10 +83,10 @@ const BrowsePage = ({ query: baseQuery }) => {
     season: season as string,
     seasonYear: seasonYear as string,
     sort: sort as MediaSort,
-    type,
+    type: type.toLowerCase(),
   };
 
-  const handleTypeChange = (type: typeof TYPES[number]) => {
+  const handleTypeChange = (type: (typeof TYPES)[number]) => {
     const truthyQuery = {};
 
     Object.keys(query).forEach((key) => {
@@ -101,9 +101,9 @@ const BrowsePage = ({ query: baseQuery }) => {
     });
   };
 
-  const BrowseComponent = useMemo(() => components[type], [type]);
+  const BrowseComponent = useMemo(() => components[type.toLowerCase()], [type]);
   const chosenType = useMemo(
-    () => TYPES.find((t) => t.value === type),
+    () => TYPES.find((t) => t.value === type.toLowerCase()),
     [TYPES, type]
   );
 
