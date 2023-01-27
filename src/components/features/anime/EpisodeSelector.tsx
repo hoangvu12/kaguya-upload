@@ -5,7 +5,7 @@ import { Media } from "@/types/anilist";
 import { chunk, groupBy, parseNumberFromString } from "@/utils";
 import classNames from "classnames";
 import { LinkProps } from "next/link";
-import React, { useLayoutEffect, useMemo, useState } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { isMobileOnly } from "react-device-detect";
 
 export interface EpisodeSelectorProps {
@@ -103,6 +103,22 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
     );
   });
 
+  useEffect(() => {
+    setActiveChunk(
+      chunks.find((chunk) =>
+        chunk.some(
+          (episode) =>
+            episode.sourceEpisodeId === activeEpisode?.sourceEpisodeId ||
+            episode.episodeNumber === watchedData?.episode?.episodeNumber
+        )
+      ) || chunks[0]
+    );
+  }, [
+    activeEpisode?.sourceEpisodeId,
+    chunks,
+    watchedData?.episode?.episodeNumber,
+  ]);
+
   const sections = useMemo(
     () => groupBy(activeChunk, (episode) => episode.section),
     [activeChunk]
@@ -163,6 +179,7 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
           className="ml-auto"
           isClearable={false}
           defaultValue={activeChunkOption}
+          value={activeChunkOption}
           onChange={onChange}
           menuPortalTarget={videoContainer}
         />
