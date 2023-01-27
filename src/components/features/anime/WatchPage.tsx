@@ -25,6 +25,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { toast } from "react-toastify";
 import ErrorMessage from "./ErrorMessage";
 
 const WatchPlayer = dynamic(
@@ -121,12 +122,21 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
     [episodes, sourceId]
   );
 
-  const currentEpisode = useMemo(
-    () =>
-      sourceEpisodes.find((episode) => episode.sourceEpisodeId === episodeId) ||
-      sourceEpisodes[0],
-    [sourceEpisodes, episodeId]
-  );
+  const currentEpisode = useMemo(() => {
+    const episode = sourceEpisodes.find(
+      (episode) => episode.sourceEpisodeId === episodeId
+    );
+
+    if (!episode) {
+      toast.error(
+        "The requested episode was not found. It's either deleted or doesn't exist."
+      );
+
+      return sourceEpisodes[0] || episodes[0];
+    }
+
+    return episode;
+  }, [sourceEpisodes, episodeId, episodes]);
 
   const sectionEpisodes = useMemo(
     () =>
