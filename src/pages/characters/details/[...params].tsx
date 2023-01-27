@@ -193,6 +193,10 @@ export const getStaticProps: GetStaticProps = async ({
       id: Number(params[0]),
     });
 
+    if (!data) {
+      return { notFound: true, revalidate: REVALIDATE_TIME };
+    }
+
     return {
       props: {
         character: data,
@@ -200,7 +204,7 @@ export const getStaticProps: GetStaticProps = async ({
       revalidate: REVALIDATE_TIME,
     };
   } catch (error) {
-    console.log(error);
+    console.log("character", error);
 
     return { notFound: true, revalidate: REVALIDATE_TIME };
   }
