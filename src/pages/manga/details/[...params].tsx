@@ -39,6 +39,7 @@ import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { BsFillPlayFill } from "react-icons/bs";
 import TopBanner from "@/components/features/ads/TopBanner";
 import useSavedRead from "@/hooks/useSavedRead";
+import { toast } from "react-toastify";
 
 interface DetailsPageProps {
   manga: Media;
@@ -61,6 +62,22 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
     () => manga.status === MediaStatus.Not_yet_released || !chapters?.length,
     [chapters?.length, manga.status]
   );
+
+  const handleReadClick = () => {
+    if (!readDisabled) return;
+
+    if (manga.status === MediaStatus.Not_yet_released) {
+      toast.error("This manga hasn't been released yet");
+      return;
+    }
+
+    if (isLoading) {
+      toast.info("Please wait for the chapters to load");
+      return;
+    }
+
+    toast.error("No chapters were found.");
+  };
 
   return (
     <>
@@ -94,7 +111,11 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
                     href={`/manga/read/${manga.id}`}
                   >
                     <a>
-                      <Button primary LeftIcon={BsFillPlayFill}>
+                      <Button
+                        onClick={handleReadClick}
+                        primary
+                        LeftIcon={BsFillPlayFill}
+                      >
                         <p>{t("read_now")}</p>
                       </Button>
                     </a>

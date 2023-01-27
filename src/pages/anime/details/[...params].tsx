@@ -44,6 +44,7 @@ import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { BsFillPlayFill } from "react-icons/bs";
 import TopBanner from "@/components/features/ads/TopBanner";
 import useSavedWatched from "@/hooks/useSavedWatched";
+import { toast } from "react-toastify";
 
 interface DetailsPageProps {
   anime: Media;
@@ -83,6 +84,22 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
     () => anime.status === MediaStatus.Not_yet_released || !episodes?.length,
     [anime.status, episodes?.length]
   );
+
+  const handleWatchClick = () => {
+    if (!watchDisabled) return;
+
+    if (anime.status === MediaStatus.Not_yet_released) {
+      toast.error("This anime hasn't been released yet");
+      return;
+    }
+
+    if (isLoading) {
+      toast.info("Please wait for the episodes to load");
+      return;
+    }
+
+    toast.error("No episodes were found.");
+  };
 
   useEffect(() => {
     if (!anime) return;
@@ -130,7 +147,11 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
                     href={`/anime/watch/${anime.id}`}
                   >
                     <a>
-                      <Button primary LeftIcon={BsFillPlayFill}>
+                      <Button
+                        onClick={handleWatchClick}
+                        primary
+                        LeftIcon={BsFillPlayFill}
+                      >
                         <p>{t("common:watch_now")}</p>
                       </Button>
                     </a>
