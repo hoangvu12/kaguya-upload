@@ -2,7 +2,7 @@ import supabaseClient from "@/lib/supabase";
 import { getMedia } from "@/services/anilist";
 import { AdditionalUser, SourceStatus, Watched } from "@/types";
 import { Media, MediaType } from "@/types/anilist";
-import { getPagination, parseNumberFromString } from "@/utils";
+import { getPagination } from "@/utils";
 import { useInfiniteQuery } from "react-query";
 
 export const STATUS = {
@@ -55,6 +55,7 @@ const useWatchList = (sourceType: Status, user: AdditionalUser) => {
       const media = await getMedia({
         type: MediaType.Anime,
         id_in: ids,
+        perPage: LIST_LIMIT,
       });
 
       const { data: watched } = await supabaseClient
