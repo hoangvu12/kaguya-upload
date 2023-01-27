@@ -173,6 +173,10 @@ export const getStaticProps: GetStaticProps = async ({
       id: Number(params[0]),
     });
 
+    if (!data) {
+      return { notFound: true, revalidate: REVALIDATE_TIME };
+    }
+
     return {
       props: {
         voiceActor: data,
