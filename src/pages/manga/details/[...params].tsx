@@ -338,7 +338,7 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
 
             {!!manga?.relations?.nodes?.length && (
               <DetailsSection title={t("relations_section")}>
-                <List data={manga.relations.nodes}>
+                <List data={manga.relations.nodes.filter(Boolean)}>
                   {(node) => <Card data={node} />}
                 </List>
               </DetailsSection>
@@ -347,9 +347,9 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
             {!!manga?.recommendations?.nodes.length && (
               <DetailsSection title={t("recommendations_section")}>
                 <List
-                  data={manga.recommendations.nodes.map(
-                    (node) => node.mediaRecommendation
-                  )}
+                  data={manga.recommendations.nodes
+                    .map((node) => node.mediaRecommendation)
+                    .filter(Boolean)}
                 >
                   {(node) => <Card data={node} />}
                 </List>

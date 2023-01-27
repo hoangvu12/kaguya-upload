@@ -463,7 +463,7 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
 
             {!!anime?.relations?.nodes?.length && (
               <DetailsSection title={t("relations_section")}>
-                <List data={anime.relations.nodes}>
+                <List data={anime.relations.nodes.filter(Boolean)}>
                   {(node) => <Card data={node} />}
                 </List>
               </DetailsSection>
@@ -472,9 +472,9 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
             {!!anime?.recommendations?.nodes?.length && (
               <DetailsSection title={t("recommendations_section")}>
                 <List
-                  data={anime.recommendations.nodes.map(
-                    (node) => node.mediaRecommendation
-                  )}
+                  data={anime.recommendations.nodes
+                    .map((node) => node.mediaRecommendation)
+                    .filter(Boolean)}
                 >
                   {(node) => <Card data={node} />}
                 </List>

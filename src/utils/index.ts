@@ -455,6 +455,8 @@ export const createAttachmentUrl = (url: string) => {
 };
 
 export const createMediaDetailsUrl = (media: Media) => {
+  if (!media) return "";
+
   if (media.type === MediaType.Anime) {
     return `/anime/details/${media.id}/${vietnameseSlug(
       media.title.userPreferred
