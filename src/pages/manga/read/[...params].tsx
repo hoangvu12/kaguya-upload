@@ -72,6 +72,10 @@ export const getStaticProps: GetStaticProps = async ({
       id: Number(params[0]),
     });
 
+    if (!media) {
+      return { notFound: true, revalidate: REVALIDATE_TIME };
+    }
+
     return {
       props: {
         media,
