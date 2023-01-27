@@ -16,6 +16,7 @@ import { useTranslation } from "next-i18next";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "react-toastify";
 
 const ReadPanel = dynamic(
   () => import("@/components/features/manga/Reader/ReadPanel"),
@@ -65,11 +66,21 @@ const ReadPage: NextPage<ReadPageProps> = ({ chapters, media: manga }) => {
     [sortedChapters, sourceId]
   );
 
-  const currentChapter = useMemo(
-    () =>
-      sourceChapters.find((chapter) => chapter.sourceChapterId === chapterId),
-    [sourceChapters, chapterId]
-  );
+  const currentChapter = useMemo(() => {
+    const chapter = sourceChapters.find(
+      (chapter) => chapter.sourceChapterId === chapterId
+    );
+
+    if (!chapter) {
+      toast.error(
+        "The requested chapter was not found. It's either deleted or doesn't exist."
+      );
+
+      return sourceChapters[0] || chapters[0];
+    }
+
+    return chapter;
+  }, [sourceChapters, chapterId, chapters]);
 
   const currentChapterIndex = useMemo(
     () =>
