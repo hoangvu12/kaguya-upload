@@ -51,7 +51,7 @@ const LocaleChapterSelector: React.FC<LocaleChapterSelectorProps> = ({
         </TabList>
 
         <div className="mt-4">
-          {locales.map(({ locale }, index) => {
+          {localesHasChapters.map(({ locale }, index) => {
             const localeChapters = chapters?.filter((chapter) =>
               chapter?.source?.locales.some(
                 (sourceLocale) => sourceLocale === locale
