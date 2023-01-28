@@ -51,7 +51,7 @@ const LocaleEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
         </TabList>
 
         <div className="mt-4">
-          {locales.map(({ locale }) => {
+          {localesHasEpisodes.map(({ locale }) => {
             const localeEpisodes = episodes?.filter((episode) =>
               episode?.source?.locales.some(
                 (sourceLocale) => sourceLocale === locale
