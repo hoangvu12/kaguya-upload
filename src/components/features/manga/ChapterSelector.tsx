@@ -30,7 +30,7 @@ const ChapterSelector: React.FC<ChapterSelectorProps> = ({
   chapterChunk = isMobileOnly ? 5 : 10,
 }) => {
   const [activeSource, setActiveSource] = useState(() => {
-    return readData?.chapter?.source.name || chapters[0].source.name;
+    return readData?.chapter?.source?.name || chapters[0].source.name;
   });
 
   const sourceChapters = useMemo(
