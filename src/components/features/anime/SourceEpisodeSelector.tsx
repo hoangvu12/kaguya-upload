@@ -1,3 +1,4 @@
+import Popup from "@/components/shared/Popup";
 import Select from "@/components/shared/Select";
 import { groupBy, sortObjectByValue } from "@/utils";
 import React, { useLayoutEffect, useMemo, useState } from "react";
@@ -95,31 +96,48 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
   return (
     <React.Fragment>
       <div className="flex justify-end w-full mx-auto mb-8">
-        <div className="flex items-center gap-2">
-          <label htmlFor="source-selector" className="font-medium">
-            Sources:{" "}
-          </label>
+        <div className="flex flex-col md:flex-row space-y-2">
+          <Popup
+            reference={
+              <p className="text-end text-right font-semibold underline">
+                Wrong title?
+              </p>
+            }
+            placement="top"
+            className="bg-background-700"
+            showArrow
+          >
+            <p className="max-w-[60vw]">
+              You can either change the source or report the issue in our{" "}
+              Discord server.
+            </p>
+          </Popup>
 
-          <Select
-            id="source-selector"
-            options={[
-              {
-                label: "Verified",
-                options: sourcesToOptions(Object.keys(verifiedSources)),
-              },
-              {
-                label: "Not verified",
-                options: sourcesToOptions(Object.keys(nonVerifiedSources)),
-              },
-            ]}
-            onChange={({ value }) => {
-              setActiveSource(value);
-            }}
-            defaultValue={{ value: activeSource, label: activeSource }}
-            isClearable={false}
-            isSearchable={false}
-            menuPortalTarget={videoContainer}
-          />
+          <div className="flex items-center gap-2">
+            <label htmlFor="source-selector" className="font-medium">
+              Sources:{" "}
+            </label>
+            <Select
+              id="source-selector"
+              options={[
+                {
+                  label: "Verified",
+                  options: sourcesToOptions(Object.keys(verifiedSources)),
+                },
+                {
+                  label: "Not verified",
+                  options: sourcesToOptions(Object.keys(nonVerifiedSources)),
+                },
+              ]}
+              onChange={({ value }) => {
+                setActiveSource(value);
+              }}
+              defaultValue={{ value: activeSource, label: activeSource }}
+              isClearable={false}
+              isSearchable={false}
+              menuPortalTarget={videoContainer}
+            />
+          </div>
         </div>
       </div>
 

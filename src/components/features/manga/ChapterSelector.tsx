@@ -1,4 +1,5 @@
 import Link from "@/components/shared/Link";
+import Popup from "@/components/shared/Popup";
 import Select from "@/components/shared/Select";
 import { Chapter, Read } from "@/types";
 import {
@@ -163,7 +164,23 @@ const ChapterSelector: React.FC<ChapterSelectorProps> = ({
   return (
     <React.Fragment>
       <div className="flex justify-end w-full mx-auto mb-8">
-        <div className="flex flex-col md:flex-row items-center gap-2">
+        <div className="flex flex-col md:flex-row md:items-center gap-2">
+          <Popup
+            reference={
+              <p className="text-end text-right font-semibold underline">
+                Wrong title?
+              </p>
+            }
+            placement="top"
+            className="bg-background-700"
+            showArrow
+          >
+            <p className="max-w-[60vw]">
+              You can either change the source or report the issue in our{" "}
+              Discord server.
+            </p>
+          </Popup>
+
           <div className="flex items-center gap-2">
             <label htmlFor="source-selector" className="font-medium">
               Sources:{" "}
