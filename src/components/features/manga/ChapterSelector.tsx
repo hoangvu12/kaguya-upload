@@ -1,4 +1,3 @@
-import CircleButton from "@/components/shared/CircleButton";
 import Link from "@/components/shared/Link";
 import Select from "@/components/shared/Select";
 import { Chapter, Read } from "@/types";
@@ -8,10 +7,8 @@ import {
   parseNumberFromString,
   sortObjectByValue,
 } from "@/utils";
-import { motion } from "framer-motion";
 import React, { useEffect, useMemo, useState } from "react";
 import { isMobileOnly } from "react-device-detect";
-import { BsChevronDown, BsChevronUp } from "react-icons/bs";
 
 export interface ChapterSelectorProps {
   chapters: Chapter[];
