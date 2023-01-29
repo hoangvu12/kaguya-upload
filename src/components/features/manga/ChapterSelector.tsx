@@ -167,9 +167,7 @@ const ChapterSelector: React.FC<ChapterSelectorProps> = ({
         <div className="flex flex-col md:flex-row md:items-center gap-2">
           <Popup
             reference={
-              <p className="text-end text-right font-semibold underline">
-                Wrong title?
-              </p>
+              <p className="text-right font-semibold underline">Wrong title?</p>
             }
             placement="top"
             className="bg-background-700"
