@@ -46,11 +46,15 @@ const queryClient = new QueryClient({
   queryCache: new QueryCache({
     onError: (error, query) => {
       const errorMessage = (() => {
-        if (typeof error === "object" && !Array.isArray(error)) {
+        if (typeof error === "object") {
           const errorObject: Record<string, any> = { ...error };
 
           if ("message" in errorObject) {
             return errorObject.message as string;
+          }
+
+          if (Object.keys(errorObject).length === 0) {
+            return null;
           }
 
           return JSON.stringify(errorObject) as string;
@@ -60,7 +64,7 @@ const queryClient = new QueryClient({
           return error;
         }
 
-        return "Unknown error";
+        return null;
       })();
 
       const errorSource = (() => {
@@ -87,6 +91,10 @@ const queryClient = new QueryClient({
             return errorObject.message as string;
           }
 
+          if (Object.keys(errorObject).length === 0) {
+            return null;
+          }
+
           return JSON.stringify(errorObject) as string;
         }
 
@@ -94,7 +102,7 @@ const queryClient = new QueryClient({
           return error;
         }
 
-        return "Unknown error";
+        return null;
       })();
 
       const errorSource = (() => {
