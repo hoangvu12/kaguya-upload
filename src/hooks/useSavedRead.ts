@@ -19,7 +19,17 @@ const useSavedRead = (mangaId: number) => {
         .limit(1)
         .single();
 
-      if (error) throw error;
+      if (error) {
+        if (
+          error?.message.includes(
+            "JSON object requested, multiple (or no) rows returned"
+          )
+        ) {
+          return null;
+        }
+
+        throw error;
+      }
 
       return data;
     },
