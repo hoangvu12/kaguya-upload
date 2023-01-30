@@ -52,7 +52,12 @@ export const useSupabaseQuery = <T>(
     async () => {
       const { data, error } = await queryFn();
 
-      if (error) {
+      if (
+        error &&
+        !error?.message.includes(
+          "JSON object requested, multiple (or no) rows returned"
+        )
+      ) {
         throw error;
       }
 
@@ -72,7 +77,12 @@ export const useSupabaseSingleQuery = <T>(
     async () => {
       const { data, error } = await queryFn();
 
-      if (error) {
+      if (
+        error &&
+        !error?.message.includes(
+          "JSON object requested, multiple (or no) rows returned"
+        )
+      ) {
         throw error;
       }
 
@@ -100,7 +110,12 @@ export const useSupaInfiniteQuery = <T>(
 
       const { data, error } = await queryFn(from, to);
 
-      if (error) {
+      if (
+        error &&
+        !error?.message.includes(
+          "JSON object requested, multiple (or no) rows returned"
+        )
+      ) {
         return {
           data: [],
           nextPage: null,
