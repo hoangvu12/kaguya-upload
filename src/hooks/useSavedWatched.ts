@@ -25,7 +25,7 @@ const useSavedWatched = (animeId: number) => {
             "JSON object requested, multiple (or no) rows returned"
           )
         ) {
-          return [];
+          return null;
         }
 
         throw error;
