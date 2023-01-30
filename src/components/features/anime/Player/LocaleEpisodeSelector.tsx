@@ -31,7 +31,7 @@ const LocaleEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
 
   return (
     <React.Fragment>
-      {!localesHasEpisodes?.length ? (
+      {localesHasEpisodes?.length ? (
         <Tabs
           defaultIndex={defaultTabIndex}
           selectedTabClassName="bg-white !text-black"
