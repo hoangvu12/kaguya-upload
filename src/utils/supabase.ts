@@ -81,6 +81,14 @@ export const useSupabaseSingleQuery = <T>(
       const { data, error } = await queryFn();
 
       if (error) {
+        if (
+          error?.message.includes(
+            "JSON object requested, multiple (or no) rows returned"
+          )
+        ) {
+          return null;
+        }
+
         throw error;
       }
 
