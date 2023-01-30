@@ -287,10 +287,11 @@ export const vietnameseSlug = (str: string) => {
 export const sleep = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
-export const debounce = (func: Function, wait: number) => {
+export const debounce = <T extends CallableFunction>(func: T, wait: number) => {
   let timeout: any;
 
-  return (...args: any[]) => {
+  // @ts-ignore
+  return (...args: Parameters<T>) => {
     const later = () => {
       timeout = null;
       func(...args);

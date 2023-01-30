@@ -5,6 +5,7 @@ const config = {
   proxyServerUrl: process.env.NEXT_PUBLIC_PROXY_SERVER_URL,
   socketServerUrl: process.env.NEXT_PUBLIC_SOCKET_SERVER_URL,
   webPushPublicKey: process.env.NEXT_PUBLIC_WEB_PUSH,
+  discordWebhookLoggerUrl: process.env.DISCORD_WEBHOOK_LOGGER,
 };
 
 export default config;

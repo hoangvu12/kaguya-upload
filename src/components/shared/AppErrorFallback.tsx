@@ -1,5 +1,7 @@
 import { DISCORD_URL } from "@/constants";
-import React from "react";
+import { debounce } from "@/utils";
+import { logError } from "@/utils/error";
+import React, { useEffect, useMemo } from "react";
 
 import { FallbackProps } from "react-error-boundary";
 import Button from "./Button";
@@ -17,11 +19,28 @@ const sliceErrorStack = (stackTrace = "", numLines = 10) => {
   return joinedLines;
 };
 
+const logDebounce = debounce(logError, 1000);
+
 export const AppErrorFallback = ({
   error,
   errorInfo,
   resetErrorBoundary,
 }: AEFProps) => {
+  const stack = useMemo(() => sliceErrorStack(error?.stack, 4), [error?.stack]);
+  const componentStack = useMemo(
+    () => sliceErrorStack(errorInfo?.componentStack, 4),
+    [errorInfo?.componentStack]
+  );
+
+  useEffect(() => {
+    logDebounce({
+      error: error.message,
+      errorSource: "AppErrorFallback",
+      componentStack,
+      stack,
+    });
+  }, [componentStack, error?.message, stack]);
+
   return (
     <Section className="w-full py-4 md:py-20 min-h-screen flex flex-col items-center justify-center ">
       <div className="w-full bg-background-800 p-8">
@@ -62,11 +81,11 @@ export const AppErrorFallback = ({
             style={{ wordWrap: "break-word", whiteSpace: "pre-wrap" }}
             className="mb-6"
           >
-            {sliceErrorStack(error.stack)}
+            {stack}
           </pre>
           <h4 className="mb-1 font-semibold text-lg">Component Stack</h4>
           <pre style={{ wordWrap: "break-word", whiteSpace: "pre-wrap" }}>
-            {sliceErrorStack(errorInfo?.componentStack)}
+            {componentStack}
           </pre>
         </details>
       </div>

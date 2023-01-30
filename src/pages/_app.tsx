@@ -11,6 +11,7 @@ import GlobalPlayerContextProvider from "@/contexts/GlobalPlayerContext";
 import { SubscriptionContextProvider } from "@/contexts/SubscriptionContext";
 import { GA_TRACKING_ID, pageview } from "@/lib/gtag";
 import "@/styles/index.css";
+import { logError } from "@/utils/error";
 import { appWithTranslation } from "next-i18next";
 import nextI18nextConfig from "next-i18next.config";
 import { AppProps } from "next/app";
@@ -19,7 +20,12 @@ import Script from "next/script";
 import NProgress from "nprogress";
 import React, { useEffect, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { QueryClient, QueryClientProvider } from "react-query";
+import {
+  MutationCache,
+  QueryCache,
+  QueryClient,
+  QueryClientProvider,
+} from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
@@ -37,6 +43,74 @@ const queryClient = new QueryClient({
       retry: 1,
     },
   },
+  queryCache: new QueryCache({
+    onError: (error, query) => {
+      console.log("query onError");
+
+      const errorMessage = (() => {
+        if (typeof error === "object") {
+          if ("message" in error) {
+            return error.message as string;
+          }
+
+          return JSON.stringify(error) as string;
+        }
+
+        if (typeof error === "string") {
+          return error;
+        }
+
+        return "Unknown error";
+      })();
+
+      const errorSource = (() => {
+        if (query.queryKey[0]) {
+          return `Query - ${JSON.stringify(query.queryKey)}`;
+        }
+
+        return "Query - Unknown";
+      })();
+
+      logError({
+        error: errorMessage,
+        errorSource: errorSource,
+      });
+    },
+  }),
+  mutationCache: new MutationCache({
+    onError: (error, _, __, mutation) => {
+      console.log("mutation onError");
+
+      const errorMessage = (() => {
+        if (typeof error === "object") {
+          if ("message" in error) {
+            return error.message as string;
+          }
+
+          return JSON.stringify(error) as string;
+        }
+
+        if (typeof error === "string") {
+          return error;
+        }
+
+        return "Unknown error";
+      })();
+
+      const errorSource = (() => {
+        if (mutation.mutationId) {
+          return `Mutation - ${mutation.mutationId}`;
+        }
+
+        return "Mutation - Unknown";
+      })();
+
+      logError({
+        error: errorMessage,
+        errorSource: errorSource,
+      });
+    },
+  }),
 });
 
 interface WorkaroundAppProps extends AppProps {

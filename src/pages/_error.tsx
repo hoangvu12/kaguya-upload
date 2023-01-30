@@ -1,10 +1,12 @@
 import Button from "@/components/shared/Button";
 import Head from "@/components/shared/Head";
+import Link from "@/components/shared/Link";
 import Section from "@/components/shared/Section";
+import { logError } from "@/utils/error";
 import { NextPage } from "next";
 import { Trans, useTranslation } from "next-i18next";
 import NextErrorComponent, { ErrorProps } from "next/error";
-import Link from "@/components/shared/Link";
+import { useEffect } from "react";
 
 interface CustomErrorProps extends ErrorProps {
   hasGetInitialPropsRun: boolean;
@@ -17,8 +19,16 @@ interface CustomErrorProps extends ErrorProps {
 const ErrorPage: NextPage<CustomErrorProps, CustomErrorProps> = ({
   statusCode,
   err,
+  title,
 }) => {
   const { t } = useTranslation("_error_page");
+
+  useEffect(() => {
+    logError({
+      error: title || JSON.stringify(err),
+      errorSource: "ErrorPage",
+    });
+  }, [err, title]);
 
   return (
     <div className="relative w-full min-h-screen flex items-center">
@@ -41,13 +51,13 @@ const ErrorPage: NextPage<CustomErrorProps, CustomErrorProps> = ({
         </div>
 
         <p className="text-4xl font-semibold">
-          {t("error_heading", { statusCode })}
+          {t("error_heading", { statusCode: statusCode || err.statusCode })}
         </p>
 
         <p className="text-2xl text-gray-200 mt-4">{t("error_description")}</p>
 
         <p>
-          <i>Error: {err}</i>
+          <i>Error: {title || JSON.stringify(err)}</i>
         </p>
 
         <Link href="/">
