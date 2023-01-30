@@ -52,12 +52,15 @@ export const useSupabaseQuery = <T>(
     async () => {
       const { data, error } = await queryFn();
 
-      if (
-        error &&
-        !error?.message.includes(
-          "JSON object requested, multiple (or no) rows returned"
-        )
-      ) {
+      if (error) {
+        if (
+          error?.message.includes(
+            "JSON object requested, multiple (or no) rows returned"
+          )
+        ) {
+          return [];
+        }
+
         throw error;
       }
 
@@ -77,12 +80,7 @@ export const useSupabaseSingleQuery = <T>(
     async () => {
       const { data, error } = await queryFn();
 
-      if (
-        error &&
-        !error?.message.includes(
-          "JSON object requested, multiple (or no) rows returned"
-        )
-      ) {
+      if (error) {
         throw error;
       }
 
