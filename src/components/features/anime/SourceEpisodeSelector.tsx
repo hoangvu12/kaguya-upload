@@ -96,12 +96,10 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
   return (
     <React.Fragment>
       <div className="flex justify-end w-full mx-auto mb-8">
-        <div className="flex flex-col md:flex-row space-y-2">
+        <div className="flex md:items-center flex-col md:flex-row gap-2">
           <Popup
             reference={
-              <p className="text-end text-right font-semibold underline">
-                Wrong title?
-              </p>
+              <p className="text-right font-semibold underline">Wrong title?</p>
             }
             placement="top"
             className="bg-background-700"
