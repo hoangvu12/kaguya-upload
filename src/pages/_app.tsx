@@ -45,15 +45,15 @@ const queryClient = new QueryClient({
   },
   queryCache: new QueryCache({
     onError: (error, query) => {
-      console.log("query onError");
-
       const errorMessage = (() => {
-        if (typeof error === "object") {
-          if ("message" in error) {
-            return error.message as string;
+        if (typeof error === "object" && !Array.isArray(error)) {
+          const errorObject: Record<string, any> = { ...error };
+
+          if ("message" in errorObject) {
+            return errorObject.message as string;
           }
 
-          return JSON.stringify(error) as string;
+          return JSON.stringify(errorObject) as string;
         }
 
         if (typeof error === "string") {
@@ -79,15 +79,15 @@ const queryClient = new QueryClient({
   }),
   mutationCache: new MutationCache({
     onError: (error, _, __, mutation) => {
-      console.log("mutation onError");
-
       const errorMessage = (() => {
         if (typeof error === "object") {
-          if ("message" in error) {
-            return error.message as string;
+          const errorObject: Record<string, any> = { ...error };
+
+          if ("message" in errorObject) {
+            return errorObject.message as string;
           }
 
-          return JSON.stringify(error) as string;
+          return JSON.stringify(errorObject) as string;
         }
 
         if (typeof error === "string") {
