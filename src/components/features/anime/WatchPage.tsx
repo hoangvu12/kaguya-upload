@@ -260,23 +260,17 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
       setVideoLoadError("Video cannot be loaded (Timeout: 30 seconds)");
     }, 30000);
 
-    const handleVideoError = (event: ErrorEvent) => {
-      setVideoLoadError(event.message || "Video cannot be loaded");
-    };
-
     const handleVideoTimeUpdate = () => {
       clearTimeout(videoNotLoadedTimeout);
 
       setVideoLoadError(null);
     };
 
-    videoEl.addEventListener("error", handleVideoError);
     videoEl.addEventListener("timeupdate", handleVideoTimeUpdate, {
       once: true,
     });
 
     return () => {
-      videoEl.removeEventListener("error", handleVideoError);
       videoEl.removeEventListener("timeupdate", handleVideoTimeUpdate);
 
       clearTimeout(videoNotLoadedTimeout);
