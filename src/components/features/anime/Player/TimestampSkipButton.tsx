@@ -25,6 +25,7 @@ const getTimestamps = async (
         types: ["ed", "mixed-ed", "mixed-op", "op", "recap"],
         episodeLength,
       },
+      validateStatus: (status) => status === 200 || status === 404,
     }
   );
 
@@ -66,7 +67,7 @@ const TimestampSkipButton: React.FC<TimestampSkipButtonProps> = ({
   >(
     `timestamps-${episode}-${malId}`,
     () => getTimestamps(episode, malId, videoEl?.duration),
-    { enabled: !!videoEl?.duration }
+    { enabled: videoEl?.duration > 1 }
   );
   const [timestamp, setTimeStamp] = useState<SkipTimeStamp>(null);
 
