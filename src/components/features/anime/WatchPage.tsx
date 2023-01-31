@@ -61,11 +61,10 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
   const [showInfoOverlay, setShowInfoOverlay] = useState(false);
   const [showWatchedOverlay, setShowWatchedOverlay] = useState(false);
   const [declinedRewatch, setDeclinedRewatch] = useState(false);
-  const [videoLoadError, setVideoLoadError] = useState(false);
+  const [videoLoadError, setVideoLoadError] = useState("");
 
   const showInfoTimeout = useRef<NodeJS.Timeout>(null);
   const saveWatchedInterval = useRef<NodeJS.Timer>(null);
-  const videoNotLoadedTimeout = useRef<NodeJS.Timeout>(null);
   const saveWatchedMutation = useSaveWatched();
   const { t } = useTranslation("anime_watch");
 
@@ -257,18 +256,33 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
 
     if (!videoEl) return;
 
+    const videoNotLoadedTimeout = setTimeout(() => {
+      setVideoLoadError("Video cannot be loaded (Timeout: 30 seconds)");
+    }, 30000);
+
     const handleVideoError = (event: ErrorEvent) => {
       setVideoLoadError(
         event.message || event.error || "Video cannot be loaded"
       );
     };
 
+    const handleVideoTimeUpdate = () => {
+      clearTimeout(videoNotLoadedTimeout);
+    };
+
     videoEl.addEventListener("error", handleVideoError);
+    videoEl.addEventListener("timeupdate", handleVideoTimeUpdate, {
+      once: true,
+    });
 
     return () => {
       videoEl.removeEventListener("error", handleVideoError);
+      videoEl.removeEventListener("timeupdate", handleVideoTimeUpdate);
+
+      clearTimeout(videoNotLoadedTimeout);
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [videoRef.current]);
 
   useEffect(() => {
     const videoEl = videoRef.current;
@@ -391,6 +405,8 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
           <ErrorMessage errorMessage={"Failed to extract streams"} />
         )
       )}
+
+      {videoLoadError && <ErrorMessage errorMessage={videoLoadError} />}
 
       {showInfoOverlay && (
         <Portal>
