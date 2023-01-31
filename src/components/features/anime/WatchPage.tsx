@@ -261,9 +261,7 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
     }, 30000);
 
     const handleVideoError = (event: ErrorEvent) => {
-      setVideoLoadError(
-        event.message || event.error || "Video cannot be loaded"
-      );
+      setVideoLoadError(event.message || "Video cannot be loaded");
     };
 
     const handleVideoTimeUpdate = () => {
