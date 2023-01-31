@@ -266,6 +266,8 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
 
     const handleVideoTimeUpdate = () => {
       clearTimeout(videoNotLoadedTimeout);
+
+      setVideoLoadError(null);
     };
 
     videoEl.addEventListener("error", handleVideoError);
