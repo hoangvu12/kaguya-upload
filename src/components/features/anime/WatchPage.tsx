@@ -61,9 +61,11 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
   const [showInfoOverlay, setShowInfoOverlay] = useState(false);
   const [showWatchedOverlay, setShowWatchedOverlay] = useState(false);
   const [declinedRewatch, setDeclinedRewatch] = useState(false);
+  const [videoLoadError, setVideoLoadError] = useState(false);
 
   const showInfoTimeout = useRef<NodeJS.Timeout>(null);
   const saveWatchedInterval = useRef<NodeJS.Timer>(null);
+  const videoNotLoadedTimeout = useRef<NodeJS.Timeout>(null);
   const saveWatchedMutation = useSaveWatched();
   const { t } = useTranslation("anime_watch");
 
@@ -255,6 +257,24 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
 
     if (!videoEl) return;
 
+    const handleVideoError = (event: ErrorEvent) => {
+      setVideoLoadError(
+        event.message || event.error || "Video cannot be loaded"
+      );
+    };
+
+    videoEl.addEventListener("error", handleVideoError);
+
+    return () => {
+      videoEl.removeEventListener("error", handleVideoError);
+    };
+  }, []);
+
+  useEffect(() => {
+    const videoEl = videoRef.current;
+
+    if (!videoEl) return;
+
     if (!watchedEpisodeData?.watchedTime) return;
 
     if (currentEpisode?.episodeNumber === null) return;
@@ -355,8 +375,8 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
         image={anime.bannerImage}
       />
 
-      {isLoading && !data && (
-        <Portal selector=".netplayer-container">
+      {isLoading && (
+        <Portal retryInterval={1000} selector=".netplayer-container">
           <Loading />
         </Portal>
       )}
