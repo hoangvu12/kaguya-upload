@@ -355,7 +355,7 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
         image={anime.bannerImage}
       />
 
-      {isLoading && (
+      {isLoading && !data && (
         <Portal selector=".netplayer-container">
           <Loading />
         </Portal>
