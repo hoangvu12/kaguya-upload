@@ -61,11 +61,11 @@ const GlobalPlayerContextProvider: React.FC = ({ children }) => {
   const router = useRouter();
 
   const shouldPlayInBackground = useMemo(() => {
-    return !router?.pathname.includes("watch");
+    return !router?.pathname.includes("watch") && !isMobile;
   }, [router?.pathname]);
 
   useEffect(() => {
-    if (shouldPlayInBackground && !isMobile) return;
+    if (shouldPlayInBackground) return;
 
     // Set the player position just in case it is dragged
     x.set(0);
