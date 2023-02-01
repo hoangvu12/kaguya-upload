@@ -13,12 +13,11 @@ export const logError = ({
   componentStack,
   errorSource,
 }: ErrorInput) => {
-  if (!error || !errorSource) return;
-
-  return axios.post("/api/error-logger", {
-    error,
-    stack,
-    componentStack,
-    errorSource,
-  });
+  // if (!error || !errorSource) return;
+  // return axios.post("/api/error-logger", {
+  //   error,
+  //   stack,
+  //   componentStack,
+  //   errorSource,
+  // });
 };
