@@ -66,8 +66,12 @@ const TimestampSkipButton: React.FC<TimestampSkipButtonProps> = ({
     SkipTimeStamp[]
   >(
     `timestamps-${episode}-${malId}`,
-    () => getTimestamps(episode, malId, videoEl?.duration),
-    { enabled: videoEl?.duration > 1 }
+    () => {
+      if (isNaN(videoEl?.duration) || videoEl?.duration < 1) return;
+
+      return getTimestamps(episode, malId, videoEl?.duration);
+    },
+    { enabled: !isNaN(videoEl?.duration) && videoEl?.duration > 1 }
   );
   const [timestamp, setTimeStamp] = useState<SkipTimeStamp>(null);
 
