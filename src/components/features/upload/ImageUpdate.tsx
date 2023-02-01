@@ -3,6 +3,7 @@ import Loading from "@/components/shared/Loading";
 import useUpdateImages from "@/hooks/useUpdateImages";
 import { Attachment } from "@/services/upload";
 import { createAttachmentUrl, createFileFromUrl } from "@/utils";
+import { useRouter } from "next/dist/client/router";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
 import ImageUpload from "./ImageUpload";
@@ -17,6 +18,7 @@ const ImageUpdate: React.FC<ImageUpdateProps> = ({
   chapterSlug,
 }) => {
   const [files, setFiles] = useState<File[]>(null);
+  const { locale } = useRouter();
 
   const { data: initialFiles, isLoading: initialFilesLoading } = useQuery<
     File[]
@@ -25,7 +27,7 @@ const ImageUpdate: React.FC<ImageUpdateProps> = ({
 
     return Promise.all<File>(
       initialImages.map((file) =>
-        createFileFromUrl(createAttachmentUrl(file.url), file.filename)
+        createFileFromUrl(createAttachmentUrl(file.url, locale), file.filename)
       )
     );
   });

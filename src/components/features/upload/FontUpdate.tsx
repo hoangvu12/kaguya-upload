@@ -3,6 +3,7 @@ import Loading from "@/components/shared/Loading";
 import useUpdateFonts from "@/hooks/useUpdateFonts";
 import { Attachment } from "@/services/upload";
 import { createAttachmentUrl, createFileFromUrl } from "@/utils";
+import { useRouter } from "next/dist/client/router";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
 import FontUpload from "./FontUpload";
@@ -17,6 +18,7 @@ const FontUpdate: React.FC<FontUpdateProps> = ({
   episodeSlug,
 }) => {
   const [files, setFiles] = useState<File[]>([]);
+  const { locale } = useRouter();
 
   const { data: initialFiles, isLoading: initialFilesLoading } = useQuery<
     File[]
@@ -25,7 +27,7 @@ const FontUpdate: React.FC<FontUpdateProps> = ({
 
     return Promise.all<File>(
       initialFonts.map((file) =>
-        createFileFromUrl(createAttachmentUrl(file.url), file.filename)
+        createFileFromUrl(createAttachmentUrl(file.url, locale), file.filename)
       )
     );
   });

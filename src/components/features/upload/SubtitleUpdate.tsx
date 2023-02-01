@@ -3,6 +3,7 @@ import Loading from "@/components/shared/Loading";
 import useUpdateSubtitles from "@/hooks/useUpdateSubtitles";
 import { Attachment } from "@/services/upload";
 import { createAttachmentUrl, createFileFromUrl } from "@/utils";
+import { useRouter } from "next/dist/client/router";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
 import SubtitleUpload, { SubtitleFile } from "./SubtitleUpload";
@@ -17,6 +18,7 @@ const SubtitleUpdate: React.FC<SubtitleUpdateProps> = ({
   episodeSlug,
 }) => {
   const [files, setFiles] = useState<SubtitleFile[]>([]);
+  const { locale } = useRouter();
 
   const { data: initialFiles, isLoading: initialFilesLoading } = useQuery<
     SubtitleFile[]
@@ -26,7 +28,7 @@ const SubtitleUpdate: React.FC<SubtitleUpdateProps> = ({
     return Promise.all<SubtitleFile>(
       initialSubtitles.map(async (file) => {
         const fileObj = await createFileFromUrl(
-          createAttachmentUrl(file.url),
+          createAttachmentUrl(file.url, locale),
           file.filename
         );
 

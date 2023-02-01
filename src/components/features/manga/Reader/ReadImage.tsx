@@ -4,6 +4,7 @@ import { ImageSource } from "@/types";
 import { createProxyUrl } from "@/utils";
 import classNames from "classnames";
 import { motion } from "framer-motion";
+import { useRouter } from "next/dist/client/router";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { BsFillImageFill } from "react-icons/bs";
 
@@ -27,6 +28,7 @@ const ReadImage: React.FC<ReadImageProps> = ({
   const [loaded, setLoaded] = useState(false);
   const { fitMode } = useReadSettings();
   const ref = useRef<HTMLImageElement>(null);
+  const { locale } = useRouter();
 
   const entry = useIntersectionObserver(ref, {
     rootMargin: "0px 0px 10px 0px",
@@ -49,10 +51,10 @@ const ReadImage: React.FC<ReadImageProps> = ({
   const src = useMemo(
     () =>
       image.useProxy || image.usePublicProxy
-        ? createProxyUrl(image.image, image.proxy, image.usePublicProxy)
+        ? createProxyUrl(image.image, image.proxy, image.usePublicProxy, locale)
         : image.image,
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [image.image]
+    [image.image, locale]
   );
 
   // I have to use img instead of Next/Image because I want to image calculate the height itself

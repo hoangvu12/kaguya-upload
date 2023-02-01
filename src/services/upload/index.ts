@@ -86,7 +86,7 @@ export type UpsertChapterArgs = {
 };
 
 const client = axios.create({
-  baseURL: config.nodeServerUrl,
+  baseURL: config.nodeServer.global,
 });
 
 client.interceptors.request.use((config) => {

@@ -423,7 +423,8 @@ export const createFileFromUrl = async (url: string, filename: string) => {
 export const createProxyUrl = (
   url: string,
   proxy: Proxy,
-  isPublicProxy?: boolean
+  isPublicProxy?: boolean,
+  locale = "en"
 ) => {
   if (isPublicProxy) return `https://corsproxy.io/?${encodeURIComponent(url)}`;
 
@@ -448,11 +449,23 @@ export const createProxyUrl = (
     ...rest,
   });
 
-  return `${config.proxyServerUrl}/?url=${encodeURIComponent(url)}&${params}`;
+  const proxyUrl = (() => {
+    if (locale === "en") return config.proxyServer.global;
+
+    return config.proxyServer.vn;
+  })();
+
+  return `${proxyUrl}/?url=${encodeURIComponent(url)}&${params}`;
 };
 
-export const createAttachmentUrl = (url: string) => {
-  return `${config.nodeServerUrl}/file/${url}`;
+export const createAttachmentUrl = (url: string, locale = "en") => {
+  const nodeServerUrl = (() => {
+    if (locale === "en") return config.nodeServer.global;
+
+    return config.nodeServer.vn;
+  })();
+
+  return `${nodeServerUrl}/file/${url}`;
 };
 
 export const createMediaDetailsUrl = (media: Media) => {

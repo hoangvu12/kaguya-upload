@@ -54,6 +54,7 @@ const GlobalPlayerContextProvider: React.FC = ({ children }) => {
   const [playerState, setPlayerState] = useState<PlayerProps>(null);
   const [playerProps, setPlayerProps] = useState<WatchPlayerContextProps>(null);
   const alertRef = useRef<Boolean>(false);
+  const { locale } = useRouter();
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -111,7 +112,8 @@ const GlobalPlayerContextProvider: React.FC = ({ children }) => {
       ? createProxyUrl(
           playerSource?.file,
           playerSource?.proxy,
-          playerSource?.usePublicProxy
+          playerSource?.usePublicProxy,
+          locale
         )
       : playerSource?.file;
   }, [
@@ -119,6 +121,7 @@ const GlobalPlayerContextProvider: React.FC = ({ children }) => {
     playerSource?.proxy,
     playerSource?.useProxy,
     playerSource?.usePublicProxy,
+    locale,
   ]);
 
   return (

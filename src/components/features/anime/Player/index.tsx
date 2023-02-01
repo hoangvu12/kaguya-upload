@@ -7,6 +7,7 @@ import { createProxyUrl } from "@/utils";
 import SubtitlesOctopus from "libass-wasm";
 import NetPlayer, { NetPlayerProps } from "netplayer";
 import Hls from "netplayer/dist/types/hls.js";
+import { useRouter } from "next/router";
 import React, { useCallback, useMemo, useRef } from "react";
 import { buildAbsoluteURL } from "url-toolkit";
 import Subtitle from "./Subtitle";
@@ -23,13 +24,19 @@ export interface PlayerProps extends NetPlayerProps {
   fonts?: Font[];
 }
 
-const corsServers = [config.proxyServerUrl, "https://corsproxy.io"];
+const corsServers = [
+  config.proxyServer.global,
+  config.proxyServer.vn,
+  "https://corsproxy.io",
+];
 
 const Player = React.forwardRef<HTMLVideoElement, PlayerProps>(
   (
     { hotkeys = [], components = [], subtitles = [], fonts = [], ...props },
     ref
   ) => {
+    const { locale } = useRouter();
+
     const { PLAYER_TRANSLATIONS } = useConstantTranslation();
     const subtitlesOctopusRef = useRef(null);
 
@@ -43,77 +50,93 @@ const Player = React.forwardRef<HTMLVideoElement, PlayerProps>(
       [hotkeys]
     );
 
-    const handleHlsInit = useCallback((hls: Hls, source: VideoSource) => {
-      // @ts-ignore
-      hls.on("hlsManifestParsed", (_, info) => {
-        info.levels.forEach((level) => {
-          if (!level?.url?.length) return;
+    const handleHlsInit = useCallback(
+      (hls: Hls, source: VideoSource) => {
+        // @ts-ignore
+        hls.on("hlsManifestParsed", (_, info) => {
+          info.levels.forEach((level) => {
+            if (!level?.url?.length) return;
 
-          level.url = level.url.map((url) => {
-            if (!corsServers.some((server) => url.includes(server))) return url;
+            level.url = level.url.map((url) => {
+              if (!corsServers.some((server) => url.includes(server)))
+                return url;
 
-            if (url.includes("corsproxy")) {
-              const targetUrl = decodeURIComponent(
-                url.replace("https://corsproxy.io/", "")
-              );
+              if (url.includes("corsproxy")) {
+                const targetUrl = decodeURIComponent(
+                  url.replace("https://corsproxy.io/", "")
+                );
 
-              const finalUrl = buildAbsoluteURL(source.file, targetUrl, {
-                alwaysNormalize: true,
-              });
+                const finalUrl = buildAbsoluteURL(source.file, targetUrl, {
+                  alwaysNormalize: true,
+                });
 
-              return `https://corsproxy.io/?${encodeURIComponent(finalUrl)}`;
-            } else if (url.includes(config.proxyServerUrl)) {
-              const targetUrl = decodeURIComponent(
-                url.replace(config.proxyServerUrl + "/", "")
-              );
+                return `https://corsproxy.io/?${encodeURIComponent(finalUrl)}`;
+              } else if (
+                url.includes(config.proxyServer.global) ||
+                url.includes(config.proxyServer.vn)
+              ) {
+                const proxyUrl = (() => {
+                  if (locale === "vi") return config.proxyServer.vn;
 
-              const href = new URL(source.file);
-              const baseUrl = href.searchParams.get("url");
+                  return config.proxyServer.global;
+                })();
 
-              const finalUrl = buildAbsoluteURL(baseUrl, targetUrl, {
-                alwaysNormalize: true,
-              });
+                const targetUrl = decodeURIComponent(
+                  url.replace(proxyUrl + "/", "")
+                );
 
-              return createProxyUrl(finalUrl, source.proxy);
-            }
+                const href = new URL(source.file);
+                const baseUrl = href.searchParams.get("url");
+
+                const finalUrl = buildAbsoluteURL(baseUrl, targetUrl, {
+                  alwaysNormalize: true,
+                });
+
+                return createProxyUrl(finalUrl, source.proxy, false, locale);
+              }
+            });
           });
         });
-      });
 
-      // @ts-ignore
-      hls.on("hlsFragLoading", (_, { frag }) => {
-        if (
-          !corsServers.some((server) => frag.url.includes(server)) ||
-          frag.relurl.includes("http")
-        )
-          return;
+        // @ts-ignore
+        hls.on("hlsFragLoading", (_, { frag }) => {
+          if (
+            !corsServers.some((server) => frag.url.includes(server)) ||
+            frag.relurl.includes("http")
+          )
+            return;
 
-        if (frag.url.includes(config.proxyServerUrl)) {
-          const href = new URL(frag.baseurl);
-          const targetUrl = href.searchParams.get("url");
+          if (
+            frag.url.includes(config.proxyServer.global) ||
+            frag.url.includes(config.proxyServer.vn)
+          ) {
+            const href = new URL(frag.baseurl);
+            const targetUrl = href.searchParams.get("url");
 
-          const url = buildAbsoluteURL(targetUrl, frag.relurl, {
-            alwaysNormalize: true,
-          });
+            const url = buildAbsoluteURL(targetUrl, frag.relurl, {
+              alwaysNormalize: true,
+            });
 
-          href.searchParams.set("url", url);
+            href.searchParams.set("url", url);
 
-          frag.url = href.toString();
+            frag.url = href.toString();
 
-          // Free CORS server
-        } else if (frag.url.includes("corsproxy")) {
-          const targetUrl = decodeURIComponent(
-            frag.baseurl.replace("https://corsproxy.io/?", "")
-          );
+            // Free CORS server
+          } else if (frag.url.includes("corsproxy")) {
+            const targetUrl = decodeURIComponent(
+              frag.baseurl.replace("https://corsproxy.io/?", "")
+            );
 
-          const url = buildAbsoluteURL(targetUrl, frag.relurl, {
-            alwaysNormalize: true,
-          });
+            const url = buildAbsoluteURL(targetUrl, frag.relurl, {
+              alwaysNormalize: true,
+            });
 
-          frag.url = `https://corsproxy.io/?${encodeURIComponent(url)}`;
-        }
-      });
-    }, []);
+            frag.url = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+          }
+        });
+      },
+      [locale]
+    );
 
     const notAssSubtitles = useMemo(
       () => subtitles.filter((subtitle) => !subtitle.file.endsWith(".ass")),
@@ -145,21 +168,25 @@ const Player = React.forwardRef<HTMLVideoElement, PlayerProps>(
       [fonts, subtitles]
     );
 
-    const proxyBuilder = useCallback((url: string, source: VideoSource) => {
-      if (
-        corsServers.some((server) => url.includes(server)) ||
-        (!source.useProxy && !source.usePublicProxy)
-      )
-        return url;
+    const proxyBuilder = useCallback(
+      (url: string, source: VideoSource) => {
+        if (
+          corsServers.some((server) => url.includes(server)) ||
+          (!source.useProxy && !source.usePublicProxy)
+        )
+          return url;
 
-      const requestUrl = createProxyUrl(
-        url,
-        source.proxy,
-        source.usePublicProxy
-      );
+        const requestUrl = createProxyUrl(
+          url,
+          source.proxy,
+          source.usePublicProxy,
+          locale
+        );
 
-      return requestUrl;
-    }, []);
+        return requestUrl;
+      },
+      [locale]
+    );
 
     return (
       <CustomVideoStateContextProvider>
