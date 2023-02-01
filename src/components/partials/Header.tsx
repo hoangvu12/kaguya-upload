@@ -39,6 +39,10 @@ const routes = [
     title: "Anime Themes",
     href: "/themes",
   },
+  {
+    title: "Donate",
+    href: "/donate",
+  },
 ];
 
 const Header = () => {
