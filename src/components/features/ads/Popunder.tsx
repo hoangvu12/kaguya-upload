@@ -31,7 +31,7 @@ const Popunder = () => {
   return isShow ? (
     <Script
       data-cfasync="false"
-      src="//dnks065sb0ww6.cloudfront.net/?ssknd=974102"
+      src="//2qn0djb6oujlt.cloudfront.net/?jdnqd=974102"
       onLoad={handleScriptLoad}
     ></Script>
   ) : null;
