@@ -49,6 +49,9 @@ interface ContextProps {
 
 const PlayerContext = createContext<ContextProps>(null);
 
+const MIN_WIDTH = 400;
+const MIN_HEIGHT = 225;
+
 const GlobalPlayerContextProvider: React.FC = ({ children }) => {
   const constraintsRef = useRef<HTMLDivElement>(null);
   const [playerState, setPlayerState] = useState<PlayerProps>(null);
@@ -81,9 +84,19 @@ const GlobalPlayerContextProvider: React.FC = ({ children }) => {
       };
     }
 
+    if (typeof window === "undefined") {
+      return {
+        width: MIN_WIDTH,
+        height: MIN_HEIGHT,
+      };
+    }
+
+    const width = window.innerWidth * 0.3;
+    const height = width * (9 / 16);
+
     return {
-      width: 400,
-      height: 225,
+      width: MIN_WIDTH > width ? MIN_WIDTH : width,
+      height: MIN_HEIGHT > height ? MIN_HEIGHT : height,
     };
   }, [shouldPlayInBackground]);
 
