@@ -153,6 +153,22 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
     return chunkOptions.find((option) => option.value === activeChunk);
   }, [activeChunk, chunkOptions]);
 
+  const watchedSourceEpisode = useMemo(() => {
+    const watchedEpisode = watchedData?.episode;
+
+    if (!watchedEpisode) return null;
+
+    const watchedEpisodeNumber = watchedEpisode.episodeNumber;
+
+    const watchedEpisodeInActiveChunk = activeChunk.find(
+      (chunk) => chunk.episodeNumber === watchedEpisodeNumber
+    );
+
+    if (!watchedEpisodeInActiveChunk) return watchedEpisode;
+
+    return watchedEpisodeInActiveChunk;
+  }, [activeChunk, watchedData?.episode]);
+
   const onChange = ({ value }) => {
     setActiveChunk(value);
   };
@@ -186,12 +202,12 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
       </div>
 
       <div className="mt-10 space-y-4">
-        {watchedData?.episode && (
+        {watchedSourceEpisode && (
           <div className="flex items-center gap-4">
             <p className="shrink-0">Continue watching: </p>
 
             <div className="grid grid-cols-1 w-28">
-              {onEachEpisode(watchedData.episode)}
+              {onEachEpisode(watchedSourceEpisode)}
             </div>
           </div>
         )}
