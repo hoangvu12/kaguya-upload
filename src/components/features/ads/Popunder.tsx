@@ -23,7 +23,7 @@ const Popunder = () => {
 
     nookies.set(null, POPUNDER_COOKIE, "1", {
       // 1 day
-      maxAge: isLoggedIn ? 1 * 60 * 60 : 24 * 60 * 60,
+      maxAge: isLoggedIn ? 2 * 60 * 60 : 12 * 60 * 60,
       path: "/",
     });
   };
