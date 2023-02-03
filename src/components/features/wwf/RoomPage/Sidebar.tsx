@@ -2,7 +2,6 @@ import useHorizontalScroll from "@/hooks/useHorizontalScroll";
 import { useTranslation } from "next-i18next";
 import React from "react";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
-import AudioChat from "./AudioChat";
 import ChatBar from "./ChatBar";
 import MediaBar from "./MediaBar";
 
@@ -38,9 +37,6 @@ const Sidebar = () => {
             <Tab className="px-3 py-2 cursor-pointer">
               {t("sideBar.textChat")}
             </Tab>
-            <Tab className="px-3 py-2 cursor-pointer">
-              {t("sideBar.voiceChat")}
-            </Tab>
           </div>
         </TabList>
       </div>
@@ -51,9 +47,6 @@ const Sidebar = () => {
         </TabPanel>
         <TabPanel className="hidden h-full p-2">
           <ChatBar />
-        </TabPanel>
-        <TabPanel className="hidden h-full p-2">
-          <AudioChat />
         </TabPanel>
       </div>
     </Tabs>

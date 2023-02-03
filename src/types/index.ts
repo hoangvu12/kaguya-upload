@@ -214,7 +214,6 @@ export type BasicRoomUser = {
 export type RoomUser = {
   id: string; // Socket id
   roomId: number;
-  peerId: string;
   isMicMuted: boolean;
   isHeadphoneMuted: boolean;
   useVoiceChat: boolean;

@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import React, { CSSProperties, useEffect } from "react";
+import React, { useEffect } from "react";
 import { AiFillCheckCircle } from "react-icons/ai";
 import ReactSelect, {
   components,

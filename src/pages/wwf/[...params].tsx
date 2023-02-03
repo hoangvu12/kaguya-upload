@@ -27,12 +27,11 @@ import {
 import classNames from "classnames";
 import { GetServerSideProps, NextPage } from "next";
 import { useTranslation } from "next-i18next";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { Peer } from "peerjs";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "react-query";
 import { io, Socket } from "socket.io-client";
-import dynamic from "next/dynamic";
 
 const RoomPlayer = dynamic(
   () => import("@/components/features/wwf/RoomPage/RoomPlayer"),
@@ -46,7 +45,6 @@ interface RoomPageProps {
 
 const RoomPage: NextPage<RoomPageProps> = ({ room, user }) => {
   const [socket, setSocket] = useState<Socket>();
-  const [peer, setPeer] = useState<Peer>();
   const { data } = useRoom(room.id, room);
   const queryClient = useQueryClient();
   const { locale } = useRouter();
@@ -78,7 +76,6 @@ const RoomPage: NextPage<RoomPageProps> = ({ room, user }) => {
 
   useEffect(() => {
     let newSocket: Socket = null;
-    let newPeer: Peer = null;
 
     const roomQuery = ["room", room.id];
 
@@ -86,7 +83,7 @@ const RoomPage: NextPage<RoomPageProps> = ({ room, user }) => {
       queryClient.setQueryData(roomQuery, update);
     };
 
-    const createSocket = (peerId: string) => {
+    const createSocket = () => {
       const { pathname, origin } = new URL(config.socketServerUrl);
 
       const socket = io(origin, {
@@ -97,7 +94,6 @@ const RoomPage: NextPage<RoomPageProps> = ({ room, user }) => {
         ...basicRoomUser,
         id: socket.id,
         roomId: room.id,
-        peerId,
         isMicMuted: true,
         isHeadphoneMuted: false,
         useVoiceChat: false,
@@ -105,7 +101,7 @@ const RoomPage: NextPage<RoomPageProps> = ({ room, user }) => {
 
       setRoomUser(roomUser);
 
-      socket.emit("join", room.id, peerId, roomUser);
+      socket.emit("join", room.id, null, roomUser);
 
       optimisticUpdateRoom((room) => {
         room.users.push(roomUser);
@@ -131,18 +127,6 @@ const RoomPage: NextPage<RoomPageProps> = ({ room, user }) => {
         }
       });
 
-      socket.on("connectVoiceChat", (roomUser: RoomUser) => {
-        optimisticUpdateRoom((room) => {
-          const user = room.users.find((u) => u.userId === roomUser.userId);
-
-          if (!user) return room;
-
-          user.useVoiceChat = true;
-
-          return room;
-        });
-      });
-
       socket.on("changeEpisode", (episode) => {
         console.log("changeEpisde", episode);
 
@@ -163,7 +147,7 @@ const RoomPage: NextPage<RoomPageProps> = ({ room, user }) => {
           return room;
         });
 
-        createSocket(peerId);
+        createSocket();
       });
 
       socket.on("reconnect", () => {
@@ -189,35 +173,12 @@ const RoomPage: NextPage<RoomPageProps> = ({ room, user }) => {
       return socket;
     };
 
-    const init = async () => {
-      const { default: Peer } = await import("peerjs");
-
-      if (!basicRoomUser?.name) return;
-
-      const peer = new Peer(null, { debug: 3 });
-
-      peer.on("open", (id) => {
-        createSocket(id);
-      });
-
-      peer.on("close", () => {
-        console.log("peer closed");
-
-        peer.reconnect();
-      });
-
-      setPeer(peer);
-
-      newPeer = peer;
-    };
-
-    init();
+    createSocket();
 
     return () => {
       newSocket?.off();
 
       newSocket?.disconnect();
-      newPeer?.disconnect();
     };
   }, [queryClient, room.id, basicRoomUser]);
 
@@ -240,7 +201,6 @@ const RoomPage: NextPage<RoomPageProps> = ({ room, user }) => {
             room: data,
             basicRoomUser: basicRoomUser,
             socket,
-            peer,
             roomUser,
           }}
         >
