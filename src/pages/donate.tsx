@@ -70,6 +70,16 @@ const DonatePage = () => {
               </a>{" "}
             </p>
 
+            <p>
+              or{" "}
+              <a
+                href="https://www.buymeacoffee.com/kaguyaanime"
+                className="text-primary-300 hover:underline"
+              >
+                Kaguya&apos;s buymeacoffee page
+              </a>{" "}
+            </p>
+
             <iframe
               className="w-full h-[40rem] !mt-8"
               src="https://ko-fi.com/kaguyaanime/?hidefeed=true&widget=true&embed=true&preview=true"
