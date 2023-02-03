@@ -3,7 +3,8 @@ import useDevice from "@/hooks/useDevice";
 import { Modifier, Options, Placement } from "@popperjs/core";
 import classNames from "classnames";
 import { AnimatePresence, motion, Variants } from "framer-motion";
-import React, { useCallback, useMemo, useState } from "react";
+import { useRouter } from "next/router";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { usePopper } from "react-popper";
 
 export interface PopupProps {
@@ -61,6 +62,7 @@ const Popup: React.FC<PopupProps> = (props) => {
   const [referenceElement, setReferenceElement] = useState(null);
   const [popperElement, setPopperElement] = useState(null);
   const [arrowElement, setArrowElement] = useState(null);
+  const { asPath } = useRouter();
 
   const [active, setActive] = useState(false);
   const { isMobile } = useDevice();
@@ -147,6 +149,11 @@ const Popup: React.FC<PopupProps> = (props) => {
   }, []);
 
   const isHover = useMemo(() => type === "hover", [type]);
+
+  useEffect(() => {
+    // Close popup when route change
+    setActive(false);
+  }, [asPath]);
 
   return (
     <React.Fragment>
