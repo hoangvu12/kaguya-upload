@@ -1,12 +1,22 @@
 import classNames from "classnames";
 import React, { useEffect } from "react";
+import { isMobileOnly } from "react-device-detect";
 import { AiFillCheckCircle } from "react-icons/ai";
 import ReactSelect, {
   components,
   GroupBase,
+  MenuProps,
   OptionProps,
   Props,
 } from "react-select";
+
+const Menu: React.ComponentType<
+  MenuProps<unknown, boolean, GroupBase<unknown>>
+> = (props) => {
+  if (isMobileOnly) return <div>I have no idea</div>;
+
+  return <components.Menu {...props} />;
+};
 
 const MoreSelectedBadge = ({ items }) => {
   const title = items.join(", ");
@@ -125,7 +135,12 @@ const Select = React.forwardRef<any, Props>(
         }}
         hideSelectedOptions={false}
         noOptionsMessage={() => "Không còn lựa chọn"}
-        components={{ MultiValue, Option, ...components }}
+        components={{
+          ...components,
+          MultiValue,
+          Option,
+          Menu,
+        }}
         isClearable
         menuPortalTarget={portalTarget}
         {...props}

@@ -65,6 +65,8 @@ const DonatePage = () => {
               <a
                 href="https://ko-fi.com/kaguyaanime/"
                 className="text-primary-300 hover:underline"
+                target="_blank"
+                rel="noreferrer"
               >
                 Kaguya&apos;s Ko-fi page
               </a>{" "}
@@ -75,6 +77,8 @@ const DonatePage = () => {
               <a
                 href="https://www.buymeacoffee.com/kaguyaanime"
                 className="text-primary-300 hover:underline"
+                target="_blank"
+                rel="noreferrer"
               >
                 Kaguya&apos;s buymeacoffee page
               </a>{" "}
