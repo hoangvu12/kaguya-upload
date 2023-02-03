@@ -119,6 +119,22 @@ const ChapterSelector: React.FC<ChapterSelectorProps> = ({
     return chunkOptions.find((option) => option.value === activeChunk);
   }, [activeChunk, chunkOptions]);
 
+  const readSourceChapter = useMemo(() => {
+    const readChapter = readData?.chapter;
+
+    if (!readChapter) return null;
+
+    const readEpisodeNumber = readChapter.chapterNumber;
+
+    const readEpisodeInActiveChunk = activeChunk.find(
+      (chunk) => chunk.chapterNumber === readEpisodeNumber
+    );
+
+    if (!readEpisodeInActiveChunk) return readChapter;
+
+    return readEpisodeInActiveChunk;
+  }, [activeChunk, readData?.chapter]);
+
   useEffect(() => {
     const sourceKeys = Object.keys(sources);
 
@@ -219,11 +235,11 @@ const ChapterSelector: React.FC<ChapterSelectorProps> = ({
       </div>
 
       <div className="space-y-2 overflow-hidden">
-        {readData?.chapter && (
+        {readSourceChapter && (
           <div className="flex items-center gap-4">
             <p className="shrink-0">Continue reading: </p>
 
-            <div className="w-full">{onEachChapter(readData.chapter)}</div>
+            <div className="w-full">{onEachChapter(readSourceChapter)}</div>
           </div>
         )}
 
