@@ -39,6 +39,12 @@ class MyDocument extends Document {
             `,
             }}
           />
+
+          <script
+            async
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6759016801592853"
+            crossOrigin="anonymous"
+          ></script>
         </Head>
         <body>
           <Main />

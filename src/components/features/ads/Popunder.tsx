@@ -6,35 +6,37 @@ const POPUNDER_COOKIE = "kaguya_popunder";
 const USER_COOKIE = "sb-access-token";
 
 const Popunder = () => {
-  const [isShow, setIsShow] = useState(false);
+  // const [isShow, setIsShow] = useState(false);
 
-  useEffect(() => {
-    const cookies = nookies.get(null);
+  // useEffect(() => {
+  //   const cookies = nookies.get(null);
 
-    if (cookies[POPUNDER_COOKIE]) return;
+  //   if (cookies[POPUNDER_COOKIE]) return;
 
-    setIsShow(true);
-  }, []);
+  //   setIsShow(true);
+  // }, []);
 
-  const handleScriptLoad = () => {
-    const cookies = nookies.get(null);
+  // const handleScriptLoad = () => {
+  //   const cookies = nookies.get(null);
 
-    const isLoggedIn = cookies[USER_COOKIE];
+  //   const isLoggedIn = cookies[USER_COOKIE];
 
-    nookies.set(null, POPUNDER_COOKIE, "1", {
-      // 1 day
-      maxAge: isLoggedIn ? 2 * 60 * 60 : 12 * 60 * 60,
-      path: "/",
-    });
-  };
+  //   nookies.set(null, POPUNDER_COOKIE, "1", {
+  //     // 1 day
+  //     maxAge: isLoggedIn ? 2 * 60 * 60 : 12 * 60 * 60,
+  //     path: "/",
+  //   });
+  // };
 
-  return isShow ? (
-    <Script
-      data-cfasync="false"
-      src="//dtv5ske218f44.cloudfront.net/?ksvtd=974102"
-      onLoad={handleScriptLoad}
-    ></Script>
-  ) : null;
+  // return isShow ? (
+  //   <Script
+  //     data-cfasync="false"
+  //     src="//dtv5ske218f44.cloudfront.net/?ksvtd=974102"
+  //     onLoad={handleScriptLoad}
+  //   ></Script>
+  // ) : null;
+
+  return null;
 };
 
 export default Popunder;
