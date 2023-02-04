@@ -13,7 +13,8 @@ import ReactSelect, {
 const Menu: React.ComponentType<
   MenuProps<unknown, boolean, GroupBase<unknown>>
 > = (props) => {
-  if (isMobileOnly) return <div>I have no idea</div>;
+  // TODO: Use modal for mobile
+  // if (isMobileOnly) return <div>I have no idea</div>;
 
   return <components.Menu {...props} />;
 };
