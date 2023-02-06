@@ -21,7 +21,7 @@ const Preload = () => {
 
     shownTime = isNaN(shownTime) ? 0 : shownTime;
 
-    if (shownTime < 10) {
+    if (shownTime < 3) {
       nookies.set(null, PRELOAD_COOKIE, String(shownTime + 1), {
         // 30 minutes
         maxAge: 30 * 60,
