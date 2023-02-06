@@ -1,15 +1,12 @@
-import Script from "next/script";
-import React from "react";
-
 const NativeBanner = () => {
   return (
     <div>
-      <Script
+      <script
         data-cfasync="false"
         async
         type="text/javascript"
         src="//tolterunrout.com/tpLRQoNtTHlHK3dD/61183"
-      ></Script>
+      ></script>
     </div>
   );
 };
