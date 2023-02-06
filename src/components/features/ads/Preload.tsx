@@ -54,11 +54,12 @@ const Preload = () => {
           href="https://www.i9bet59.com/Register?a=22608"
           target="_blank"
           rel="noreferrer"
+          className="block max-w-[80vw] w-[500px] aspect-w-4 aspect-h-3"
         >
           <img
             src="https://i.imgur.com/JoKwRGP.jpg"
             alt="preload"
-            className="min-w-[250px] min-h-[250px]"
+            className="w-full h-full"
           />
         </a>
 
