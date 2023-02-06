@@ -22,7 +22,7 @@ const Preload = () => {
 
     shownTime = isNaN(shownTime) ? 0 : shownTime;
 
-    if (shownTime < 3) {
+    if (shownTime < 5) {
       nookies.set(null, PRELOAD_COOKIE, String(shownTime + 1), {
         // 30 minutes
         maxAge: 30 * 60,
@@ -49,7 +49,7 @@ const Preload = () => {
           rel="noreferrer"
         >
           <img
-            src="https://imgyn.imageshh.com/400x300.jpg"
+            src="https://i.imgur.com/JoKwRGP.jpg"
             alt="preload"
             className="min-w-[250px] min-h-[250px]"
           />
