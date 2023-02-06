@@ -10,6 +10,7 @@ import { useTranslation } from "next-i18next";
 import Link from "@/components/shared/Link";
 import React from "react";
 import { AiOutlinePlus } from "react-icons/ai";
+import NativeBanner from "@/components/features/ads/NativeBanner";
 
 const WatchWithFriendPage = () => {
   const { data, isLoading } = useRooms();
@@ -23,6 +24,7 @@ const WatchWithFriendPage = () => {
       />
 
       <TopBanner />
+      <NativeBanner />
 
       <div className="mb-8 flex flex-col items-center gap-4 md:flex-row md:justify-between">
         <h1 className="text-center text-4xl font-semibold md:text-left">

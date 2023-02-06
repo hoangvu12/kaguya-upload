@@ -1,3 +1,4 @@
+import NativeBanner from "@/components/features/ads/NativeBanner";
 import TopBanner from "@/components/features/ads/TopBanner";
 import Head from "@/components/shared/Head";
 import Section from "@/components/shared/Section";
@@ -9,6 +10,7 @@ const privacy = () => {
       <Head title="Privacy - Kaguya" />
 
       <TopBanner />
+      <NativeBanner />
 
       <h1 className="text-2xl font-bold">Privacy Policy</h1>
       <p>Last updated: March 03, 2022</p>

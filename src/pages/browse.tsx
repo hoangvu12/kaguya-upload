@@ -12,6 +12,7 @@ import React, { useMemo } from "react";
 import Section from "@/components/shared/Section";
 import TopBanner from "@/components/features/ads/TopBanner";
 import UserBrowseList from "@/components/features/users/UserBrowseList";
+import NativeBanner from "@/components/features/ads/NativeBanner";
 
 const components = {
   anime: AnimeBrowseList,
@@ -115,6 +116,7 @@ const BrowsePage = ({ query: baseQuery }) => {
       />
 
       <TopBanner />
+      <NativeBanner />
 
       <div className="mb-8 flex items-center space-x-2">
         <h1 className="text-4xl font-semibold text-center md:text-left">

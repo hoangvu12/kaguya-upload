@@ -1,3 +1,4 @@
+import NativeBanner from "@/components/features/ads/NativeBanner";
 import TopBanner from "@/components/features/ads/TopBanner";
 import AnimeSchedule from "@/components/features/anime/AiringSchedule";
 import WatchedSection from "@/components/features/anime/WatchedSection";
@@ -111,6 +112,10 @@ const Home: NextPage<HomeProps> = ({ selectors }) => {
               <GenreSwiper selectors={selectors} className="md:h-[500px]" />
             </Section>
           </div>
+
+          <Section>
+            <NativeBanner />
+          </Section>
 
           <Section title={t("anime_home:airing_schedule")}>
             <AnimeSchedule />

@@ -1,3 +1,4 @@
+import NativeBanner from "@/components/features/ads/NativeBanner";
 import TopBanner from "@/components/features/ads/TopBanner";
 import Head from "@/components/shared/Head";
 import { DISCORD_URL, FACEBOOK_URL } from "@/constants";
@@ -12,6 +13,7 @@ const contact = () => {
       <Head title="Liên hệ - Kaguya" description="Liên hệ với chúng tôi." />
 
       <TopBanner />
+      <NativeBanner />
 
       <h1 className="text-2xl font-bold">Liên hệ với chúng tôi</h1>
 

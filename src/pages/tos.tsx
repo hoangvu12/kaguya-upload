@@ -1,3 +1,4 @@
+import NativeBanner from "@/components/features/ads/NativeBanner";
 import TopBanner from "@/components/features/ads/TopBanner";
 import Head from "@/components/shared/Head";
 import React from "react";
@@ -11,6 +12,7 @@ const tos = () => {
       />
 
       <TopBanner />
+      <NativeBanner />
 
       <h1 className="text-2xl font-bold">Điều khoản dịch vụ</h1>
 

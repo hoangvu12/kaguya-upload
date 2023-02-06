@@ -40,6 +40,7 @@ import { BsFillPlayFill } from "react-icons/bs";
 import TopBanner from "@/components/features/ads/TopBanner";
 import useSavedRead from "@/hooks/useSavedRead";
 import { toast } from "react-toastify";
+import NativeBanner from "@/components/features/ads/NativeBanner";
 
 interface DetailsPageProps {
   manga: Media;
@@ -328,6 +329,7 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
 
           <div className="md:col-span-8 space-y-12">
             <TopBanner />
+            <NativeBanner />
 
             <DetailsSection title={t("chapters_section")} className="relative">
               {isLoading || readLoading ? (

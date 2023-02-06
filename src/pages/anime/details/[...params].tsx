@@ -45,6 +45,7 @@ import { BsFillPlayFill } from "react-icons/bs";
 import TopBanner from "@/components/features/ads/TopBanner";
 import useSavedWatched from "@/hooks/useSavedWatched";
 import { toast } from "react-toastify";
+import NativeBanner from "@/components/features/ads/NativeBanner";
 
 interface DetailsPageProps {
   anime: Media;
@@ -449,6 +450,7 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
 
           <div className="space-y-12 md:col-span-8">
             <TopBanner />
+            <NativeBanner />
 
             <DetailsSection
               title={t("episodes_section")}

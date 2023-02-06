@@ -1,3 +1,4 @@
+import NativeBanner from "@/components/features/ads/NativeBanner";
 import TopBanner from "@/components/features/ads/TopBanner";
 import ReadSection from "@/components/features/manga/ReadSection";
 import RecommendedMangaSection from "@/components/features/manga/RecommendedMangaSection";
@@ -116,6 +117,10 @@ const Home: NextPage<HomeProps> = ({ selectors }) => {
               <GenreSwiper selectors={selectors} className="md:h-[500px]" />
             </Section>
           </div>
+
+          <Section>
+            <NativeBanner />
+          </Section>
         </div>
       </div>
     </React.Fragment>
