@@ -3,6 +3,7 @@ import CircleButton from "@/components/shared/CircleButton";
 import React, { useEffect, useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import nookies from "nookies";
+import { useRouter } from "next/router";
 
 const PRELOAD_COOKIE = "kaguya_preload";
 const USER_COOKIE = "sb-access-token";
@@ -10,11 +11,9 @@ const USER_COOKIE = "sb-access-token";
 const Preload = () => {
   const [isShow, setIsShow] = useState(false);
 
-  const handleClose = () => {
-    setIsShow(false);
-  };
+  const { asPath } = useRouter();
 
-  useEffect(() => {
+  const showPreload = () => {
     const cookies = nookies.get(null);
     let shownTime = 0;
 
@@ -22,7 +21,7 @@ const Preload = () => {
 
     shownTime = isNaN(shownTime) ? 0 : shownTime;
 
-    if (shownTime < 5) {
+    if (shownTime < 10) {
       nookies.set(null, PRELOAD_COOKIE, String(shownTime + 1), {
         // 30 minutes
         maxAge: 30 * 60,
@@ -33,7 +32,15 @@ const Preload = () => {
 
       return;
     }
-  }, []);
+  };
+
+  const handleClose = () => {
+    setIsShow(false);
+  };
+
+  useEffect(() => {
+    showPreload();
+  }, [asPath]);
 
   return isShow ? (
     <div className="fixed inset-0 z-[9999]">
