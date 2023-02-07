@@ -15,6 +15,9 @@ const Preload = () => {
 
   const showPreload = () => {
     const cookies = nookies.get(null);
+
+    if (cookies?.[USER_COOKIE]) return;
+
     let shownTime = 0;
 
     shownTime = Number(cookies?.[PRELOAD_COOKIE]);
