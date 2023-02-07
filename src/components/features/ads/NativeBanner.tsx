@@ -1,24 +1,28 @@
-import { useRouter } from "next/router";
-import { useMemo } from "react";
+const scriptId = "native-banner";
 
 const NativeBanner = () => {
-  const { asPath } = useRouter();
+  // const ref = useRef<HTMLDivElement>();
+  // const { asPath } = useRouter();
+  // useEffect(() => {
+  //   const script = document.createElement("script");
+  //   const divRef = ref.current;
+  //   script.id = scriptId;
+  //   script.src = `//tolterunrout.com/tpLRQoNtTHlHK3dD/61183?v=${Math.round(
+  //     Math.random() * 100
+  //   )}`;
+  //   script.async = true;
+  //   script.setAttribute("data-cfasync", "false");
+  //   script.setAttribute("type", "text/javascript");
+  //   if (divRef) {
+  //     divRef.appendChild(script);
+  //   }
+  //   return () => {
+  //     divRef?.removeChild(script);
+  //   };
+  // }, [ref, asPath]);
+  // return <div ref={ref}></div>;
 
-  const version = useMemo(() => {
-    return Math.round(Math.random() * 100);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [asPath]);
-
-  return (
-    <div>
-      <script
-        data-cfasync="false"
-        async
-        type="text/javascript"
-        src={`//tolterunrout.com/tpLRQoNtTHlHK3dD/61183?v=${version}`}
-      ></script>
-    </div>
-  );
+  return null;
 };
 
 export default NativeBanner;
