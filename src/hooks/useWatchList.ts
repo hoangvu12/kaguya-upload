@@ -34,7 +34,7 @@ const useWatchList = (sourceType: Status, user: AdditionalUser) => {
         .from<SourceStatus>("kaguya_watch_status")
         .select("mediaId, userId, status, created_at")
         .eq("userId", user.id)
-        .order("mediaId", { ascending: false })
+        .order("created_at", { ascending: false })
         .eq("status", sourceType)
         .range(from, to);
 
