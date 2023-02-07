@@ -46,6 +46,7 @@ export type Source = {
   addedUserId?: string;
   addedUser?: AdditionalUser;
   isCustomSource: boolean;
+  isFast: boolean;
 };
 
 export type Video = {
