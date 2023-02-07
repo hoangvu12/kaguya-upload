@@ -56,6 +56,9 @@ export const AuthContextProvider: React.FC<{}> = ({ children }) => {
 
       if (event === "SIGNED_OUT") {
         setUser(null);
+
+        nookies.destroy(null, accessTokenCookieName);
+        nookies.destroy(null, refreshTokenCookieName);
       } else if (event === "SIGNED_IN") {
         const { data: profileUser } = await supabaseClient
           .from<AdditionalUser>("users")
