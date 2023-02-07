@@ -84,17 +84,9 @@ const ReadList: React.FC<ReadListProps> = ({ user }) => {
                 return (
                   <Card
                     imageEndSlot={
-                      <React.Fragment>
-                        <div className="z-[5] flex flex-col justify-end absolute inset-0">
-                          <p className="w-max ml-2 mb-2 px-1 py-0.5 rounded-md bg-background-700">
-                            {node.readChapter} / {node.chapters || "??"}
-                          </p>
-                        </div>
-
-                        <div className="z-0 flex flex-col justify-end absolute inset-0">
-                          <div className="h-32 bg-gradient-to-t from-black/80 to-transparent z-40"></div>
-                        </div>
-                      </React.Fragment>
+                      <p className="w-max ml-2 mb-2 px-1 py-0.5 rounded-md bg-background-700">
+                        {node.readChapter} / {node.chapters || "??"}
+                      </p>
                     }
                     data={node}
                   />

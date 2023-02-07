@@ -17,6 +17,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { AiFillHeart } from "react-icons/ai";
 import { MdTagFaces } from "react-icons/md";
 import Description from "./Description";
+import dayjs from "dayjs";
 
 interface AnimeCardProps {
   data: Media;
@@ -48,6 +49,7 @@ const Card: React.FC<AnimeCardProps> = (props) => {
     data,
     className,
     containerEndSlot,
+    imageEndSlot,
     redirectUrl = createMediaDetailsUrl(data),
     isExpanded,
   } = props;
@@ -70,6 +72,20 @@ const Card: React.FC<AnimeCardProps> = (props) => {
     () => getTitle(data, router.locale),
     [data, router?.locale]
   );
+
+  const nextEpisodeAiringTimeDuration = useMemo(() => {
+    const nextEpisodeAiringTime = !data.nextAiringEpisode
+      ? null
+      : dayjs.unix(data.nextAiringEpisode.airingAt);
+
+    if (nextEpisodeAiringTime) {
+      return dayjs
+        .duration(nextEpisodeAiringTime.diff(dayjs()))
+        .format("D[d] H[h] m[m]");
+    }
+
+    return "";
+  }, [data.nextAiringEpisode]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -118,6 +134,21 @@ const Card: React.FC<AnimeCardProps> = (props) => {
                     layout="fill"
                     quality={35}
                   />
+
+                  <div className="z-[5] flex flex-col justify-end absolute inset-0">
+                    {data.nextAiringEpisode && (
+                      <p className="ml-2 mb-1 px-1 py-0.5 rounded-md bg-background-700 w-max">
+                        EP {data.nextAiringEpisode.episode}:{" "}
+                        {nextEpisodeAiringTimeDuration}
+                      </p>
+                    )}
+
+                    {imageEndSlot}
+                  </div>
+
+                  <div className="z-0 flex flex-col justify-end absolute inset-0">
+                    <div className="h-32 bg-gradient-to-t from-black/80 to-transparent z-40"></div>
+                  </div>
                 </motion.div>
               ) : (
                 <motion.div

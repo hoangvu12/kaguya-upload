@@ -9,7 +9,6 @@ import useWatchList, { STATUS, Status } from "@/hooks/useWatchList";
 import { AdditionalUser } from "@/types";
 import { parseTime } from "@/utils";
 import classNames from "classnames";
-import dayjs from "dayjs";
 import { useTranslation } from "next-i18next";
 import React, { useMemo, useState } from "react";
 
@@ -92,20 +91,6 @@ const WatchList: React.FC<WatchListProps> = ({ user }) => {
                   return (node.watchedTime / durationTime) * 100;
                 })();
 
-                const now = dayjs();
-
-                const nextEpisodeAiringTime = !node.nextAiringEpisode
-                  ? null
-                  : dayjs.unix(node.nextAiringEpisode.airingAt);
-
-                let nextEpisodeAiringTimeDuration = "";
-
-                if (nextEpisodeAiringTime) {
-                  nextEpisodeAiringTimeDuration = dayjs
-                    .duration(nextEpisodeAiringTime.diff(now))
-                    .format("D[d] H[h] m[m]");
-                }
-
                 const airedEpisodes = node.nextAiringEpisode
                   ? node.nextAiringEpisode.episode - 1
                   : null;
@@ -114,41 +99,26 @@ const WatchList: React.FC<WatchListProps> = ({ user }) => {
                   <Card
                     imageEndSlot={
                       <React.Fragment>
-                        <div className="z-[5] flex flex-col justify-end absolute inset-0">
-                          {node.nextAiringEpisode && (
-                            <p className="ml-2 mb-1 px-1 py-0.5 rounded-md bg-background-700 w-max">
-                              EP {node.nextAiringEpisode.episode}:{" "}
-                              {nextEpisodeAiringTimeDuration}
-                            </p>
-                          )}
+                        <div className="flex justify-between">
+                          <p className="ml-2 mb-2 px-1 py-0.5 rounded-md bg-background-700">
+                            {airedEpisodes
+                              ? `${node.watchedEpisode} / ${airedEpisodes} / ${
+                                  node.episodes || "??"
+                                }`
+                              : `${node.watchedEpisode} / ${
+                                  node.episodes || "??"
+                                }`}
+                          </p>
 
-                          <div className="flex justify-between">
-                            <p className="ml-2 mb-2 px-1 py-0.5 rounded-md bg-background-700">
-                              {airedEpisodes
-                                ? `${
-                                    node.watchedEpisode
-                                  } / ${airedEpisodes} / ${
-                                    node.episodes || "??"
-                                  }`
-                                : `${node.watchedEpisode} / ${
-                                    node.episodes || "??"
-                                  }`}
-                            </p>
-
-                            <p className="mr-2 mb-2 px-1 py-0.5 rounded-md bg-background-700">
-                              {parseTime(node.watchedTime)}
-                            </p>
-                          </div>
-
-                          <div
-                            className="h-1 bg-primary-500"
-                            style={{ width: `${watchProgressPercent}%` }}
-                          />
+                          <p className="mr-2 mb-2 px-1 py-0.5 rounded-md bg-background-700">
+                            {parseTime(node.watchedTime)}
+                          </p>
                         </div>
 
-                        <div className="z-0 flex flex-col justify-end absolute inset-0">
-                          <div className="h-32 bg-gradient-to-t from-black/80 to-transparent z-40"></div>
-                        </div>
+                        <div
+                          className="h-1 bg-primary-500"
+                          style={{ width: `${watchProgressPercent}%` }}
+                        />
                       </React.Fragment>
                     }
                     data={node}

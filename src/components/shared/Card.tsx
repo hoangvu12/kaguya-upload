@@ -17,6 +17,7 @@ import { AiFillHeart } from "react-icons/ai";
 import { MdTagFaces } from "react-icons/md";
 import Description from "./Description";
 import Popup from "./Popup";
+import dayjs from "dayjs";
 
 interface CardProps {
   data: Media;
@@ -78,6 +79,20 @@ const Card: React.FC<CardProps> = (props) => {
     [data, router.locale]
   );
 
+  const nextEpisodeAiringTimeDuration = useMemo(() => {
+    const nextEpisodeAiringTime = !data.nextAiringEpisode
+      ? null
+      : dayjs.unix(data.nextAiringEpisode.airingAt);
+
+    if (nextEpisodeAiringTime) {
+      return dayjs
+        .duration(nextEpisodeAiringTime.diff(dayjs()))
+        .format("D[d] H[h] m[m]");
+    }
+
+    return "";
+  }, [data.nextAiringEpisode]);
+
   return (
     <Link href={redirectUrl}>
       <a>
@@ -99,7 +114,20 @@ const Card: React.FC<CardProps> = (props) => {
                   quality={35}
                 />
 
-                {imageEndSlot}
+                <div className="z-[5] flex flex-col justify-end absolute inset-0">
+                  {data.nextAiringEpisode && (
+                    <p className="ml-2 mb-1 px-1 py-0.5 rounded-md bg-background-700 w-max">
+                      EP {data.nextAiringEpisode.episode}:{" "}
+                      {nextEpisodeAiringTimeDuration}
+                    </p>
+                  )}
+
+                  {imageEndSlot}
+                </div>
+
+                <div className="z-0 flex flex-col justify-end absolute inset-0">
+                  <div className="h-32 bg-gradient-to-t from-black/80 to-transparent z-40"></div>
+                </div>
               </div>
 
               <p
