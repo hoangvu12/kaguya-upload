@@ -27,23 +27,22 @@ const ChapterSelector: React.FC<ChapterSelectorProps> = ({
   readData,
   chapterChunk = isMobileOnly ? 5 : 10,
 }) => {
-  const [activeSource, setActiveSource] = useState(() => {
-    return readData?.chapter?.source?.name || chapters[0].source.name;
-  });
+  const fastSources = useMemo(() => {
+    const fastChapters = chapters.filter((chapter) => chapter.source.isFast);
 
-  const sourceChapters = useMemo(
-    () => chapters.filter((chapter) => chapter.source.name === activeSource),
-    [activeSource, chapters]
-  );
+    const sources = groupBy(fastChapters, (chapter) => chapter.source.name);
 
-  const sources = useMemo(
-    () => groupBy(chapters, (data) => data.source.name),
-    [chapters]
-  );
+    const sortedSources = sortObjectByValue(
+      sources,
+      (a, b) => b.length - a.length
+    );
+
+    return sortedSources;
+  }, [chapters]);
 
   const verifiedSources = useMemo(() => {
     const verifiedChapters = chapters.filter(
-      (chapter) => chapter.source.isCustomSource
+      (chapter) => chapter.source.isCustomSource && !chapter.source.isFast
     );
 
     const sources = groupBy(verifiedChapters, (chapter) => chapter.source.name);
@@ -58,7 +57,7 @@ const ChapterSelector: React.FC<ChapterSelectorProps> = ({
 
   const nonVerifiedSources = useMemo(() => {
     const nonVerifiedChapters = chapters.filter(
-      (chapter) => !chapter.source.isCustomSource
+      (chapter) => !chapter.source.isCustomSource && !chapter.source.isFast
     );
 
     const sources = groupBy(
@@ -73,6 +72,23 @@ const ChapterSelector: React.FC<ChapterSelectorProps> = ({
 
     return sortedSources;
   }, [chapters]);
+
+  const sources = useMemo(() => {
+    return {
+      ...fastSources,
+      ...verifiedSources,
+      ...nonVerifiedSources,
+    };
+  }, [fastSources, verifiedSources, nonVerifiedSources]);
+
+  const [activeSource, setActiveSource] = useState(() => {
+    return readData?.chapter?.source?.name || Object.keys(sources)[0];
+  });
+
+  const sourceChapters = useMemo(
+    () => chapters.filter((chapter) => chapter.source.name === activeSource),
+    [activeSource, chapters]
+  );
 
   const chunks = useMemo(
     () => chunk(sourceChapters, chapterChunk),
@@ -204,11 +220,15 @@ const ChapterSelector: React.FC<ChapterSelectorProps> = ({
               id="source-selector"
               options={[
                 {
+                  label: "Quality",
+                  options: sourcesToOptions(Object.keys(fastSources)),
+                },
+                {
                   label: "Verified",
                   options: sourcesToOptions(Object.keys(verifiedSources)),
                 },
                 {
-                  label: "Not verified",
+                  label: "Normal",
                   options: sourcesToOptions(Object.keys(nonVerifiedSources)),
                 },
               ]}
