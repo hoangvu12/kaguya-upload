@@ -17,9 +17,22 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
 }) => {
   const [videoContainer, setVideoContainer] = useState<HTMLElement>();
 
+  const fastSources = useMemo(() => {
+    const fastEpisodes = episodes.filter((episode) => episode.source.isFast);
+
+    const sources = groupBy(fastEpisodes, (episode) => episode.source.name);
+
+    const sortedSources = sortObjectByValue(
+      sources,
+      (a, b) => b.length - a.length
+    );
+
+    return sortedSources;
+  }, [episodes]);
+
   const verifiedSources = useMemo(() => {
     const verifiedEpisodes = episodes.filter(
-      (episode) => episode.source.isCustomSource
+      (episode) => episode.source.isCustomSource && !episode.source.isFast
     );
 
     const sources = groupBy(verifiedEpisodes, (episode) => episode.source.name);
@@ -34,7 +47,7 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
 
   const nonVerifiedSources = useMemo(() => {
     const nonVerifiedEpisodes = episodes.filter(
-      (episode) => !episode.source.isCustomSource
+      (episode) => !episode.source.isCustomSource && !episode.source.isFast
     );
 
     const sources = groupBy(
@@ -51,8 +64,8 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
   }, [episodes]);
 
   const sources = useMemo(() => {
-    return { ...verifiedSources, ...nonVerifiedSources };
-  }, [nonVerifiedSources, verifiedSources]);
+    return { ...fastSources, ...verifiedSources, ...nonVerifiedSources };
+  }, [fastSources, nonVerifiedSources, verifiedSources]);
 
   const defaultActiveSource = useMemo(
     () =>
@@ -119,11 +132,15 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
               id="source-selector"
               options={[
                 {
+                  label: "Quality",
+                  options: sourcesToOptions(Object.keys(fastSources)),
+                },
+                {
                   label: "Verified",
                   options: sourcesToOptions(Object.keys(verifiedSources)),
                 },
                 {
-                  label: "Not verified",
+                  label: "Normal",
                   options: sourcesToOptions(Object.keys(nonVerifiedSources)),
                 },
               ]}
