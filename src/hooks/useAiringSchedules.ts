@@ -12,8 +12,10 @@ const useAiringSchedules = (
 ) => {
   return useQuery<AiringSchedule[]>(
     ["airingSchedules", { args }],
-    () => {
-      return getAiringSchedules(args);
+    async () => {
+      const airingSchedules = await getAiringSchedules(args);
+
+      return airingSchedules.filter((schedule) => !schedule.media.isAdult);
     },
     options
   );
