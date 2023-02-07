@@ -13,6 +13,7 @@ import axios from "axios";
 import mime from "mime";
 import { stringify } from "querystring";
 import { toast } from "react-toastify";
+import slugify, { charmap, multicharmap } from "slug";
 
 export const randomElement = <T>(array: T[]): T => {
   const index = Math.floor(Math.random() * array.length);
@@ -262,26 +263,15 @@ export const groupBy = <T, K extends string>(
     return previous;
   }, {} as Record<string, T[]>);
 
-// https://gist.github.com/bluzky/b8c205c98ff3318907b30c3e0da4bf3f
-export const vietnameseSlug = (str: string) => {
-  const from =
-    "àáãảạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệđùúủũụưừứửữựòóỏõọôồốổỗộơờớởỡợìíỉĩịäëïîöüûñçýỳỹỵỷ";
-  const to =
-    "aaaaaaaaaaaaaaaaaeeeeeeeeeeeduuuuuuuuuuuoooooooooooooooooiiiiiaeiiouuncyyyyy";
-
-  let newStr = str;
-
-  for (let i = 0, l = from.length; i < l; i++) {
-    newStr = newStr.replace(RegExp(from[i], "gi"), to[i]);
-  }
-
-  newStr = newStr
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9\-]/g, "-")
-    .replace(/-+/g, "-");
-
-  return newStr;
+export const stringToSlug = (str: string) => {
+  return slugify(str, {
+    replacement: "-",
+    remove: null,
+    lower: true,
+    charmap,
+    multicharmap,
+    trim: true,
+  });
 };
 
 export const sleep = (ms: number) =>
@@ -472,30 +462,30 @@ export const createMediaDetailsUrl = (media: Media) => {
   if (!media) return "";
 
   if (media.type === MediaType.Anime) {
-    return `/anime/details/${media.id}/${vietnameseSlug(
-      media.title.userPreferred
-    )}`;
+    return `/anime/details/${media.id}/${
+      media.id + "-" + slugify(media.title.userPreferred)
+    }`;
   }
 
-  return `/manga/details/${media.id}/${vietnameseSlug(
-    media.title.userPreferred
-  )}`;
+  return `/manga/details/${media.id}/${
+    media.id + "-" + slugify(media.title.userPreferred)
+  }`;
 };
 
 export const createCharacterDetailsUrl = (character: Character) => {
-  return `/characters/details/${character.id}/${vietnameseSlug(
-    character?.name?.userPreferred
-  )}`;
+  return `/characters/details/${character.id}/${
+    character.id + "-" + slugify(character?.name?.userPreferred)
+  }`;
 };
 
 export const createVoiceActorDetailsUrl = (voiceActor: Staff) => {
-  return `/voice-actors/details/${voiceActor.id}/${vietnameseSlug(
-    voiceActor?.name?.userPreferred
-  )}`;
+  return `/voice-actors/details/${voiceActor.id}/${
+    voiceActor.id + "-" + slugify(voiceActor?.name?.userPreferred)
+  }`;
 };
 
 export const createStudioDetailsUrl = (studio: Studio) => {
-  return `/studios/${studio.id}/${vietnameseSlug(studio?.name)}`;
+  return `/studios/${studio.id}/${studio.id + "-" + slugify(studio?.name)}`;
 };
 
 export const sortObjectByValue = <T extends object>(

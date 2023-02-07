@@ -19,7 +19,7 @@ import {
   isFalsy,
   numberWithCommas,
   removeArrayOfObjectDup,
-  vietnameseSlug,
+  stringToSlug,
 } from "@/utils";
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { useTranslation } from "next-i18next";
@@ -223,9 +223,9 @@ export default withRedirect(DetailsPage, (router, props) => {
   if (slug) return null;
 
   return {
-    url: `/characters/details/${id}/${vietnameseSlug(
-      props.character.name.userPreferred
-    )}`,
+    url: `/characters/details/${id}/${
+      id + "-" + stringToSlug(props.character.name.userPreferred)
+    }`,
     options: {
       shallow: true,
     },

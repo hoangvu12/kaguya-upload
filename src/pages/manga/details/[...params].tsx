@@ -24,7 +24,7 @@ import withRedirect from "@/hocs/withRedirect";
 import useChapters from "@/hooks/useChapters";
 import { getMediaDetails } from "@/services/anilist";
 import { Media, MediaStatus, MediaType } from "@/types/anilist";
-import { numberWithCommas, vietnameseSlug } from "@/utils";
+import { numberWithCommas, stringToSlug } from "@/utils";
 import { convert, getDescription, getTitle } from "@/utils/data";
 import { supabaseClient } from "@supabase/auth-helpers-nextjs";
 import classNames from "classnames";
@@ -437,7 +437,7 @@ export default withRedirect(DetailsPage, (router, props) => {
   if (slug) return null;
 
   return {
-    url: `/manga/details/${id}/${vietnameseSlug(title)}`,
+    url: `/manga/details/${id}/${id + "-" + stringToSlug(title)}`,
     options: {
       shallow: true,
     },

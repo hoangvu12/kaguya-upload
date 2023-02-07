@@ -28,7 +28,7 @@ import { Media, MediaStatus, MediaType } from "@/types/anilist";
 import {
   createStudioDetailsUrl,
   numberWithCommas,
-  vietnameseSlug,
+  stringToSlug,
 } from "@/utils";
 import { convert, getDescription, getTitle } from "@/utils/data";
 import { supabaseClient } from "@supabase/auth-helpers-nextjs";
@@ -564,7 +564,7 @@ export default withRedirect(DetailsPage, (router, props) => {
   if (slug) return null;
 
   return {
-    url: `/anime/details/${id}/${vietnameseSlug(title)}`,
+    url: `/anime/details/${id}/${id + "-" + stringToSlug(title)}`,
     options: {
       shallow: true,
     },

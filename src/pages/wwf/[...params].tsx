@@ -17,7 +17,7 @@ import {
   RoomUser,
 } from "@/types";
 import { MediaType } from "@/types/anilist";
-import { randomString, vietnameseSlug } from "@/utils";
+import { randomString, stringToSlug } from "@/utils";
 import { getTitle } from "@/utils/data";
 import {
   getUser,
@@ -309,7 +309,7 @@ const RoomPageWithRedirect = withRedirect(RoomPage, (router, props) => {
   if (slug) return null;
 
   return {
-    url: `/wwf/${id}/${vietnameseSlug(title)}`,
+    url: `/wwf/${id}/${id + "-" + stringToSlug(title)}`,
     options: {
       shallow: true,
     },

@@ -12,7 +12,7 @@ import withRedirect from "@/hocs/withRedirect";
 import { useStudio } from "@/hooks/useStudio";
 import { getStudioDetails } from "@/services/anilist";
 import { Studio } from "@/types/anilist";
-import { groupBy, numberWithCommas, vietnameseSlug } from "@/utils";
+import { groupBy, numberWithCommas, stringToSlug } from "@/utils";
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { useTranslation } from "next-i18next";
 import { useMemo } from "react";
@@ -131,7 +131,7 @@ export default withRedirect(DetailsPage, (router, props) => {
   if (slug) return null;
 
   return {
-    url: `/studios/${id}/${vietnameseSlug(props.studio.name)}`,
+    url: `/studios/${id}/${id + "-" + stringToSlug(props.studio.name)}`,
     options: {
       shallow: true,
     },

@@ -16,7 +16,7 @@ import {
   arePropertiesFalsy,
   formatDate,
   numberWithCommas,
-  vietnameseSlug,
+  stringToSlug,
 } from "@/utils";
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { useTranslation } from "next-i18next";
@@ -203,9 +203,9 @@ export default withRedirect(DetailsPage, (router, props) => {
   if (slug) return null;
 
   return {
-    url: `/voice-actors/details/${id}/${vietnameseSlug(
-      props.voiceActor.name.userPreferred
-    )}`,
+    url: `/voice-actors/details/${id}/${
+      id + "-" + stringToSlug(props.voiceActor.name.userPreferred)
+    }`,
     options: {
       shallow: true,
     },
