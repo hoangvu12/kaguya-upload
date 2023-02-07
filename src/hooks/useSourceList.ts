@@ -4,7 +4,7 @@ import { MediaType } from "@/types/anilist";
 import { useQuery } from "react-query";
 
 const useSourceList = <T extends MediaType>(
-  status: SourceStatus<T>[],
+  status: SourceStatus[],
   type: T
 ) => {
   return useQuery(["source-list", type], () => {

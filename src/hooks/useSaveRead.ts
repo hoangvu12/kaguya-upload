@@ -1,7 +1,6 @@
 import { useUser } from "@/contexts/AuthContext";
 import supabaseClient from "@/lib/supabase";
 import { Read, SourceStatus } from "@/types";
-import { MediaType } from "@/types/anilist";
 import { useMutation, useQueryClient } from "react-query";
 
 interface MutationInput {
@@ -18,9 +17,10 @@ const useSaveRead = () => {
 
     const { chapter_id, media_id } = data;
 
-    const sourceStatus = queryClient.getQueryData<
-      SourceStatus<MediaType.Manga>
-    >(["kaguya_read_status", media_id]);
+    const sourceStatus = queryClient.getQueryData<SourceStatus>([
+      "kaguya_read_status",
+      media_id,
+    ]);
 
     if (sourceStatus?.status !== "COMPLETED") {
       await supabaseClient.from("kaguya_read_status").upsert({
@@ -28,6 +28,17 @@ const useSaveRead = () => {
         mediaId: media_id,
         status: "CURRENT",
       });
+
+      if (!sourceStatus.status) {
+        queryClient.setQueryData<SourceStatus>(
+          ["kaguya_read_status", media_id],
+          {
+            status: "CURRENT",
+            mediaId: media_id,
+            userId: user.id,
+          }
+        );
+      }
     }
 
     const { error: upsertError } = await supabaseClient

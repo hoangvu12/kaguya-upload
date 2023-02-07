@@ -264,20 +264,18 @@ export type CallbackSetter<T> = (handler: T) => void;
 
 export type Noop = () => void;
 
-export type WatchStatus = "WATCHING" | "COMPLETED" | "PLANNING";
-export type ReadStatus = "READING" | "COMPLETED" | "PLANNING";
+export type MediaListStatus =
+  | "CURRENT"
+  | "PLANNING"
+  | "COMPLETED"
+  | "DROPPED"
+  | "PAUSED"
+  | "REPEATING";
 
-export type SourceStatus<T> = (T extends MediaType.Anime
-  ? {
-      status?: WatchStatus;
-      mediaId?: number;
-      media?: Media;
-    }
-  : {
-      status?: ReadStatus;
-      mediaId?: number;
-      media?: Media;
-    }) & {
+export type SourceStatus = {
+  status?: MediaListStatus;
+  mediaId?: number;
+  media?: Media;
   userId?: string;
   user?: User;
   updated_at?: string;

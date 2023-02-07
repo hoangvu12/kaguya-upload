@@ -11,7 +11,7 @@ const useSourceStatus = <T extends MediaType>(type: T, mediaId: number) => {
   const queryKey = [tableName, mediaId];
   const user = useUser();
 
-  return useSupabaseSingleQuery<SourceStatus<T>>(
+  return useSupabaseSingleQuery<SourceStatus>(
     queryKey,
     () => {
       return supabaseClient

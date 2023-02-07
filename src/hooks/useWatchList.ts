@@ -31,7 +31,7 @@ const useWatchList = (sourceType: Status, user: AdditionalUser) => {
       const { from, to } = getPagination(pageParam, LIST_LIMIT);
 
       const sourceStatusQuery = supabaseClient
-        .from<SourceStatus<MediaType.Anime>>("kaguya_watch_status")
+        .from<SourceStatus>("kaguya_watch_status")
         .select("mediaId, userId, status, created_at")
         .eq("userId", user.id)
         .order("mediaId", { ascending: false })

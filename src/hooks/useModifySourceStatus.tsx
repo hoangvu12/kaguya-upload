@@ -16,8 +16,8 @@ const useModifySourceStatus = <T extends MediaType>(type: T, source: Media) => {
   const { WATCH_STATUS, READ_STATUS } = useConstantTranslation();
 
   type StatusInput = T extends MediaType.Anime
-    ? typeof WATCH_STATUS[number]["value"]
-    : typeof READ_STATUS[number]["value"];
+    ? (typeof WATCH_STATUS)[number]["value"]
+    : (typeof READ_STATUS)[number]["value"];
 
   const { locale } = useRouter();
   const queryClient = useQueryClient();
@@ -48,7 +48,7 @@ const useModifySourceStatus = <T extends MediaType>(type: T, source: Media) => {
 
     {
       onMutate: (status) => {
-        const oldStatus = queryClient.getQueryData<SourceStatus<T>>(queryKey);
+        const oldStatus = queryClient.getQueryData<SourceStatus>(queryKey);
 
         queryClient.setQueryData(queryKey, {
           ...oldStatus,
