@@ -9,6 +9,7 @@ import { DeviceSelectors } from "@/types";
 import { Media } from "@/types/anilist";
 import { createMediaDetailsUrl, isValidUrl, numberWithCommas } from "@/utils";
 import { convert, getDescription, getTitle } from "@/utils/data";
+import dayjs from "dayjs";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useCallback, useMemo, useState } from "react";
@@ -76,6 +77,17 @@ const MobileHomeBanner: React.FC<HomeBannerProps> = ({ data }) => {
     >
       {data.map((slide: Media, index: number) => {
         const title = getTitle(slide, locale);
+        const nextEpisodeAiringTime = !slide.nextAiringEpisode
+          ? null
+          : dayjs.unix(slide.nextAiringEpisode.airingAt);
+
+        let nextEpisodeAiringTimeDuration = "";
+
+        if (nextEpisodeAiringTime) {
+          nextEpisodeAiringTimeDuration = dayjs
+            .duration(nextEpisodeAiringTime.diff(dayjs()))
+            .format("D[d] H[h] m[m]");
+        }
 
         return (
           <SwiperSlide key={index}>
@@ -92,13 +104,20 @@ const MobileHomeBanner: React.FC<HomeBannerProps> = ({ data }) => {
                     />
                   )}
 
-                  <div className="fixed-0 absolute flex items-end bg-gradient-to-b from-transparent via-black/60 to-black/80">
+                  <div className="fixed-0 absolute flex items-end bg-gradient-to-b from-black/20 via-black/60 to-black/80">
                     <div className="p-4">
                       <h1 className="text-xl font-bold uppercase line-clamp-1">
                         {title}
                       </h1>
 
-                      <div className="mt-4 flex flex-wrap items-center gap-x-8 text-lg">
+                      {slide?.nextAiringEpisode && (
+                        <p className="mb-2 mt-2.5 text-base text-primary-200">
+                          Episode {slide.nextAiringEpisode.episode}:{" "}
+                          {nextEpisodeAiringTimeDuration}
+                        </p>
+                      )}
+
+                      <div className="flex flex-wrap items-center gap-x-8 text-lg">
                         {slide.averageScore && (
                           <TextIcon
                             LeftIcon={MdTagFaces}
@@ -163,6 +182,20 @@ const DesktopHomeBanner: React.FC<HomeBannerProps> = ({ data }) => {
     [activeSlide, locale]
   );
 
+  const nextEpisodeAiringTimeDuration = useMemo(() => {
+    const nextEpisodeAiringTime = !activeSlide.nextAiringEpisode
+      ? null
+      : dayjs.unix(activeSlide.nextAiringEpisode.airingAt);
+
+    if (nextEpisodeAiringTime) {
+      return dayjs
+        .duration(nextEpisodeAiringTime.diff(dayjs()))
+        .format("D[d] H[h] m[m]");
+    }
+
+    return "";
+  }, [activeSlide.nextAiringEpisode]);
+
   return (
     <React.Fragment>
       <div className="group relative w-full overflow-hidden md:h-[450px] xl:h-[500px] 2xl:h-[550px]">
@@ -195,7 +228,14 @@ const DesktopHomeBanner: React.FC<HomeBannerProps> = ({ data }) => {
           className="absolute left-4 top-1/2 w-full -translate-y-1/2 md:left-12 md:w-[45%] lg:left-20 xl:left-28 2xl:left-36"
           transition={{ ease: transition, duration: 1 }}
         >
-          <h1 className="text-2xl font-bold uppercase line-clamp-2 sm:line-clamp-3 md:text-4xl md:line-clamp-4">
+          {activeSlide?.nextAiringEpisode && (
+            <p className="mb-4 font-semibold text-xl text-primary-300">
+              Episode {activeSlide.nextAiringEpisode.episode}:{" "}
+              {nextEpisodeAiringTimeDuration}
+            </p>
+          )}
+
+          <h1 className="text-2xl font-bold uppercase line-clamp-1 sm:line-clamp-1 md:text-4xl md:line-clamp-2">
             {title}
           </h1>
 
