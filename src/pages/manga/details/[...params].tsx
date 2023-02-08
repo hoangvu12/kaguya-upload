@@ -1,3 +1,5 @@
+import Banner from "@/components/features/ads/Banner";
+import NativeBanner from "@/components/features/ads/NativeBanner";
 import Comments from "@/components/features/comment/Comments";
 import LocaleChapterSelector from "@/components/features/manga/LocaleChapterSelector";
 import AddTranslationModal from "@/components/shared/AddTranslationModal";
@@ -10,6 +12,7 @@ import DetailsSection from "@/components/shared/DetailsSection";
 import DotList from "@/components/shared/DotList";
 import Head from "@/components/shared/Head";
 import InfoItem from "@/components/shared/InfoItem";
+import Link from "@/components/shared/Link";
 import List from "@/components/shared/List";
 import MediaDescription from "@/components/shared/MediaDescription";
 import NotificationButton from "@/components/shared/NotificationButton";
@@ -22,6 +25,7 @@ import { REVALIDATE_TIME } from "@/constants";
 import { useUser } from "@/contexts/AuthContext";
 import withRedirect from "@/hocs/withRedirect";
 import useChapters from "@/hooks/useChapters";
+import useSavedRead from "@/hooks/useSavedRead";
 import { getMediaDetails } from "@/services/anilist";
 import { Media, MediaStatus, MediaType } from "@/types/anilist";
 import { numberWithCommas, stringToSlug } from "@/utils";
@@ -30,17 +34,13 @@ import { supabaseClient } from "@supabase/auth-helpers-nextjs";
 import classNames from "classnames";
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { useTranslation } from "next-i18next";
-import Link from "@/components/shared/Link";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 import { isMobile } from "react-device-detect";
 import { AiOutlineUpload } from "react-icons/ai";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { BsFillPlayFill } from "react-icons/bs";
-import TopBanner from "@/components/features/ads/TopBanner";
-import useSavedRead from "@/hooks/useSavedRead";
 import { toast } from "react-toastify";
-import NativeBanner from "@/components/features/ads/NativeBanner";
 
 interface DetailsPageProps {
   manga: Media;
@@ -328,7 +328,13 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
           </div>
 
           <div className="md:col-span-8 space-y-12">
-            <TopBanner />
+            <Banner
+              size={{
+                desktop: "900x250",
+                mobile: "300x250",
+              }}
+            />
+
             <NativeBanner />
 
             <DetailsSection title={t("chapters_section")} className="relative">
@@ -344,6 +350,13 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
                 />
               )}
             </DetailsSection>
+
+            <Banner
+              size={{
+                desktop: "728x90",
+                mobile: "300x100",
+              }}
+            />
 
             {!!manga?.characters?.edges.length && (
               <DetailsSection

@@ -1,16 +1,15 @@
-import TopBanner from "@/components/features/ads/TopBanner";
+import Banner from "@/components/features/ads/Banner";
+import NativeBanner from "@/components/features/ads/NativeBanner";
 import Button from "@/components/shared/Button";
 import Head from "@/components/shared/Head";
+import Link from "@/components/shared/Link";
 import List from "@/components/shared/List";
 import RoomCard from "@/components/shared/RoomCard";
 import Section from "@/components/shared/Section";
 import RoomListSkeleton from "@/components/skeletons/RoomListSkeleton";
 import useRooms from "@/hooks/useRooms";
 import { useTranslation } from "next-i18next";
-import Link from "@/components/shared/Link";
-import React from "react";
 import { AiOutlinePlus } from "react-icons/ai";
-import NativeBanner from "@/components/features/ads/NativeBanner";
 
 const WatchWithFriendPage = () => {
   const { data, isLoading } = useRooms();
@@ -23,7 +22,13 @@ const WatchWithFriendPage = () => {
         description={t("browse_page_description")}
       />
 
-      <TopBanner />
+      <Banner
+        size={{
+          desktop: "900x250",
+          mobile: "300x250",
+        }}
+      />
+
       <NativeBanner />
 
       <div className="mb-8 flex flex-col items-center gap-4 md:flex-row md:justify-between">

@@ -1,5 +1,5 @@
+import Banner from "@/components/features/ads/Banner";
 import NativeBanner from "@/components/features/ads/NativeBanner";
-import TopBanner from "@/components/features/ads/TopBanner";
 import ReadSection from "@/components/features/manga/ReadSection";
 import RecommendedMangaSection from "@/components/features/manga/RecommendedMangaSection";
 import CardSwiper from "@/components/shared/CardSwiper";
@@ -69,7 +69,7 @@ const Home: NextPage<HomeProps> = ({ selectors }) => {
           isLoading={trendingLoading}
         />
 
-        <TopBanner />
+        <Banner size={{ desktop: "900x250", mobile: "300x250" }} />
 
         <div className="space-y-8">
           <ReadSection />
@@ -92,6 +92,8 @@ const Home: NextPage<HomeProps> = ({ selectors }) => {
           )}
 
           <NewestComments type={MediaType.Manga} />
+
+          <Banner size={{ desktop: "728x90", mobile: "300x100" }} />
 
           <div
             className={classNames(

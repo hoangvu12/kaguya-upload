@@ -1,5 +1,5 @@
 import NativeBanner from "@/components/features/ads/NativeBanner";
-import TopBanner from "@/components/features/ads/TopBanner";
+import Banner from "@/components/features/ads/Banner";
 import AnimeSchedule from "@/components/features/anime/AiringSchedule";
 import WatchedSection from "@/components/features/anime/WatchedSection";
 import CardSwiper from "@/components/shared/CardSwiper";
@@ -64,7 +64,7 @@ const Home: NextPage<HomeProps> = ({ selectors }) => {
           isLoading={trendingLoading}
         />
 
-        <TopBanner />
+        <Banner size={{ desktop: "900x250", mobile: "300x250" }} />
 
         <div className="space-y-8">
           <WatchedSection />
@@ -116,6 +116,8 @@ const Home: NextPage<HomeProps> = ({ selectors }) => {
           <Section>
             <NativeBanner />
           </Section>
+
+          <Banner size={{ desktop: "728x90", mobile: "300x100" }} />
 
           <Section title={t("anime_home:airing_schedule")}>
             <AnimeSchedule />

@@ -1,3 +1,4 @@
+import Banner from "@/components/features/ads/Banner";
 import EditProfileModal from "@/components/features/users/EditProfileModal";
 import ReadList from "@/components/features/users/ReadList";
 import UpdateAvatar from "@/components/features/users/UpdateAvatar";
@@ -117,6 +118,8 @@ const UserPage: NextPage<UserPageProps> = ({ user }) => {
             </div>
           )}
         </Section>
+
+        <Banner size={{ desktop: "900x250", mobile: "300x250" }} />
 
         <Section title={t("list_heading")} className="mt-8 w-full">
           <div className="flex items-center gap-3">

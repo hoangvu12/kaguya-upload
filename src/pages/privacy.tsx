@@ -1,15 +1,12 @@
 import NativeBanner from "@/components/features/ads/NativeBanner";
-import TopBanner from "@/components/features/ads/TopBanner";
 import Head from "@/components/shared/Head";
 import Section from "@/components/shared/Section";
-import React from "react";
 
 const privacy = () => {
   return (
     <Section className="space-y-8 pt-20">
       <Head title="Privacy - Kaguya" />
 
-      <TopBanner />
       <NativeBanner />
 
       <h1 className="text-2xl font-bold">Privacy Policy</h1>

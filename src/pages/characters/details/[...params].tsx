@@ -1,5 +1,5 @@
+import Banner from "@/components/features/ads/Banner";
 import NativeBanner from "@/components/features/ads/NativeBanner";
-import TopBanner from "@/components/features/ads/TopBanner";
 import VACard from "@/components/features/va/VACard";
 import Card from "@/components/shared/Card";
 import DetailsSection from "@/components/shared/DetailsSection";
@@ -158,7 +158,13 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ character }) => {
           </div>
         </Section>
 
-        <TopBanner />
+        <Banner
+          size={{
+            desktop: "900x250",
+            mobile: "300x250",
+          }}
+        />
+
         <NativeBanner />
 
         <Section className="space-y-8">
@@ -175,6 +181,13 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ character }) => {
               <List data={anime}>{(anime) => <Card data={anime} />}</List>
             </DetailsSection>
           )}
+
+          <Banner
+            size={{
+              desktop: "728x90",
+              mobile: "300x100",
+            }}
+          />
 
           {!!manga?.length && (
             <DetailsSection title={t("manga_section")}>

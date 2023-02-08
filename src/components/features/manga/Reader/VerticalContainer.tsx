@@ -2,6 +2,7 @@ import { useReadInfo } from "@/contexts/ReadContext";
 import { useReadPanel } from "@/contexts/ReadPanelContext";
 import { useReadSettings } from "@/contexts/ReadSettingsContext";
 import React, { useEffect, useMemo } from "react";
+import Banner from "../../ads/Banner";
 import ReadImage from "./ReadImage";
 
 const VerticalContainer: React.FC = () => {
@@ -49,6 +50,8 @@ const VerticalContainer: React.FC = () => {
 
   return (
     <div className="w-full h-full">
+      <Banner size={{ desktop: "728x90", mobile: "300x250" }} />
+
       {images.map((image, index) => (
         <div className="image-container mx-auto" key={index}>
           <ReadImage
@@ -59,6 +62,8 @@ const VerticalContainer: React.FC = () => {
           />
         </div>
       ))}
+
+      <Banner size={{ desktop: "900x250", mobile: "300x100" }} />
 
       {currentChapterIndex < sourceChapters.length - 1 && (
         <div className="w-full h-60 p-8">

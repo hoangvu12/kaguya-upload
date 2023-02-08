@@ -1,18 +1,18 @@
-import { MediaFormat, MediaSort } from "@/types/anilist";
+import Banner from "@/components/features/ads/Banner";
+import NativeBanner from "@/components/features/ads/NativeBanner";
 import AnimeBrowseList from "@/components/features/anime/AnimeBrowseList";
 import CharacterBrowseList from "@/components/features/characters/CharacterBrowseList";
 import MangaBrowseList from "@/components/features/manga/MangaBrowseList";
+import UserBrowseList from "@/components/features/users/UserBrowseList";
 import VABrowseList from "@/components/features/va/VABrowseList";
 import Head from "@/components/shared/Head";
+import Section from "@/components/shared/Section";
 import Select from "@/components/shared/Select";
 import useConstantTranslation from "@/hooks/useConstantTranslation";
+import { MediaFormat, MediaSort } from "@/types/anilist";
 import { useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
-import React, { useMemo } from "react";
-import Section from "@/components/shared/Section";
-import TopBanner from "@/components/features/ads/TopBanner";
-import UserBrowseList from "@/components/features/users/UserBrowseList";
-import NativeBanner from "@/components/features/ads/NativeBanner";
+import { useMemo } from "react";
 
 const components = {
   anime: AnimeBrowseList,
@@ -115,8 +115,8 @@ const BrowsePage = ({ query: baseQuery }) => {
         description={`Search ${chosenType.label} in Kaguya`}
       />
 
-      <TopBanner />
       <NativeBanner />
+      <Banner size={{ desktop: "900x250", mobile: "300x250" }} />
 
       <div className="mb-8 flex items-center space-x-2">
         <h1 className="text-4xl font-semibold text-center md:text-left">

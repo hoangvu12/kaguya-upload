@@ -1,18 +1,18 @@
+import Banner from "@/components/features/ads/Banner";
+import NativeBanner from "@/components/features/ads/NativeBanner";
 import TraceImageSearch from "@/components/features/trace/TraceImageSearch";
 import TracePanel from "@/components/features/trace/TracePanel";
 import Button from "@/components/shared/Button";
 import Head from "@/components/shared/Head";
 import Image from "@/components/shared/Image";
 import Loading from "@/components/shared/Loading";
+import Section from "@/components/shared/Section";
 import useTraceImage, { TraceImageResponse } from "@/hooks/useTraceImage";
 import React, { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { CgArrowLongRight } from "react-icons/cg";
 import { MdOutlineRestartAlt } from "react-icons/md";
 import { ImageType } from "react-images-uploading";
-import { useTranslation } from "react-i18next";
-import Section from "@/components/shared/Section";
-import TopBanner from "@/components/features/ads/TopBanner";
-import NativeBanner from "@/components/features/ads/NativeBanner";
 
 const TracePage = () => {
   const [traceResult, setTraceResult] = useState<TraceImageResponse>(null);
@@ -45,8 +45,13 @@ const TracePage = () => {
       />
 
       <Section className="pt-20 space-y-16 flex flex-col items-center justify-center">
-        <TopBanner />
         <NativeBanner />
+        <Banner
+          size={{
+            desktop: "900x250",
+            mobile: "300x250",
+          }}
+        />
 
         <div className="text-center">
           <h1 className="text-3xl font-bold mb-1">{t("heading")}</h1>

@@ -1,4 +1,4 @@
-import Banner from "@/components/features/ads/Banner";
+import StickyBanner from "@/components/features/ads/StickyBanner";
 import Interstitial from "@/components/features/ads/Interstitial";
 import NativeFloater from "@/components/features/ads/NativeFloater";
 import Popunder from "@/components/features/ads/Popunder";
@@ -202,7 +202,7 @@ function App({ Component, pageProps, router, err }: WorkaroundAppProps) {
           <Popunder />
           <NativeFloater />
           <InvitePopup />
-          <Banner />
+          <StickyBanner />
         </React.Fragment>
       )}
 

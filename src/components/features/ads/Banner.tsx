@@ -1,54 +1,120 @@
-/* eslint-disable @next/next/no-img-element */
-import CircleButton from "@/components/shared/CircleButton";
-import Image from "@/components/shared/Image";
-import classNames from "classnames";
-import React, { useEffect, useRef, useState } from "react";
-import { AiOutlineClose } from "react-icons/ai";
+import { useRouter } from "next/dist/client/router";
+import React, { useEffect } from "react";
+import { isMobileOnly } from "react-device-detect";
 
-const Banner = () => {
-  // const [isShow, setIsShow] = useState(true);
+declare global {
+  // eslint-disable-next-line no-unused-vars
+  interface Window {
+    AdProvider: any;
+  }
+}
 
-  // const handleClose = () => {
-  //   setIsShow(false);
-  // };
+export enum ScreenType {
+  Desktop = "desktop",
+  Mobile = "mobile",
+}
 
-  // return isShow ? (
-  //   <div
-  //     className={classNames(
-  //       "z-[9000] fixed bottom-4 left-1/2 -translate-x-1/2 w-[60vw]"
-  //     )}
-  //   >
-  //     {/* <div className="relative w-[90vw] h-[50px] md:w-[728px] md:h-[90px]">
-  //       <a
-  //         href={
-  //           "https://affpa.top/L?tag=d_1947233m_97c__[]general[]_d85116_l87833_catfish&site=1947233&ad=97&r=line/Football/"
-  //         }
-  //         target="_blank"
-  //         rel="noreferrer"
-  //       >
-  //         <Image
-  //           layout="fill"
-  //           objectFit="cover"
-  //           src="/catfish.gif"
-  //           className="w-full h-full"
-  //           unoptimized
-  //           alt="Catfish banner"
-  //         />
-  //       </a>
-  //     </div> */}
+export const mobileZones = [
+  {
+    id: 4909670,
+    size: "300x250",
+    type: ScreenType.Mobile,
+    width: 300,
+    height: 250,
+  },
+  {
+    id: 4909700,
+    size: "300x100",
+    type: ScreenType.Mobile,
+    width: 300,
+    height: 100,
+  },
+] as const;
 
-  //     <CircleButton
-  //       onClick={handleClose}
-  //       className="!bg-background-600 absolute -top-5 -right-5"
-  //       secondary
-  //       iconClassName="w-8 h-8"
-  //       LeftIcon={AiOutlineClose}
-  //       title="Close banner ad"
-  //     />
-  //   </div>
-  // ) : null;
+export const desktopZones = [
+  {
+    id: 4909666,
+    size: "900x250",
+    type: ScreenType.Desktop,
+    width: 900,
+    height: 250,
+  },
+  {
+    id: 4909696,
+    size: "728x90",
+    type: ScreenType.Desktop,
+    width: 728,
+    height: 90,
+  },
+  {
+    id: 4909698,
+    size: "160x600",
+    type: ScreenType.Desktop,
+    width: 160,
+    height: 600,
+  },
+] as const;
 
-  return null;
+export const zones = [...mobileZones, ...desktopZones] as const;
+
+type MobileZoneSize = (typeof mobileZones)[number]["size"];
+type DesktopZoneSize = (typeof desktopZones)[number]["size"];
+
+export type ZoneSize = (typeof zones)[number]["size"];
+export type Zone = (typeof zones)[number];
+
+export type ZoneSizeSelector = {
+  mobile: MobileZoneSize;
+  desktop: DesktopZoneSize;
 };
 
-export default React.memo(Banner);
+export interface BannerProps {
+  size: ZoneSizeSelector;
+}
+
+const Banner: React.FC<BannerProps> = ({ size }) => {
+  const [zone, setZone] = React.useState<Zone>(null);
+  const { asPath } = useRouter();
+
+  const loadBanner = () => {
+    (window.AdProvider = window.AdProvider || []).push({ serve: {} });
+  };
+
+  useEffect(() => {
+    setZone(
+      zones.find(
+        (zone) =>
+          zone.size === (isMobileOnly ? size.mobile : size.desktop) &&
+          zone.type === (isMobileOnly ? ScreenType.Mobile : ScreenType.Desktop)
+      )
+    );
+  }, [size]);
+
+  useEffect(() => {
+    const script = document.createElement("script");
+
+    script.src = "https://a.exdynsrv.com/ad-provider.js";
+    script.async = true;
+    script.onload = loadBanner;
+
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, [asPath]); // router prop or w/e
+
+  return zone ? (
+    <div
+      className="flex items-center justify-center my-8"
+      style={{
+        minWidth: zone.width,
+        minHeight: zone.height,
+      }}
+    >
+      <ins className="adsbyexoclick" data-zoneid={zone.id}></ins>
+    </div>
+  ) : null;
+};
+
+export default Banner;

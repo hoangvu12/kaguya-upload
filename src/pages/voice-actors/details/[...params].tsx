@@ -1,5 +1,5 @@
+import Banner from "@/components/features/ads/Banner";
 import NativeBanner from "@/components/features/ads/NativeBanner";
-import TopBanner from "@/components/features/ads/TopBanner";
 import CharacterCard from "@/components/shared/CharacterCard";
 import Head from "@/components/shared/Head";
 import List from "@/components/shared/List";
@@ -154,7 +154,13 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ voiceActor }) => {
           </div>
         </Section>
 
-        <TopBanner />
+        <Banner
+          size={{
+            desktop: "900x250",
+            mobile: "300x250",
+          }}
+        />
+
         <NativeBanner />
 
         <Section title={t("characters_section")}>
