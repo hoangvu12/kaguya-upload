@@ -40,11 +40,10 @@ class MyDocument extends Document {
             }}
           />
 
-          <script
-            async
-            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6759016801592853"
-            crossOrigin="anonymous"
-          ></script>
+          <meta
+            name="exoclick-site-verification"
+            content="993454f71337139b039882b0e72c7ed8"
+          />
         </Head>
         <body>
           <Main />
