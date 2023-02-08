@@ -22,23 +22,18 @@ const useSaveRead = () => {
       media_id,
     ]);
 
-    if (sourceStatus?.status !== "COMPLETED") {
+    if (!sourceStatus?.status) {
       await supabaseClient.from("kaguya_read_status").upsert({
         userId: user.id,
         mediaId: media_id,
         status: "CURRENT",
       });
 
-      if (!sourceStatus.status) {
-        queryClient.setQueryData<SourceStatus>(
-          ["kaguya_read_status", media_id],
-          {
-            status: "CURRENT",
-            mediaId: media_id,
-            userId: user.id,
-          }
-        );
-      }
+      queryClient.setQueryData<SourceStatus>(["kaguya_read_status", media_id], {
+        status: "CURRENT",
+        mediaId: media_id,
+        userId: user.id,
+      });
     }
 
     const { error: upsertError } = await supabaseClient
