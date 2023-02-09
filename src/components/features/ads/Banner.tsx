@@ -101,7 +101,12 @@ const Banner: React.FC<BannerProps> = ({ size }) => {
 
   return zone ? (
     isError ? (
-      <div className="gap-8 px-8 py-3 my-8 bg-primary-800 mx-auto w-[90vw] md:min-w-[24rem] md:w-[60vw] h-full">
+      <div
+        className="flex items-center justify-center gap-8 px-8 py-3 my-8 bg-primary-800 mx-auto w-[90vw] md:min-w-[24rem] md:w-[60vw]"
+        style={{
+          minHeight: zone.height,
+        }}
+      >
         <p className="text-lg">
           Help support Kaguya by disabling your ad-blocker. Ads on our site
           allow us to continue providing high-quality content for you. Your
