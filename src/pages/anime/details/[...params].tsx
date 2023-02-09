@@ -451,7 +451,7 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
           <div className="space-y-12 md:col-span-8">
             <Banner
               size={{
-                desktop: "900x250",
+                desktop: "970x250",
                 mobile: "300x250",
               }}
             />
@@ -476,12 +476,12 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
               )}
             </DetailsSection>
 
-            <Banner
+            {/* <Banner
               size={{
                 desktop: "728x90",
                 mobile: "300x100",
               }}
-            />
+            /> */}
 
             {!!anime?.characters?.edges?.length && (
               <DetailsSection

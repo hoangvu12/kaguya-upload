@@ -24,7 +24,7 @@ const WatchWithFriendPage = () => {
 
       <Banner
         size={{
-          desktop: "900x250",
+          desktop: "970x250",
           mobile: "300x250",
         }}
       />

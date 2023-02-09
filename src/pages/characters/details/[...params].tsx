@@ -160,7 +160,7 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ character }) => {
 
         <Banner
           size={{
-            desktop: "900x250",
+            desktop: "970x250",
             mobile: "300x250",
           }}
         />
@@ -182,12 +182,12 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ character }) => {
             </DetailsSection>
           )}
 
-          <Banner
+          {/* <Banner
             size={{
               desktop: "728x90",
               mobile: "300x100",
             }}
-          />
+          /> */}
 
           {!!manga?.length && (
             <DetailsSection title={t("manga_section")}>

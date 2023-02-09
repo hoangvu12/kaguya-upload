@@ -16,42 +16,23 @@ export enum ScreenType {
 
 export const mobileZones = [
   {
-    id: 4909670,
+    id: "pf-63e4671aca8fd80027a8519a",
     size: "300x250",
     type: ScreenType.Mobile,
     width: 300,
     height: 250,
-  },
-  {
-    id: 4909700,
-    size: "300x100",
-    type: ScreenType.Mobile,
-    width: 300,
-    height: 100,
+    url: "https://platform.pubfuture.com/v1/unit/63e4671aca8fd80027a8519a.js?v=2",
   },
 ] as const;
 
 export const desktopZones = [
   {
-    id: 4909666,
-    size: "900x250",
+    id: "pf-63e468d6f41bf4002779ba8d",
+    size: "970x250",
     type: ScreenType.Desktop,
-    width: 900,
+    width: 970,
     height: 250,
-  },
-  {
-    id: 4909696,
-    size: "728x90",
-    type: ScreenType.Desktop,
-    width: 728,
-    height: 90,
-  },
-  {
-    id: 4909698,
-    size: "160x600",
-    type: ScreenType.Desktop,
-    width: 160,
-    height: 600,
+    url: "https://platform.pubfuture.com/v1/unit/63e468d6f41bf4002779ba8d.js?v=2",
   },
 ] as const;
 
@@ -76,9 +57,9 @@ const Banner: React.FC<BannerProps> = ({ size }) => {
   const [zone, setZone] = React.useState<Zone>(null);
   const { asPath } = useRouter();
 
-  const loadBanner = () => {
-    (window.AdProvider = window.AdProvider || []).push({ serve: {} });
-  };
+  // const loadBanner = () => {
+  //   (window.AdProvider = window.AdProvider || []).push({ serve: {} });
+  // };
 
   useEffect(() => {
     setZone(
@@ -91,18 +72,21 @@ const Banner: React.FC<BannerProps> = ({ size }) => {
   }, [size]);
 
   useEffect(() => {
+    if (!zone) return;
+
     const script = document.createElement("script");
+    const parentDiv = document.getElementById(zone.id);
 
-    script.src = "https://a.exdynsrv.com/ad-provider.js";
+    script.src = zone.url;
     script.async = true;
-    script.onload = loadBanner;
+    // script.onload = loadBanner;
 
-    document.body.appendChild(script);
+    parentDiv.appendChild(script);
 
     return () => {
-      document.body.removeChild(script);
+      parentDiv.removeChild(script);
     };
-  }, [asPath]); // router prop or w/e
+  }, [asPath, zone]); // router prop or w/e
 
   return zone ? (
     <div
@@ -112,7 +96,8 @@ const Banner: React.FC<BannerProps> = ({ size }) => {
         minHeight: zone.height,
       }}
     >
-      <ins className="adsbyexoclick" data-zoneid={zone.id}></ins>
+      <div id={zone.id}></div>
+      {/* <ins className="adsbyexoclick" data-zoneid={zone.id}></ins> */}
     </div>
   ) : null;
 };
