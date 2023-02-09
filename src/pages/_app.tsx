@@ -124,7 +124,7 @@ interface WorkaroundAppProps extends AppProps {
   err: any;
 }
 
-const noAdsRoutes = ["/anime/watch", "/manga/read"];
+const noAdsRoutes = ["/anime/watch", "/manga/read", "/upload"];
 
 function App({ Component, pageProps, router, err }: WorkaroundAppProps) {
   const [errorInfo, setErrorInfo] = useState<React.ErrorInfo>(null);
