@@ -1,21 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
-import CircleButton from "@/components/shared/CircleButton";
-import Image from "@/components/shared/Image";
 import classNames from "classnames";
-import React, { useEffect, useRef, useState } from "react";
-import { AiOutlineClose } from "react-icons/ai";
+import React from "react";
 
 const StickyBanner = () => {
-  const [isShow, setIsShow] = useState(true);
-
-  const handleClose = () => {
-    setIsShow(false);
-  };
-
-  return isShow ? (
+  return (
     <div
       className={classNames(
-        "z-[9000] flex items-center fixed bottom-4 w-full min-h-[250px]"
+        "z-[9000] flex flex-col md:flex-row items-center fixed bottom-4 w-full min-h-[250px]"
       )}
     >
       <div id="pf-63e46763ca8fd80027a851ae">
@@ -37,19 +28,8 @@ const StickyBanner = () => {
           type="text/javascript"
         ></script>
       </div>
-
-      <CircleButton
-        onClick={handleClose}
-        className="!bg-background-600 absolute -top-5 -translate-x-1/2 right-1/4"
-        secondary
-        iconClassName="w-8 h-8"
-        LeftIcon={AiOutlineClose}
-        title="Close banner ad"
-      />
     </div>
-  ) : null;
-
-  return null;
+  );
 };
 
 export default React.memo(StickyBanner);

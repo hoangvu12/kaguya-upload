@@ -50,7 +50,7 @@ export type ZoneSizeSelector = {
 };
 
 export interface BannerProps {
-  size: ZoneSizeSelector;
+  size: ZoneSizeSelector | ZoneSize;
 }
 
 const Banner: React.FC<BannerProps> = ({ size }) => {
@@ -62,13 +62,19 @@ const Banner: React.FC<BannerProps> = ({ size }) => {
   // };
 
   useEffect(() => {
-    setZone(
-      zones.find(
+    let zone = null;
+
+    if (typeof size === "string") {
+      zone = zones.find((zone) => zone.size === size);
+    } else if (typeof size === "object") {
+      zone = zones.find(
         (zone) =>
           zone.size === (isMobileOnly ? size.mobile : size.desktop) &&
           zone.type === (isMobileOnly ? ScreenType.Mobile : ScreenType.Desktop)
-      )
-    );
+      );
+    }
+
+    setZone(zone);
   }, [size]);
 
   useEffect(() => {
@@ -90,7 +96,7 @@ const Banner: React.FC<BannerProps> = ({ size }) => {
 
   return zone ? (
     <div
-      className="flex items-center justify-center my-8"
+      className="flex justify-center my-8"
       style={{
         minWidth: zone.width,
         minHeight: zone.height,
