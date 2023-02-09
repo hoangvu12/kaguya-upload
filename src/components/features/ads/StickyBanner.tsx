@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import classNames from "classnames";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 const StickyBanner = () => {
   const [isLoaded, setIsLoaded] = useState(false);

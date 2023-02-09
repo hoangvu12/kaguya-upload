@@ -1,6 +1,7 @@
 import { useRouter } from "next/dist/client/router";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { isMobileOnly } from "react-device-detect";
+import { FiAlertTriangle } from "react-icons/fi";
 
 declare global {
   // eslint-disable-next-line no-unused-vars
@@ -55,6 +56,7 @@ export interface BannerProps {
 
 const Banner: React.FC<BannerProps> = ({ size }) => {
   const [zone, setZone] = React.useState<Zone>(null);
+  const [isError, setIsError] = useState(false);
   const { asPath } = useRouter();
 
   // const loadBanner = () => {
@@ -85,6 +87,9 @@ const Banner: React.FC<BannerProps> = ({ size }) => {
 
     script.src = zone.url;
     script.async = true;
+    script.onerror = () => {
+      setIsError(true);
+    };
     // script.onload = loadBanner;
 
     parentDiv.appendChild(script);
@@ -95,16 +100,27 @@ const Banner: React.FC<BannerProps> = ({ size }) => {
   }, [asPath, zone]); // router prop or w/e
 
   return zone ? (
-    <div
-      className="flex justify-center my-8"
-      style={{
-        minWidth: zone.width,
-        minHeight: zone.height,
-      }}
-    >
-      <div id={zone.id}></div>
-      {/* <ins className="adsbyexoclick" data-zoneid={zone.id}></ins> */}
-    </div>
+    isError ? (
+      <div className="gap-8 px-8 py-3 my-8 bg-primary-800 mx-auto w-[90vw] md:min-w-[24rem] md:w-[60vw] h-full">
+        <p className="text-lg">
+          Help support Kaguya by disabling your ad-blocker. Ads on our site
+          allow us to continue providing high-quality content for you. Your
+          support is greatly appreciated.
+        </p>
+      </div>
+    ) : (
+      <div
+        className="flex items-center justify-center my-8"
+        style={{
+          minWidth: zone.width,
+          minHeight: zone.height,
+        }}
+      >
+        <div id={zone.id}></div>
+
+        {/* <ins className="adsbyexoclick" data-zoneid={zone.id}></ins> */}
+      </div>
+    )
   ) : null;
 };
 
