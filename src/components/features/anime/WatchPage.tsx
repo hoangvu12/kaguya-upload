@@ -7,7 +7,11 @@ import Portal from "@/components/shared/Portal";
 import { useGlobalPlayer } from "@/contexts/GlobalPlayerContext";
 import useDevice from "@/hooks/useDevice";
 import useEventListener from "@/hooks/useEventListener";
-import { useFetchSource } from "@/hooks/useFetchSource";
+import {
+  fetchSource,
+  getQueryKey,
+  useFetchSource,
+} from "@/hooks/useFetchSource";
 import useSavedWatched from "@/hooks/useSavedWatched";
 import useSaveWatched from "@/hooks/useSaveWatched";
 import { Episode } from "@/types";
@@ -25,6 +29,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useQueryClient } from "react-query";
 import { toast } from "react-toastify";
 import ErrorMessage from "./ErrorMessage";
 
@@ -67,6 +72,7 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
   const saveWatchedInterval = useRef<NodeJS.Timer>(null);
   const saveWatchedMutation = useSaveWatched();
   const { t } = useTranslation("anime_watch");
+  const queryClient = useQueryClient();
 
   const { params } = router.query;
 
@@ -190,10 +196,7 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
     [animeId, router]
   );
 
-  const { data, isLoading, isError, error } = useFetchSource(
-    currentEpisode,
-    nextEpisode
-  );
+  const { data, isLoading, isError, error } = useFetchSource(currentEpisode);
 
   // Show watched overlay
   useEffect(() => {
@@ -309,6 +312,33 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watchedEpisodeData, currentEpisode?.slug, videoRef.current]);
+
+  useEffect(() => {
+    if (!videoRef.current) return;
+
+    let isPrefetched = false;
+
+    const videoEl = videoRef.current;
+
+    const handleVideoTimeUpdate = () => {
+      // check if 80% of the video has been watched
+      if (videoEl.currentTime / videoEl.duration < 0.8) return;
+      if (isPrefetched) return;
+
+      isPrefetched = true;
+
+      queryClient.prefetchQuery(getQueryKey(nextEpisode), () =>
+        fetchSource(nextEpisode, router.locale)
+      );
+    };
+
+    videoEl.addEventListener("timeupdate", handleVideoTimeUpdate);
+
+    return () => {
+      videoEl.removeEventListener("timeupdate", handleVideoTimeUpdate);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nextEpisode, queryClient, router.locale, videoRef.current]);
 
   // Refetch watched data when episode changes
   useEffect(() => {

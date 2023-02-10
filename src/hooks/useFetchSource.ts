@@ -3,7 +3,7 @@ import { Episode, Font, Subtitle, VideoSource } from "@/types";
 import { createProxyUrl } from "@/utils";
 import axios, { AxiosError } from "axios";
 import { useRouter } from "next/dist/client/router";
-import { useQuery, useQueryClient } from "react-query";
+import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 
 interface ReturnSuccessType {
@@ -20,66 +20,55 @@ interface ReturnFailType {
   errorMessage: string;
 }
 
-export const useFetchSource = (
-  currentEpisode: Episode,
-  nextEpisode?: Episode
-) => {
-  const queryClient = useQueryClient();
+export const fetchSource = async (episode: Episode, locale: string) => {
+  const hasViLocale = episode?.source?.locales?.includes("vi");
+
+  const nodeServerUrl = (() => {
+    if (hasViLocale || locale === "vi") {
+      return config.nodeServer.vn;
+    }
+
+    return config.nodeServer.global;
+  })();
+
+  const convertSources = (sources: VideoSource[]) =>
+    sources.map((source) => {
+      if (source.useProxy && !source.isEmbed) {
+        source.file = createProxyUrl(
+          source.file,
+          source.proxy,
+          source.usePublicProxy,
+          episode?.source?.locales?.includes("vi") ? "vi" : locale
+        );
+      }
+
+      return source;
+    });
+
+  const { data } = await axios.get<ReturnSuccessType>(
+    `${nodeServerUrl}/source`,
+    {
+      params: {
+        episode_id: episode.sourceEpisodeId,
+        source_media_id: episode.sourceMediaId,
+        source_id: episode.sourceId,
+      },
+    }
+  );
+  data.sources = convertSources(data.sources);
+  return data;
+};
+
+export const getQueryKey = (episode: Episode) =>
+  `source-${episode.sourceId}-${episode.sourceEpisodeId}`;
+
+export const useFetchSource = (currentEpisode: Episode) => {
   const { locale } = useRouter();
-
-  const fetchSource = async (episode: Episode) => {
-    const hasViLocale = episode?.source?.locales?.includes("vi");
-
-    const nodeServerUrl = (() => {
-      if (hasViLocale || locale === "vi") {
-        return config.nodeServer.vn;
-      }
-
-      return config.nodeServer.global;
-    })();
-
-    const convertSources = (sources: VideoSource[]) =>
-      sources.map((source) => {
-        if (source.useProxy && !source.isEmbed) {
-          source.file = createProxyUrl(
-            source.file,
-            source.proxy,
-            source.usePublicProxy,
-            episode?.source?.locales?.includes("vi") ? "vi" : locale
-          );
-        }
-
-        return source;
-      });
-
-    const { data } = await axios.get<ReturnSuccessType>(
-      `${nodeServerUrl}/source`,
-      {
-        params: {
-          episode_id: episode.sourceEpisodeId,
-          source_media_id: episode.sourceMediaId,
-          source_id: episode.sourceId,
-        },
-      }
-    );
-    data.sources = convertSources(data.sources);
-    return data;
-  };
-
-  const getQueryKey = (episode: Episode) =>
-    `source-${episode.sourceId}-${episode.sourceEpisodeId}`;
 
   return useQuery<ReturnSuccessType, AxiosError<ReturnFailType>>(
     getQueryKey(currentEpisode),
-    () => fetchSource(currentEpisode),
+    () => fetchSource(currentEpisode, locale),
     {
-      onSuccess: () => {
-        if (!nextEpisode?.sourceEpisodeId) return;
-
-        queryClient.prefetchQuery(getQueryKey(nextEpisode), () =>
-          fetchSource(nextEpisode)
-        );
-      },
       onError: (error) => {
         toast.error(error.message);
       },
