@@ -1,6 +1,7 @@
 import { useUser } from "@/contexts/AuthContext";
 import supabaseClient from "@/lib/supabase";
 import { SourceStatus, Watched } from "@/types";
+import { useRef } from "react";
 import { useMutation, useQueryClient } from "react-query";
 
 interface MutationInput {
@@ -12,6 +13,7 @@ interface MutationInput {
 const useSaveWatched = () => {
   const user = useUser();
   const queryClient = useQueryClient();
+  const savedTime = useRef(0);
 
   return useMutation(async (data: MutationInput) => {
     if (!user) return;
@@ -39,6 +41,10 @@ const useSaveWatched = () => {
         }
       );
     }
+
+    if (savedTime.current === watched_time) return;
+
+    savedTime.current = watched_time;
 
     const { error: upsertError } = await supabaseClient
       .from<Watched>("kaguya_watched")
