@@ -315,6 +315,7 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
 
   useEffect(() => {
     if (!videoRef.current) return;
+    if (!nextEpisode) return;
 
     let isPrefetched = false;
 
