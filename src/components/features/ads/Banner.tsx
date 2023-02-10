@@ -85,6 +85,10 @@ const Banner: React.FC<BannerProps> = ({ size }) => {
     const script = document.createElement("script");
     const parentDiv = document.getElementById(zone.id);
 
+    if (!parentDiv) return;
+
+    setIsError(false);
+
     script.src = zone.url;
     script.async = true;
     script.onerror = () => {
