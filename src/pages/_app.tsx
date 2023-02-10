@@ -201,7 +201,7 @@ function App({ Component, pageProps, router, err }: WorkaroundAppProps) {
           <Interstitial />
           <Popunder />
           <NativeFloater />
-          <InvitePopup />
+          {/* <InvitePopup /> */}
           <StickyBanner />
         </React.Fragment>
       )}
