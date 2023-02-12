@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import classNames from "classnames";
 import Script from "next/script";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const StickyBanner = () => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -42,6 +42,19 @@ const StickyBanner = () => {
   //     </div>
   //   </div>
   // );
+
+  useEffect(() => {
+    setInterval(() => {
+      const slots = window.googletag.pubads().getSlots();
+      for (const slot of slots) {
+        if (slot.getSlotElementId() == "protag-sticky-bottom-ad-unit") {
+          window.googletag.cmd.push(() => {
+            window.googletag.pubads().refresh([slot]);
+          });
+        }
+      }
+    }, 30000);
+  }, []);
 
   return (
     <Script id="sticky" type="text/javascript">
