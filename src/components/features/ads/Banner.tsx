@@ -1,8 +1,5 @@
-import Script from "next/script";
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo } from "react";
 import { isMobileOnly } from "react-device-detect";
-
-const ignoreAdUnitPath = ["interstitial", "sticky"];
 
 declare global {
   // eslint-disable-next-line no-unused-vars
@@ -110,16 +107,14 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type }) => {
   }, [size]);
 
   return (
-    <React.Fragment>
-      <div
-        className="flex items-center justify-center my-8"
-        id={divId}
-        style={{
-          minWidth: bannerSize?.width,
-          minHeight: bannerSize?.height,
-        }}
-      />
-    </React.Fragment>
+    <div
+      className="flex items-center justify-center my-8"
+      id={divId}
+      style={{
+        minWidth: bannerSize?.width,
+        minHeight: bannerSize?.height,
+      }}
+    />
   );
 };
 
