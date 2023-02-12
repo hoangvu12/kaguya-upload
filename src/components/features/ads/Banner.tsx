@@ -124,7 +124,7 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type }) => {
       return;
     }
 
-    if (!window.protag) return;
+    if (!("googletag" in window)) return;
 
     const slots = window.googletag.pubads().getSlots();
 

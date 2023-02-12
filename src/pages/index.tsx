@@ -67,7 +67,7 @@ const Home: NextPage<HomeProps> = ({ selectors }) => {
         <Banner
           desktop={{ size: "970x250" }}
           mobile={{ size: "300x250" }}
-          type="btf"
+          type="atf"
         />
 
         <div className="space-y-8">

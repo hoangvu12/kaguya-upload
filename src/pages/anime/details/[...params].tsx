@@ -514,7 +514,7 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
               <Banner
                 desktop={{ size: "300x250" }}
                 mobile={{ size: "320x100" }}
-                type="atf"
+                type="btf"
               />
             )}
 

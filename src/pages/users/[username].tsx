@@ -122,7 +122,7 @@ const UserPage: NextPage<UserPageProps> = ({ user }) => {
         <Banner
           desktop={{ size: "970x250" }}
           mobile={{ size: "300x250" }}
-          type="btf"
+          type="atf"
         />
 
         <Section title={t("list_heading")} className="mt-8 w-full">

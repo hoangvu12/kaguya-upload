@@ -68,7 +68,7 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ studio: initialStudio }) => {
         <Banner
           desktop={{ size: "970x250" }}
           mobile={{ size: "300x250" }}
-          type="btf"
+          type="atf"
         />
 
         <Section className="px-4 sm:px-12">

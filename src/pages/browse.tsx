@@ -120,7 +120,7 @@ const BrowsePage = ({ query: baseQuery }) => {
       <Banner
         desktop={{ size: "970x250" }}
         mobile={{ size: "300x250" }}
-        type="btf"
+        type="atf"
       />
 
       <div className="mb-8 flex items-center space-x-2">

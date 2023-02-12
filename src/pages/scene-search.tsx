@@ -49,7 +49,7 @@ const TracePage = () => {
         <Banner
           desktop={{ size: "970x250" }}
           mobile={{ size: "300x250" }}
-          type="btf"
+          type="atf"
         />
 
         <div className="text-center">
