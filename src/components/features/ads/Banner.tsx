@@ -263,6 +263,8 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type, refresh }) => {
   }
 
   useEffect(() => {
+    if (!divId.current) return;
+
     window.googletag = window.googletag || { cmd: [] };
 
     window.googletag.cmd.push(() => {
@@ -357,7 +359,8 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type, refresh }) => {
         }
       });
     };
-  }, [refresh]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refresh, divId.current]);
 
   const bannerSize = useMemo(() => {
     if (isMobileOnly) {
