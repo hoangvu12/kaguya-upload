@@ -1,17 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
-import classNames from "classnames";
-import Script from "next/script";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 const StickyBanner = () => {
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  const handleLoaded = () => {
-    console.log("script loaded");
-
-    setIsLoaded(true);
-  };
-
   // return (
   //   <div
   //     className={classNames(
@@ -43,30 +33,32 @@ const StickyBanner = () => {
   //   </div>
   // );
 
-  useEffect(() => {
-    setInterval(() => {
-      const slots = window.googletag.pubads().getSlots();
-      for (const slot of slots) {
-        if (slot.getSlotElementId() == "protag-sticky-bottom-ad-unit") {
-          window.googletag.cmd.push(() => {
-            window.googletag.pubads().refresh([slot]);
-          });
-        }
-      }
-    }, 30000);
-  }, []);
+  // useEffect(() => {
+  //   setInterval(() => {
+  //     const slots = window.googletag.pubads().getSlots();
+  //     for (const slot of slots) {
+  //       if (slot.getSlotElementId() == "protag-sticky-bottom-ad-unit") {
+  //         window.googletag.cmd.push(() => {
+  //           window.googletag.pubads().refresh([slot]);
+  //         });
+  //       }
+  //     }
+  //   }, 30000);
+  // }, []);
 
-  return (
-    <Script id="sticky" type="text/javascript">
-      {`
-        window.googletag = window.googletag || { cmd: [] };
-        window.protag = window.protag || { cmd: [] };
-        window.protag.cmd.push(function () {
-            window.protag.display("protag-sticky-bottom");
-        });
-      `}
-    </Script>
-  );
+  // return (
+  //   <Script id="sticky" type="text/javascript">
+  //     {`
+  //       window.googletag = window.googletag || { cmd: [] };
+  //       window.protag = window.protag || { cmd: [] };
+  //       window.protag.cmd.push(function () {
+  //           window.protag.display("protag-sticky-bottom");
+  //       });
+  //     `}
+  //   </Script>
+  // );
+
+  return null;
 };
 
 export default React.memo(StickyBanner);

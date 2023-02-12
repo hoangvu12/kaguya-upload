@@ -327,11 +327,13 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type, refresh }) => {
         if (!slotRef.current) {
           for (const slot of slots) {
             const adsId = slot.getSlotElementId();
-            if (adsId.match(/interstitial/)) {
-              console.log("setTagRefresh: interstitial found, continue...");
+
+            if (ignoreAdUnitPath.some((path) => adsId.includes(path))) {
+              console.log("setTagRefresh: ignoreAdUnitPath found, continue...");
 
               continue;
             }
+
             const adElement = document.querySelector("#" + adsId);
 
             if (adElement) {
@@ -364,17 +366,16 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type, refresh }) => {
       }
     });
 
-    // return () => {
-    //   window.googletag.cmd.push(() => {
-    //     if (slotRef.current) {
-    //       window.googletag.destroySlots([slotRef.current]);
-    //       console.log("Destroy slots " + divId.current);
-    //       slotRef.current = null;
-    //     }
-    //   });
-    // };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [refresh, divId.current, slotRef.current]);
+    return () => {
+      window.googletag.cmd.push(() => {
+        if (slotRef.current) {
+          window.googletag.destroySlots([slotRef.current]);
+          console.log("Destroy slots " + divId.current);
+          slotRef.current = null;
+        }
+      });
+    };
+  }, [refresh]);
 
   const bannerSize = useMemo(() => {
     if (isMobileOnly) {
