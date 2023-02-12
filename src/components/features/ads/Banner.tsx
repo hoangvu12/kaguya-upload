@@ -140,7 +140,7 @@
 
 // export default Banner;
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { isMobileOnly } from "react-device-detect";
 
 const ignoreAdUnitPath = ["interstitial", "sticky"];
@@ -210,7 +210,6 @@ type DesktopBannerOption = {
 //https://support.google.com/admanager/answer/1100453?hl=en
 const Banner: React.FC<BannerProps> = ({ desktop, mobile, type, refresh }) => {
   const slotRef = useRef(null);
-  const [isError, setIsError] = useState(false);
 
   const divId = useRef(null);
 
@@ -265,12 +264,6 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type, refresh }) => {
 
   useEffect(() => {
     window.googletag = window.googletag || { cmd: [] };
-
-    console.log(window.googletag);
-
-    if (!("pubads" in window.googletag)) {
-      return setIsError(true);
-    }
 
     window.googletag.cmd.push(() => {
       if (process.env.NODE_ENV === "development") {
@@ -374,20 +367,7 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type, refresh }) => {
     }
   }, [size]);
 
-  return isError ? (
-    <div
-      className="flex items-center justify-center gap-8 px-8 py-3 my-8 bg-primary-800 mx-auto w-[90vw] md:min-w-[24rem] md:w-[60vw]"
-      style={{
-        minHeight: bannerSize.height,
-      }}
-    >
-      <p className="text-lg">
-        Help support Kaguya by disabling your ad-blocker. Ads on our site allow
-        us to continue providing high-quality content for you. Your support is
-        greatly appreciated.
-      </p>
-    </div>
-  ) : (
+  return (
     <div
       className="flex items-center justify-center my-8"
       id={divId.current}
