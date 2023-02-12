@@ -261,6 +261,8 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type, refresh }) => {
       return;
     }
 
+    console.log(slotRef.current);
+
     window.googletag = window.googletag || { cmd: [] };
 
     window.googletag.cmd.push(() => {
@@ -319,6 +321,9 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type, refresh }) => {
         if (!slotRef.current) {
           for (const slot of slots) {
             const adsId = slot.getSlotElementId();
+
+            console.log("Found", adsId);
+
             if (adsId.match(/interstitial/)) {
               console.log("setTagRefresh: interstitial found, continue...");
 
@@ -365,7 +370,8 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type, refresh }) => {
         }
       });
     };
-  }, [refresh, divId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refresh, divId, slotRef.current]);
 
   const bannerSize = useMemo(() => {
     if (isMobileOnly) {
