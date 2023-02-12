@@ -311,13 +311,13 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type, refresh }) => {
         if (slots.length == 0) {
           return;
         }
-        if (!slotRef.current) {
-          for (const slot of slots.filter((slot) => {
-            const name = slot.getAdUnitPath();
 
-            return !ignoreAdUnitPath.some((path) => name.includes(path));
-          })) {
+        if (!slotRef.current) {
+          for (const slot of slots) {
             const adsId = slot.getSlotElementId();
+            if (adsId.match(/interstitial/)) {
+              continue;
+            }
             const adElement = document.querySelector("#" + adsId);
 
             if (adElement) {
