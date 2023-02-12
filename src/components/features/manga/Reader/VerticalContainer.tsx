@@ -6,8 +6,14 @@ import Banner from "../../ads/Banner";
 import ReadImage from "./ReadImage";
 
 const VerticalContainer: React.FC = () => {
-  const { currentChapterIndex, chapters, setChapter, images, currentChapter } =
-    useReadInfo();
+  const {
+    currentChapterIndex,
+    chapters,
+    setChapter,
+    images,
+    currentChapter,
+    manga,
+  } = useReadInfo();
   const { state, setState } = useReadPanel();
   const { direction } = useReadSettings();
 
@@ -50,11 +56,13 @@ const VerticalContainer: React.FC = () => {
 
   return (
     <div className="w-full h-full">
-      <Banner
-        desktop={{ size: "970x250" }}
-        mobile={{ size: "300x250" }}
-        type="btf"
-      />
+      {!manga.isAdult && (
+        <Banner
+          desktop={{ size: "970x250" }}
+          mobile={{ size: "300x250" }}
+          type="btf"
+        />
+      )}
 
       {images.map((image, index) => (
         <div className="image-container mx-auto" key={index}>
@@ -66,12 +74,13 @@ const VerticalContainer: React.FC = () => {
           />
         </div>
       ))}
-
-      <Banner
-        desktop={{ size: "300x250" }}
-        mobile={{ size: "320x100" }}
-        type="atf"
-      />
+      {!manga.isAdult && (
+        <Banner
+          desktop={{ size: "300x250" }}
+          mobile={{ size: "320x100" }}
+          type="atf"
+        />
+      )}
 
       {currentChapterIndex < sourceChapters.length - 1 && (
         <div className="w-full h-60 p-8">

@@ -449,11 +449,13 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
           </div>
 
           <div className="space-y-12 md:col-span-8">
-            <Banner
-              desktop={{ size: "970x250" }}
-              mobile={{ size: "300x250" }}
-              type="middle"
-            />
+            {!anime.isAdult && (
+              <Banner
+                desktop={{ size: "970x250" }}
+                mobile={{ size: "300x250" }}
+                type="middle"
+              />
+            )}
 
             <NativeBanner />
 
@@ -508,12 +510,13 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
                 </List>
               </DetailsSection>
             )}
-
-            <Banner
-              desktop={{ size: "300x250" }}
-              mobile={{ size: "320x100" }}
-              type="atf"
-            />
+            {!anime.isAdult && (
+              <Banner
+                desktop={{ size: "300x250" }}
+                mobile={{ size: "320x100" }}
+                type="atf"
+              />
+            )}
 
             <DetailsSection title={t("comments_section")}>
               <Comments topic={`anime-${anime.id}`} />

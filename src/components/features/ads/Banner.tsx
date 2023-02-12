@@ -140,8 +140,10 @@
 
 // export default Banner;
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { isMobileOnly } from "react-device-detect";
+
+const ignoreAdUnitPath = ["interstitial", "sticky"];
 
 declare global {
   // eslint-disable-next-line no-unused-vars
@@ -156,79 +158,120 @@ type BannerProps = {
   mobile: MobileBannerOption;
   desktop: DesktopBannerOption;
   type: "btf" | "atf" | "middle";
+  refresh?: boolean;
 };
 
+const MobileBanner = [
+  {
+    size: "300x250",
+    width: 320,
+    height: 250,
+  },
+  {
+    size: "320x100",
+    width: 320,
+    height: 100,
+  },
+  {
+    size: "300x600",
+    width: 300,
+    height: 600,
+  },
+] as const;
+
+const DesktopBanner = [
+  {
+    size: "970x250",
+    width: 970,
+    height: 250,
+  },
+  {
+    size: "300x250",
+    width: 300,
+    height: 250,
+  },
+  {
+    size: "300x600",
+    width: 300,
+    height: 600,
+  },
+] as const;
+
 type MobileBannerOption = {
-  size: "300x250" | "320x100" | "300x600";
-  refresh?: boolean;
+  size: (typeof MobileBanner)[number]["size"];
   setId?: string;
 };
 
 type DesktopBannerOption = {
-  size: "970x250" | "300x250" | "300x600";
-  refresh?: boolean;
+  size: (typeof DesktopBanner)[number]["size"];
   setId?: string;
 };
 
 //https://support.google.com/admanager/answer/1100453?hl=en
-const Banner: React.FC<BannerProps> = ({ desktop, mobile, type }) => {
+const Banner: React.FC<BannerProps> = ({ desktop, mobile, type, refresh }) => {
   const slotRef = useRef(null);
+  const [isError, setIsError] = useState(false);
 
   const divId = useRef(null);
 
-  const { setId, size, refresh } = useMemo(
+  const { setId, size } = useMemo(
     () => (isMobileOnly ? mobile : desktop),
     [mobile, desktop]
   );
 
-  useEffect(() => {
-    if (!divId.current) {
-      if (setId) {
-        divId.current = setId;
-      } else {
-        if (isMobileOnly) {
-          switch (size) {
-            case "320x100":
-              divId.current = "protag-header";
-              break;
-            case "300x250":
-              if (type == "atf") {
-                divId.current = "protag-before_content";
-              } else if (type == "middle") {
-                divId.current = "protag-in_content";
-              } else if (type == "btf") {
-                divId.current = "protag-after_content";
-              }
-              break;
-            case "300x600":
-              divId.current = "protag-sidebar";
-              break;
-          }
-        } else if (!isMobileOnly) {
-          switch (size) {
-            case "300x600":
-              divId.current = "protag-sidebar";
-              break;
-            case "300x250":
-              if (type == "atf") {
-                divId.current = "protag-before_content";
-              } else if (type == "middle") {
-                divId.current = "protag-in_content";
-              } else if (type == "btf") {
-                divId.current = "protag-after_content";
-              }
-              break;
-            case "970x250":
-              divId.current = "protag-header";
-              break;
-          }
+  if (!divId.current) {
+    if (setId) {
+      divId.current = setId;
+    } else {
+      if (isMobileOnly) {
+        switch (size) {
+          case "320x100":
+            divId.current = "protag-header";
+            break;
+          case "300x250":
+            if (type == "atf") {
+              divId.current = "protag-before_content";
+            } else if (type == "middle") {
+              divId.current = "protag-in_content";
+            } else if (type == "btf") {
+              divId.current = "protag-after_content";
+            }
+            break;
+          case "300x600":
+            divId.current = "protag-sidebar";
+            break;
+        }
+      } else if (!isMobileOnly) {
+        switch (size) {
+          case "300x600":
+            divId.current = "protag-sidebar";
+            break;
+          case "300x250":
+            if (type == "atf") {
+              divId.current = "protag-before_content";
+            } else if (type == "middle") {
+              divId.current = "protag-in_content";
+            } else if (type == "btf") {
+              divId.current = "protag-after_content";
+            }
+            break;
+          case "970x250":
+            divId.current = "protag-header";
+            break;
         }
       }
     }
-  }, [setId, size, type]);
+  }
 
   useEffect(() => {
     window.googletag = window.googletag || { cmd: [] };
+
+    console.log(window.googletag);
+
+    if (!("pubads" in window.googletag)) {
+      return setIsError(true);
+    }
+
     window.googletag.cmd.push(() => {
       if (process.env.NODE_ENV === "development") {
         if (!slotRef.current) {
@@ -269,13 +312,18 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type }) => {
         }
       }
 
-      setTimeout(() => {
+      const setTagRefresh = () => {
         const slots = window.googletag.pubads().getSlots();
+
         if (slots.length == 0) {
           return;
         }
         if (!slotRef.current) {
-          for (const slot of slots) {
+          for (const slot of slots.filter((slot) => {
+            const name = slot.getAdUnitPath();
+
+            return !ignoreAdUnitPath.some((path) => name.includes(path));
+          })) {
             const adsId = slot.getSlotElementId();
             const adElement = document.querySelector("#" + adsId);
 
@@ -298,7 +346,13 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type }) => {
           );
           slotRef.current.setTargeting("refresh", "true");
         }
-      }, 5000);
+      };
+
+      if (process.env.NODE_ENV == "development") {
+        setTagRefresh();
+      } else {
+        setTimeout(() => setTagRefresh(), 5000);
+      }
     });
 
     return () => {
@@ -312,10 +366,35 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type }) => {
     };
   }, [refresh]);
 
-  return (
+  const bannerSize = useMemo(() => {
+    if (isMobileOnly) {
+      return MobileBanner.find((banner) => banner.size == size);
+    } else {
+      return DesktopBanner.find((banner) => banner.size == size);
+    }
+  }, [size]);
+
+  return isError ? (
+    <div
+      className="flex items-center justify-center gap-8 px-8 py-3 my-8 bg-primary-800 mx-auto w-[90vw] md:min-w-[24rem] md:w-[60vw]"
+      style={{
+        minHeight: bannerSize.height,
+      }}
+    >
+      <p className="text-lg">
+        Help support Kaguya by disabling your ad-blocker. Ads on our site allow
+        us to continue providing high-quality content for you. Your support is
+        greatly appreciated.
+      </p>
+    </div>
+  ) : (
     <div
       className="flex items-center justify-center my-8"
       id={divId.current}
+      style={{
+        minWidth: bannerSize?.width,
+        minHeight: bannerSize?.height,
+      }}
     ></div>
   );
 };
