@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useRef } from "react";
+import Script from "next/script";
+import React, { useEffect, useMemo, useRef } from "react";
 import { isMobileOnly } from "react-device-detect";
 
 const ignoreAdUnitPath = ["interstitial", "sticky"];
@@ -117,42 +118,91 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type }) => {
     }
   }
 
+  // useEffect(() => {
+  //   if (!divId.current) {
+  //     console.log("no divId found");
+
+  //     return;
+  //   }
+
+  //   if (!("googletag" in window)) return;
+
+  //   const slots = window.googletag.pubads().getSlots();
+
+  //   for (const slot of slots) {
+  //     const adsId = slot.getSlotElementId();
+
+  //     if (ignoreAdUnitPath.some((path) => adsId.includes(path))) {
+  //       continue;
+  //     }
+
+  //     if (adsId.includes(divId.current)) {
+  //       slotRef.current = slot;
+
+  //       break;
+  //     }
+  //   }
+
+  //   if (!slotRef.current) {
+  //     window.googletag = window.googletag;
+  //     window.protag = window.protag;
+
+  //     window.protag.cmd.push(function () {
+  //       console.log("display divID " + divId.current);
+  //       window.protag.display(divId.current);
+  //     });
+  //   } else {
+  //     window.googletag.pubads().refresh([slotRef.current]);
+  //   }
+  // }, []);
+
   useEffect(() => {
-    if (!divId.current) {
-      console.log("no divId found");
-
-      return;
-    }
-
-    if (!("googletag" in window)) return;
-
-    const slots = window.googletag.pubads().getSlots();
-
-    for (const slot of slots) {
-      const adsId = slot.getSlotElementId();
-
-      if (ignoreAdUnitPath.some((path) => adsId.includes(path))) {
-        continue;
-      }
-
-      if (adsId.includes(divId.current)) {
-        slotRef.current = slot;
-
-        break;
-      }
-    }
-
-    if (!slotRef.current) {
-      window.googletag = window.googletag;
-      window.protag = window.protag;
-
-      window.protag.cmd.push(function () {
+    // @ts-ignore
+    window.googletag = window.googletag || { cmd: [] };
+    window.googletag.cmd.push(() => {
+      if (!slotRef.current) {
+        // Request and render an ad for the "banner-ad" slot.
         console.log("display divID " + divId.current);
-        window.protag.display(divId.current);
-      });
-    } else {
-      window.googletag.pubads().refresh([slotRef.current]);
-    }
+        if (process.env.NODE_ENV === "development") {
+          window.googletag.display(divId.current);
+        } else {
+          window.protag.display(divId.current);
+        }
+      } else {
+        console.log("refresh " + divId.current);
+        window.googletag.pubads().refresh([slotRef.current]);
+      }
+
+      function setTagRefresh() {
+        const slots = window.googletag.pubads().getSlots();
+        if (slots.length == 0) {
+          return;
+        }
+        if (!slotRef.current) {
+          for (const slot of slots) {
+            const adsId = slot.getSlotElementId();
+            if (adsId.match(/interstitial/)) {
+              continue;
+            }
+            const adElement = document.querySelector("#" + adsId);
+
+            if (adElement) {
+              const isParent = adElement.closest("#" + divId.current);
+              if (isParent) {
+                slotRef.current = slot;
+                break;
+              }
+            }
+          }
+        }
+      }
+
+      if (process.env.NODE_ENV === "development") {
+        setTagRefresh();
+      } else {
+        setTimeout(setTagRefresh, 5000);
+      }
+    });
   }, []);
 
   const bannerSize = useMemo(() => {
@@ -164,14 +214,42 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type }) => {
   }, [size]);
 
   return (
-    <div
-      className="flex items-center justify-center my-8"
-      id={divId.current}
-      style={{
-        minWidth: bannerSize?.width,
-        minHeight: bannerSize?.height,
-      }}
-    ></div>
+    <React.Fragment>
+      <div
+        className="flex items-center justify-center my-8"
+        id={divId.current}
+        style={{
+          minWidth: bannerSize?.width,
+          minHeight: bannerSize?.height,
+        }}
+      />
+
+      {process.env.NODE_ENV === "development" && (
+        <Script
+          id={"define-ad-slot-development"}
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.googletag = window.googletag || { cmd: [] };
+              window.googletag.cmd.push(function () {
+                  const slotIds = ['protag-before_content', 'protag-in_content', 'protag-after_content', 'protag-header', 'protag-sidebar']
+                  for (const slotId of slotIds) {
+                  console.log('define: ' + slotId)
+                    window.googletag
+                      .defineSlot(
+                        "/6355419/Travel/Europe/France/Paris",
+                        [300, 250],
+                        slotId
+                      )
+                      .addService(window.googletag.pubads())
+                    // Enable the PubAdsService.
+                  }
+                  window.googletag.enableServices()
+              })
+            `,
+          }}
+        />
+      )}
+    </React.Fragment>
   );
 };
 
