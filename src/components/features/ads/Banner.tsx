@@ -140,7 +140,7 @@
 
 // export default Banner;
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { isMobileOnly } from "react-device-detect";
 
 const ignoreAdUnitPath = ["interstitial", "sticky"];
@@ -211,59 +211,51 @@ type DesktopBannerOption = {
 const Banner: React.FC<BannerProps> = ({ desktop, mobile, type, refresh }) => {
   const slotRef = useRef(null);
 
-  const divId = useRef(null);
-
   const { setId, size } = useMemo(
     () => (isMobileOnly ? mobile : desktop),
     [mobile, desktop]
   );
 
-  if (!divId.current) {
-    if (setId) {
-      divId.current = setId;
-    } else {
-      if (isMobileOnly) {
-        switch (size) {
-          case "320x100":
-            divId.current = "protag-header";
-            break;
-          case "300x250":
-            if (type == "atf") {
-              divId.current = "protag-before_content";
-            } else if (type == "middle") {
-              divId.current = "protag-in_content";
-            } else if (type == "btf") {
-              divId.current = "protag-after_content";
-            }
-            break;
-          case "300x600":
-            divId.current = "protag-sidebar";
-            break;
-        }
-      } else if (!isMobileOnly) {
-        switch (size) {
-          case "300x600":
-            divId.current = "protag-sidebar";
-            break;
-          case "300x250":
-            if (type == "atf") {
-              divId.current = "protag-before_content";
-            } else if (type == "middle") {
-              divId.current = "protag-in_content";
-            } else if (type == "btf") {
-              divId.current = "protag-after_content";
-            }
-            break;
-          case "970x250":
-            divId.current = "protag-header";
-            break;
-        }
+  const [divId] = useState(() => {
+    if (setId) return setId;
+
+    if (isMobileOnly) {
+      switch (size) {
+        case "320x100":
+          return "protag-header";
+        case "300x250":
+          if (type == "atf") {
+            return "protag-before_content";
+          } else if (type == "middle") {
+            return "protag-in_content";
+          } else if (type == "btf") {
+            return "protag-after_content";
+          }
+          break;
+        case "300x600":
+          return "protag-sidebar";
+      }
+    } else if (!isMobileOnly) {
+      switch (size) {
+        case "300x600":
+          return "protag-sidebar";
+        case "300x250":
+          if (type == "atf") {
+            return "protag-before_content";
+          } else if (type == "middle") {
+            return "protag-in_content";
+          } else if (type == "btf") {
+            return "protag-after_content";
+          }
+          break;
+        case "970x250":
+          return "protag-header";
       }
     }
-  }
+  });
 
   useEffect(() => {
-    if (!divId.current) {
+    if (!divId) {
       console.log("no divId found");
 
       return;
@@ -280,16 +272,16 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type, refresh }) => {
               .defineSlot(
                 "/6355419/Travel/Europe/France/Paris",
                 [300, 250],
-                divId.current
+                divId
               )!
               .addService(window.googletag.pubads());
 
             // Enable the PubAdsService.
             window.googletag.enableServices();
-            console.log("display divID " + divId.current);
+            console.log("display divID " + divId);
 
             // Request and render an ad for the "banner-ad" slot.
-            window.googletag.display(divId.current);
+            window.googletag.display(divId);
           });
         } else {
           console.log("refreshing slot " + slotRef.current);
@@ -303,8 +295,8 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type, refresh }) => {
           window.googletag = window.googletag || { cmd: [] };
           window.protag = window.protag || { cmd: [] };
           window.protag.cmd.push(function () {
-            console.log("display divID " + divId.current);
-            window.protag.display(divId.current);
+            console.log("display divID " + divId);
+            window.protag.display(divId);
           });
         } else {
           console.log("refreshing slot " + slotRef.current);
@@ -335,7 +327,7 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type, refresh }) => {
             const adElement = document.querySelector("#" + adsId);
 
             if (adElement) {
-              const isParent = adElement.closest("#" + divId.current);
+              const isParent = adElement.closest("#" + divId);
               console.log(`setTagRefresh: isParent ${isParent} for ${adsId}`);
 
               if (isParent) {
@@ -368,13 +360,12 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type, refresh }) => {
       window.googletag.cmd.push(() => {
         if (slotRef.current) {
           window.googletag.destroySlots([slotRef.current]);
-          console.log("Destroy slots " + divId.current);
+          console.log("Destroy slots " + divId);
           slotRef.current = null;
         }
       });
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [refresh, divId.current, slotRef.current]);
+  }, [refresh, divId]);
 
   const bannerSize = useMemo(() => {
     if (isMobileOnly) {
@@ -387,7 +378,7 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type, refresh }) => {
   return (
     <div
       className="flex items-center justify-center my-8"
-      id={divId.current}
+      id={divId}
       style={{
         minWidth: bannerSize?.width,
         minHeight: bannerSize?.height,
