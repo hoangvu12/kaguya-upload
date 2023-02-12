@@ -124,6 +124,8 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type }) => {
       return;
     }
 
+    if (!window.protag) return;
+
     const slots = window.googletag.pubads().getSlots();
 
     for (const slot of slots) {
@@ -149,8 +151,6 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type }) => {
         window.protag.display(divId.current);
       });
     } else {
-      console.log("refresh", document.getElementById(divId.current));
-
       window.googletag.pubads().refresh([slotRef.current]);
     }
   }, []);
