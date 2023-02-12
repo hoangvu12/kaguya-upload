@@ -22,11 +22,7 @@ const WatchWithFriendPage = () => {
         description={t("browse_page_description")}
       />
 
-      <Banner
-        desktop={{ size: "970x250" }}
-        mobile={{ size: "300x250" }}
-        type="atf"
-      />
+      <Banner desktop="970x250" mobile="300x250" type="atf" />
 
       <NativeBanner />
 

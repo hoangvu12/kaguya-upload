@@ -12,13 +12,6 @@ declare global {
   }
 }
 
-type BannerProps = {
-  mobile: MobileBannerOption;
-  desktop: DesktopBannerOption;
-  type: "btf" | "atf" | "middle";
-  refresh?: boolean;
-};
-
 const mobileBanners = [
   {
     size: "300x250",
@@ -55,155 +48,58 @@ const desktopBanners = [
   },
 ] as const;
 
-type MobileBannerOption = {
-  size: (typeof mobileBanners)[number]["size"];
-  setId?: string;
-};
-
-type DesktopBannerOption = {
-  size: (typeof desktopBanners)[number]["size"];
-  setId?: string;
+type BannerProps = {
+  mobile: (typeof mobileBanners)[number]["size"];
+  desktop: (typeof desktopBanners)[number]["size"];
+  type: "btf" | "atf" | "middle";
+  refresh?: boolean;
 };
 
 //https://support.google.com/admanager/answer/1100453?hl=en
 const Banner: React.FC<BannerProps> = ({ desktop, mobile, type }) => {
-  const { setId, size } = useMemo(
+  const size = useMemo(
     () => (isMobileOnly ? mobile : desktop),
     [mobile, desktop]
   );
-  const slotRef = useRef<googletag.Slot>(null);
 
-  const divId = useRef(null);
-  if (!divId.current) {
-    if (setId) {
-      divId.current = setId;
-    } else {
-      if (isMobileOnly) {
-        switch (size) {
-          case "320x100":
-            divId.current = "protag-header";
-            break;
-          case "300x250":
-            if (type == "atf") {
-              divId.current = "protag-before_content";
-            } else if (type == "middle") {
-              divId.current = "protag-in_content";
-            } else if (type == "btf") {
-              divId.current = "protag-after_content";
-            }
-            break;
-          case "300x600":
-            divId.current = "protag-sidebar";
-            break;
+  const divId = useMemo(() => {
+    switch (size) {
+      case "320x100":
+      case "970x250":
+        return "protag-header";
+      case "300x600":
+        return "protag-sidebar";
+      case "300x250":
+        if (type == "atf") {
+          return "protag-before_content";
         }
-      } else {
-        switch (size) {
-          case "300x600":
-            divId.current = "protag-sidebar";
-            break;
-          case "300x250":
-            if (type == "atf") {
-              divId.current = "protag-before_content";
-            } else if (type == "middle") {
-              divId.current = "protag-in_content";
-            } else if (type == "btf") {
-              divId.current = "protag-after_content";
-            }
-            break;
-          case "970x250":
-            divId.current = "protag-header";
-            break;
+        if (type == "middle") {
+          return "protag-in_content";
         }
-      }
+        if (type == "btf") {
+          return "protag-after_content";
+        }
     }
-  }
-
-  // useEffect(() => {
-  //   if (!divId.current) {
-  //     console.log("no divId found");
-
-  //     return;
-  //   }
-
-  //   if (!("googletag" in window)) return;
-
-  //   const slots = window.googletag.pubads().getSlots();
-
-  //   for (const slot of slots) {
-  //     const adsId = slot.getSlotElementId();
-
-  //     if (ignoreAdUnitPath.some((path) => adsId.includes(path))) {
-  //       continue;
-  //     }
-
-  //     if (adsId.includes(divId.current)) {
-  //       slotRef.current = slot;
-
-  //       break;
-  //     }
-  //   }
-
-  //   if (!slotRef.current) {
-  //     window.googletag = window.googletag;
-  //     window.protag = window.protag;
-
-  //     window.protag.cmd.push(function () {
-  //       console.log("display divID " + divId.current);
-  //       window.protag.display(divId.current);
-  //     });
-  //   } else {
-  //     window.googletag.pubads().refresh([slotRef.current]);
-  //   }
-  // }, []);
+  }, [size, type]);
 
   useEffect(() => {
-    // @ts-ignore
-    window.googletag = window.googletag || { cmd: [] };
-    window.googletag.cmd.push(() => {
-      if (!slotRef.current) {
-        // Request and render an ad for the "banner-ad" slot.
-        console.log("display divID " + divId.current);
-        if (process.env.NODE_ENV === "development") {
-          window.googletag.display(divId.current);
-        } else {
-          window.protag.display(divId.current);
-        }
-      } else {
-        console.log("refresh " + divId.current);
-        window.googletag.pubads().refresh([slotRef.current]);
-      }
+    const script = document.createElement("script");
+    script.innerHTML = `
+      console.log("loading script")
 
-      function setTagRefresh() {
-        const slots = window.googletag.pubads().getSlots();
-        if (slots.length == 0) {
-          return;
-        }
-        if (!slotRef.current) {
-          for (const slot of slots) {
-            const adsId = slot.getSlotElementId();
-            if (adsId.match(/interstitial/)) {
-              continue;
-            }
-            const adElement = document.querySelector("#" + adsId);
+      window.googletag = window.googletag || { cmd: [] };
+      window.protag = window.protag || { cmd: [] };
+      window.protag.cmd.push(function () {
+          window.protag.display('${divId}')
+      });
+    `;
 
-            if (adElement) {
-              const isParent = adElement.closest("#" + divId.current);
-              if (isParent) {
-                slotRef.current = slot;
-                break;
-              }
-            }
-          }
-        }
-      }
+    document.body.appendChild(script);
 
-      if (process.env.NODE_ENV === "development") {
-        setTagRefresh();
-      } else {
-        setTimeout(setTagRefresh, 5000);
-      }
-    });
-  }, []);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, [divId]);
 
   const bannerSize = useMemo(() => {
     if (isMobileOnly) {
@@ -217,38 +113,12 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type }) => {
     <React.Fragment>
       <div
         className="flex items-center justify-center my-8"
-        id={divId.current}
+        id={divId}
         style={{
           minWidth: bannerSize?.width,
           minHeight: bannerSize?.height,
         }}
       />
-
-      {process.env.NODE_ENV === "development" && (
-        <Script
-          id={"define-ad-slot-development"}
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.googletag = window.googletag || { cmd: [] };
-              window.googletag.cmd.push(function () {
-                  const slotIds = ['protag-before_content', 'protag-in_content', 'protag-after_content', 'protag-header', 'protag-sidebar']
-                  for (const slotId of slotIds) {
-                  console.log('define: ' + slotId)
-                    window.googletag
-                      .defineSlot(
-                        "/6355419/Travel/Europe/France/Paris",
-                        [300, 250],
-                        slotId
-                      )
-                      .addService(window.googletag.pubads())
-                    // Enable the PubAdsService.
-                  }
-                  window.googletag.enableServices()
-              })
-            `,
-          }}
-        />
-      )}
     </React.Fragment>
   );
 };

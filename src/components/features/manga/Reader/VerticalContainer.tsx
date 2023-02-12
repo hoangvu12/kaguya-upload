@@ -57,11 +57,7 @@ const VerticalContainer: React.FC = () => {
   return (
     <div className="w-full h-full">
       {!manga.isAdult && (
-        <Banner
-          desktop={{ size: "970x250" }}
-          mobile={{ size: "300x250" }}
-          type="atf"
-        />
+        <Banner desktop="970x250" mobile="300x250" type="atf" />
       )}
 
       {images.map((image, index) => (
@@ -74,12 +70,9 @@ const VerticalContainer: React.FC = () => {
           />
         </div>
       ))}
+
       {!manga.isAdult && (
-        <Banner
-          desktop={{ size: "300x250" }}
-          mobile={{ size: "320x100" }}
-          type="atf"
-        />
+        <Banner desktop="300x250" mobile="320x100" type="btf" />
       )}
 
       {currentChapterIndex < sourceChapters.length - 1 && (

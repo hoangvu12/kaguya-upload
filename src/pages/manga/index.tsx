@@ -69,11 +69,7 @@ const Home: NextPage<HomeProps> = ({ selectors }) => {
           isLoading={trendingLoading}
         />
 
-        <Banner
-          desktop={{ size: "970x250" }}
-          mobile={{ size: "300x250" }}
-          type="middle"
-        />
+        <Banner desktop="970x250" mobile="300x250" type="middle" />
 
         <div className="space-y-8">
           <ReadSection />
@@ -97,11 +93,7 @@ const Home: NextPage<HomeProps> = ({ selectors }) => {
 
           <NewestComments type={MediaType.Manga} />
 
-          <Banner
-            desktop={{ size: "300x250" }}
-            mobile={{ size: "320x100" }}
-            type="btf"
-          />
+          <Banner desktop="300x250" mobile="320x100" type="btf" />
 
           <div
             className={classNames(

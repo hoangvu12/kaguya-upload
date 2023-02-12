@@ -119,11 +119,7 @@ const UserPage: NextPage<UserPageProps> = ({ user }) => {
           )}
         </Section>
 
-        <Banner
-          desktop={{ size: "970x250" }}
-          mobile={{ size: "300x250" }}
-          type="atf"
-        />
+        <Banner desktop="970x250" mobile="300x250" type="atf" />
 
         <Section title={t("list_heading")} className="mt-8 w-full">
           <div className="flex items-center gap-3">

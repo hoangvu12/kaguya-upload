@@ -64,11 +64,7 @@ const Home: NextPage<HomeProps> = ({ selectors }) => {
           isLoading={trendingLoading}
         />
 
-        <Banner
-          desktop={{ size: "970x250" }}
-          mobile={{ size: "300x250" }}
-          type="atf"
-        />
+        <Banner desktop="970x250" mobile="300x250" type="atf" />
 
         <div className="space-y-8">
           <WatchedSection />
@@ -121,11 +117,7 @@ const Home: NextPage<HomeProps> = ({ selectors }) => {
             <NativeBanner />
           </Section>
 
-          <Banner
-            desktop={{ size: "300x250" }}
-            mobile={{ size: "320x100" }}
-            type="atf"
-          />
+          <Banner desktop="300x250" mobile="320x100" type="btf" />
 
           <Section title={t("anime_home:airing_schedule")}>
             <AnimeSchedule />
