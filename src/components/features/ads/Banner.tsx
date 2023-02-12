@@ -161,7 +161,7 @@ type BannerProps = {
   refresh?: boolean;
 };
 
-const MobileBanner = [
+const mobileBanners = [
   {
     size: "300x250",
     width: 320,
@@ -179,7 +179,7 @@ const MobileBanner = [
   },
 ] as const;
 
-const DesktopBanner = [
+const desktopBanners = [
   {
     size: "970x250",
     width: 970,
@@ -198,12 +198,12 @@ const DesktopBanner = [
 ] as const;
 
 type MobileBannerOption = {
-  size: (typeof MobileBanner)[number]["size"];
+  size: (typeof mobileBanners)[number]["size"];
   setId?: string;
 };
 
 type DesktopBannerOption = {
-  size: (typeof DesktopBanner)[number]["size"];
+  size: (typeof desktopBanners)[number]["size"];
   setId?: string;
 };
 
@@ -263,7 +263,11 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type, refresh }) => {
   }
 
   useEffect(() => {
-    if (!divId.current) return;
+    if (!divId.current) {
+      console.log("no divId found");
+
+      return;
+    }
 
     window.googletag = window.googletag || { cmd: [] };
 
@@ -288,6 +292,8 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type, refresh }) => {
             window.googletag.display(divId.current);
           });
         } else {
+          console.log("refreshing slot " + slotRef.current);
+
           window.googletag.cmd.push(() => {
             window.googletag.pubads().refresh([slotRef.current]);
           });
@@ -301,6 +307,8 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type, refresh }) => {
             window.protag.display(divId.current);
           });
         } else {
+          console.log("refreshing slot " + slotRef.current);
+
           window.googletag.cmd.push(() => {
             window.googletag.pubads().refresh([slotRef.current]);
           });
@@ -311,6 +319,8 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type, refresh }) => {
         const slots = window.googletag.pubads().getSlots();
 
         if (slots.length == 0) {
+          console.log("setTagRefresh: no slots found");
+
           return;
         }
 
@@ -318,12 +328,16 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type, refresh }) => {
           for (const slot of slots) {
             const adsId = slot.getSlotElementId();
             if (adsId.match(/interstitial/)) {
+              console.log("setTagRefresh: interstitial found, continue...");
+
               continue;
             }
             const adElement = document.querySelector("#" + adsId);
 
             if (adElement) {
               const isParent = adElement.closest("#" + divId.current);
+              console.log(`setTagRefresh: isParent ${isParent} for ${adsId}`);
+
               if (isParent) {
                 slotRef.current = slot;
                 break;
@@ -360,13 +374,13 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type, refresh }) => {
       });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [refresh, divId.current]);
+  }, [refresh, divId.current, slotRef.current]);
 
   const bannerSize = useMemo(() => {
     if (isMobileOnly) {
-      return MobileBanner.find((banner) => banner.size == size);
+      return mobileBanners.find((banner) => banner.size == size);
     } else {
-      return DesktopBanner.find((banner) => banner.size == size);
+      return desktopBanners.find((banner) => banner.size == size);
     }
   }, [size]);
 
