@@ -158,7 +158,11 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ character }) => {
           </div>
         </Section>
 
-        <Banner size="970x250" />
+        <Banner
+          desktop={{ size: "970x250" }}
+          mobile={{ size: "300x250" }}
+          type="middle"
+        />
 
         <NativeBanner />
 
@@ -170,20 +174,22 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ character }) => {
               </List>
             </DetailsSection>
           )}
-
           {!!anime?.length && (
             <DetailsSection title={t("anime_section")}>
               <List data={anime}>{(anime) => <Card data={anime} />}</List>
             </DetailsSection>
           )}
-
-          <Banner size="300x250" />
-
           {!!manga?.length && (
             <DetailsSection title={t("manga_section")}>
               <List data={manga}>{(manga) => <Card data={manga} />}</List>
             </DetailsSection>
           )}
+
+          <Banner
+            desktop={{ size: "300x250" }}
+            mobile={{ size: "320x100" }}
+            type="atf"
+          />
         </Section>
       </div>
     </>

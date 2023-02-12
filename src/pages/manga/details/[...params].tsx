@@ -328,7 +328,11 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
           </div>
 
           <div className="md:col-span-8 space-y-12">
-            <Banner size="970x250" />
+            <Banner
+              desktop={{ size: "970x250" }}
+              mobile={{ size: "300x250" }}
+              type="middle"
+            />
 
             <NativeBanner />
 
@@ -345,8 +349,6 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
                 />
               )}
             </DetailsSection>
-
-            <Banner size="300x250" />
 
             {!!manga?.characters?.edges.length && (
               <DetailsSection
@@ -381,6 +383,12 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
                 </List>
               </DetailsSection>
             )}
+
+            <Banner
+              desktop={{ size: "300x250" }}
+              mobile={{ size: "320x100" }}
+              type="atf"
+            />
 
             <DetailsSection title={t("comments_section")}>
               <Comments topic={`manga-${manga.id}`} />

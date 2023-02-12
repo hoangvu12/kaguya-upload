@@ -50,7 +50,11 @@ const VerticalContainer: React.FC = () => {
 
   return (
     <div className="w-full h-full">
-      <Banner size="970x250" />
+      <Banner
+        desktop={{ size: "970x250" }}
+        mobile={{ size: "300x250" }}
+        type="btf"
+      />
 
       {images.map((image, index) => (
         <div className="image-container mx-auto" key={index}>
@@ -63,7 +67,11 @@ const VerticalContainer: React.FC = () => {
         </div>
       ))}
 
-      <Banner size="300x250" />
+      <Banner
+        desktop={{ size: "300x250" }}
+        mobile={{ size: "320x100" }}
+        type="atf"
+      />
 
       {currentChapterIndex < sourceChapters.length - 1 && (
         <div className="w-full h-60 p-8">

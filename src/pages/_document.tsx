@@ -44,6 +44,45 @@ class MyDocument extends Document {
             name="exoclick-site-verification"
             content="993454f71337139b039882b0e72c7ed8"
           />
+
+          {/* <!--Google GPT/ADM code --> */}
+          <script
+            type="text/javascript"
+            async
+            src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"
+          ></script>
+
+          <script type="text/javascript">
+            {`
+              window.googletag = window.googletag || { cmd: [] };
+              window.googletag.cmd.push(function () {
+                  window.googletag.pubads().enableSingleRequest();
+              })
+            `}
+            ;
+          </script>
+
+          {/* <!--Site config --> */}
+          <script
+            type="text/javascript"
+            async
+            src="https://protagcdn.com/s/kaguya.live/site.js"
+          ></script>
+
+          <script
+            type="text/javascript"
+            dangerouslySetInnerHTML={{
+              __html: `
+                window.protag = window.protag || { cmd: [] };
+                window.protag.config = { s: "kaguya.live", childADM: "22874911193", l: "Arf30PQf" };
+                window.protag.cmd.push(function () {
+                    console.log('pageInit')
+
+                    window.protag.pageInit();
+                })
+              `,
+            }}
+          ></script>
         </Head>
         <body>
           <Main />

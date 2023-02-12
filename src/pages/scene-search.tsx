@@ -47,10 +47,9 @@ const TracePage = () => {
       <Section className="pt-20 space-y-16 flex flex-col items-center justify-center">
         <NativeBanner />
         <Banner
-          size={{
-            desktop: "970x250",
-            mobile: "300x250",
-          }}
+          desktop={{ size: "970x250" }}
+          mobile={{ size: "300x250" }}
+          type="btf"
         />
 
         <div className="text-center">

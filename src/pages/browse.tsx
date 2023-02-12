@@ -116,7 +116,12 @@ const BrowsePage = ({ query: baseQuery }) => {
       />
 
       <NativeBanner />
-      <Banner size={{ desktop: "970x250", mobile: "300x250" }} />
+
+      <Banner
+        desktop={{ size: "970x250" }}
+        mobile={{ size: "300x250" }}
+        type="btf"
+      />
 
       <div className="mb-8 flex items-center space-x-2">
         <h1 className="text-4xl font-semibold text-center md:text-left">
