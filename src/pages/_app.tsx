@@ -28,7 +28,6 @@ import {
 import { ReactQueryDevtools } from "react-query/devtools";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
-import Script from "next/script";
 
 Router.events.on("routeChangeStart", NProgress.start);
 Router.events.on("routeChangeComplete", NProgress.done);
@@ -183,51 +182,6 @@ function App({ Component, pageProps, router, err }: WorkaroundAppProps) {
           `,
         }}
       /> */}
-
-      {/* <!--Google GPT/ADM code --> */}
-      <Script
-        id="google-gpt-script"
-        type="text/javascript"
-        async
-        src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"
-      />
-
-      <Script
-        type="text/javascript"
-        dangerouslySetInnerHTML={{
-          __html: `
-                window.googletag = window.googletag || { cmd: [] };
-                window.googletag.cmd.push(function () {
-                    window.googletag.pubads().enableSingleRequest();
-                })
-              `,
-        }}
-        id="google-gpt-init"
-      />
-
-      {/* <!--Site config --> */}
-      <Script
-        type="text/javascript"
-        async
-        id="protag-script"
-        src="https://protagcdn.com/s/kaguya.live/site.js"
-      />
-
-      <Script
-        type="text/javascript"
-        dangerouslySetInnerHTML={{
-          __html: `
-                window.protag = window.protag || { cmd: [] };
-                window.protag.config = { s: "kaguya.live", childADM: "22874911193", l: "Arf30PQf" };
-                window.protag.cmd.push(function () {
-                    console.log('pageInit')
-
-                    window.protag.pageInit();
-                })
-              `,
-        }}
-        id="protag-init"
-      />
 
       <ToastContainer
         position="bottom-left"

@@ -12,7 +12,7 @@ import { useTranslation } from "next-i18next";
 import { AiOutlinePlus } from "react-icons/ai";
 
 const WatchWithFriendPage = () => {
-  const { data, isLoading } = useRooms();
+  // const { data, isLoading } = useRooms();
   const { t } = useTranslation("wwf");
 
   return (
@@ -27,7 +27,7 @@ const WatchWithFriendPage = () => {
         mobile={{ size: "300x250" }}
         type="btf"
       />
-
+      {/* 
       <NativeBanner />
 
       <div className="mb-8 flex flex-col items-center gap-4 md:flex-row md:justify-between">
@@ -54,7 +54,7 @@ const WatchWithFriendPage = () => {
         >
           {(room) => <RoomCard room={room} />}
         </List>
-      )}
+      )} */}
     </Section>
   );
 };

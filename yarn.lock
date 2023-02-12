@@ -1717,6 +1717,11 @@
     "@types/minimatch" "*"
     "@types/node" "*"
 
+"@types/google-publisher-tag@^1.20230206.0":
+  version "1.20230206.0"
+  resolved "https://registry.yarnpkg.com/@types/google-publisher-tag/-/google-publisher-tag-1.20230206.0.tgz#6350430a8dd70d9cf3a37fd42b4c9326bec5851c"
+  integrity sha512-3buIHWTmgs1/7dkIhASvk75ic2WTtf6FWI70V7dCLwOz+T7XXGBvC7o2b3alXc+CvHuTF5YfEU509W1lOXURrA==
+
 "@types/hoist-non-react-statics@^3.3.1":
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/@types/hoist-non-react-statics/-/hoist-non-react-statics-3.3.1.tgz#1124aafe5118cb591977aeb1ceaaed1070eb039f"

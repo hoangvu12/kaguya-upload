@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
-import React from "react";
+import Script from "next/script";
+import React, { useEffect } from "react";
 
 const StickyBanner = () => {
   // return (
@@ -33,32 +34,30 @@ const StickyBanner = () => {
   //   </div>
   // );
 
-  // useEffect(() => {
-  //   setInterval(() => {
-  //     const slots = window.googletag.pubads().getSlots();
-  //     for (const slot of slots) {
-  //       if (slot.getSlotElementId() == "protag-sticky-bottom-ad-unit") {
-  //         window.googletag.cmd.push(() => {
-  //           window.googletag.pubads().refresh([slot]);
-  //         });
-  //       }
-  //     }
-  //   }, 30000);
-  // }, []);
+  useEffect(() => {
+    setInterval(() => {
+      const slots = window.googletag.pubads().getSlots();
+      for (const slot of slots) {
+        if (slot.getSlotElementId() == "protag-sticky-bottom-ad-unit") {
+          window.googletag.cmd.push(() => {
+            window.googletag.pubads().refresh([slot]);
+          });
+        }
+      }
+    }, 30000);
+  }, []);
 
-  // return (
-  //   <Script id="sticky" type="text/javascript">
-  //     {`
-  //       window.googletag = window.googletag || { cmd: [] };
-  //       window.protag = window.protag || { cmd: [] };
-  //       window.protag.cmd.push(function () {
-  //           window.protag.display("protag-sticky-bottom");
-  //       });
-  //     `}
-  //   </Script>
-  // );
-
-  return null;
+  return (
+    <Script id="sticky" type="text/javascript">
+      {`
+      window.googletag = window.googletag || { cmd: [] };
+      window.protag = window.protag || { cmd: [] };
+      window.protag.cmd.push(function () {
+          window.protag.display("protag-sticky-bottom");
+      });
+    `}
+    </Script>
+  );
 };
 
 export default React.memo(StickyBanner);
