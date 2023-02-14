@@ -35,7 +35,7 @@ import classNames from "classnames";
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { isMobile } from "react-device-detect";
 import { AiOutlineUpload } from "react-icons/ai";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
@@ -52,6 +52,7 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
   const { t } = useTranslation("manga_details");
   const { data: chapters, isLoading } = useChapters(manga.id);
   const { data: readData, isLoading: readLoading } = useSavedRead(manga.id);
+  const chapterSelectorRef = useRef<HTMLDivElement>(null);
 
   const title = useMemo(() => getTitle(manga, locale), [manga, locale]);
   const description = useMemo(
@@ -59,25 +60,16 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
     [manga, locale]
   );
 
-  const readDisabled = useMemo(
-    () => manga.status === MediaStatus.Not_yet_released || !chapters?.length,
-    [chapters?.length, manga.status]
-  );
-
   const handleReadClick = () => {
-    if (!readDisabled) return;
-
     if (manga.status === MediaStatus.Not_yet_released) {
       toast.error("This manga hasn't been released yet");
       return;
     }
 
-    if (isLoading) {
-      toast.info("Please wait for the chapters to load");
-      return;
-    }
-
-    toast.error("No chapters were found.");
+    chapterSelectorRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
   };
 
   return (
@@ -107,20 +99,13 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
             <div className="flex flex-col justify-between md:py-4 ml-4 text-left items-start md:-mt-16 space-y-4">
               <div className="flex flex-col items-start space-y-4 md:no-scrollbar">
                 <div className="hidden md:flex items-center flex-wrap gap-2 mb-4">
-                  <Link
-                    disabled={readDisabled}
-                    href={`/manga/read/${manga.id}`}
+                  <Button
+                    onClick={handleReadClick}
+                    primary
+                    LeftIcon={BsFillPlayFill}
                   >
-                    <a>
-                      <Button
-                        onClick={handleReadClick}
-                        primary
-                        LeftIcon={BsFillPlayFill}
-                      >
-                        <p>{t("read_now")}</p>
-                      </Button>
-                    </a>
-                  </Link>
+                    <p>{t("read_now")}</p>
+                  </Button>
 
                   <Popup
                     reference={
@@ -335,17 +320,19 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
             <NativeBanner />
 
             <DetailsSection title={t("chapters_section")} className="relative">
-              {isLoading || readLoading ? (
-                <div className="h-full w-full flex items-center justify-center">
-                  <Spinner />
-                </div>
-              ) : (
-                <LocaleChapterSelector
-                  readData={readData}
-                  mediaId={manga.id}
-                  chapters={chapters}
-                />
-              )}
+              <div ref={chapterSelectorRef}>
+                {isLoading || readLoading ? (
+                  <div className="h-full w-full flex items-center justify-center">
+                    <Spinner />
+                  </div>
+                ) : (
+                  <LocaleChapterSelector
+                    readData={readData}
+                    mediaId={manga.id}
+                    chapters={chapters}
+                  />
+                )}
+              </div>
             </DetailsSection>
 
             {!!manga?.characters?.edges.length && (
