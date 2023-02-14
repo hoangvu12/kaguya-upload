@@ -77,8 +77,9 @@ export type Episode = {
   video: Video[];
   published: boolean;
   section: string;
-  title?: string;
   episodeNumber: number;
+  description?: Record<string, string>;
+  title?: Record<string, string>;
 };
 
 export type Chapter = {

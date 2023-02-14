@@ -1,7 +1,8 @@
 import Popup from "@/components/shared/Popup";
 import Select from "@/components/shared/Select";
 import { groupBy, sortObjectByValue } from "@/utils";
-import React, { useLayoutEffect, useMemo, useState } from "react";
+import { useRouter } from "next/router";
+import React, { useEffect, useMemo, useState } from "react";
 import EpisodeSelector, { EpisodeSelectorProps } from "./EpisodeSelector";
 
 export interface SourceEpisodeSelectorProps extends EpisodeSelectorProps {}
@@ -16,6 +17,8 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
   ...episodeSelectorProps
 }) => {
   const [videoContainer, setVideoContainer] = useState<HTMLElement>();
+
+  const { asPath } = useRouter();
 
   const fastSources = useMemo(() => {
     const fastEpisodes = episodes.filter((episode) => episode.source.isFast);
@@ -92,19 +95,19 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
     [sources, activeSource]
   );
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const videoElement: HTMLDivElement = document.querySelector(
       ".netplayer-container"
     );
 
-    if (!videoElement) {
+    if (!videoElement || !asPath.includes("/watch/")) {
       setVideoContainer(document.body);
 
       return;
     }
 
     setVideoContainer(videoElement);
-  }, []);
+  }, [asPath]);
 
   return (
     <React.Fragment>

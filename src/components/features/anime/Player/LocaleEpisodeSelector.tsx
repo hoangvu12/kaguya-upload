@@ -8,8 +8,13 @@ import { useRouter } from "next/router";
 import classNames from "classnames";
 import { useTranslation } from "next-i18next";
 
-const LocaleEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
+interface LocaleEpisodeSelectorProps extends SourceEpisodeSelectorProps {
+  className?: string;
+}
+
+const LocaleEpisodeSelector: React.FC<LocaleEpisodeSelectorProps> = ({
   episodes,
+  className,
   ...props
 }) => {
   const router = useRouter();
@@ -35,6 +40,7 @@ const LocaleEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
         <Tabs
           defaultIndex={defaultTabIndex}
           selectedTabClassName="bg-white !text-black"
+          className={className}
         >
           <TabList className="flex items-center justify-end gap-x-1">
             {localesHasEpisodes.map(({ locale }) => {
@@ -82,4 +88,4 @@ const LocaleEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
   );
 };
 
-export default LocaleEpisodeSelector;
+export default React.memo(LocaleEpisodeSelector);
