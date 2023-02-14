@@ -83,6 +83,7 @@ const PlayerControls = React.memo(() => {
               <div className="w-[70vw] overflow-hidden bg-background-900 p-4">
                 <LocaleEpisodeSelector
                   mediaId={anime.id}
+                  media={anime}
                   episodes={episodes}
                   activeEpisode={currentEpisode}
                   episodeLinkProps={{ shallow: true, replace: true }}
@@ -163,18 +164,20 @@ const PlayerMobileControls = React.memo(() => {
               isOpen && (
                 <div
                   className={classNames(
-                    "fixed inset-0 z-[9999] flex w-full flex-col justify-center bg-background px-2"
+                    "fixed inset-0 z-[9999] flex w-full flex-col justify-center bg-background overflow-y-scroll"
                   )}
                 >
-                  <BsArrowLeft
+                  <AiOutlineClose
                     className="absolute left-3 top-3 h-8 w-8 cursor-pointer transition duration-300 hover:text-gray-200"
                     onClick={() => setIsOpen(false)}
                   />
 
                   {anime?.id && (
-                    <div>
+                    <div className="w-full h-full">
                       <LocaleEpisodeSelector
+                        className="p-4"
                         mediaId={anime.id}
+                        media={anime}
                         episodes={episodes}
                         activeEpisode={currentEpisode}
                         episodeLinkProps={{ shallow: true, replace: true }}

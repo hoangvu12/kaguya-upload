@@ -17,7 +17,7 @@ interface WatchPageContainerProps {
 }
 
 const WatchPageContainer: NextPage<WatchPageContainerProps> = ({ media }) => {
-  const { data: episodes, isLoading } = useEpisodes(media.id);
+  const { data: episodes, isLoading } = useEpisodes(media.id, true);
   const { locale, back } = useRouter();
   const { t } = useTranslation("anime_watch");
 

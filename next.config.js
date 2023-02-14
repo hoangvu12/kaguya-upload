@@ -15,6 +15,7 @@ module.exports = withPWA({
       "emojis.slackmojis.com",
       "pic-bstarstatic.akamaized.net",
       "cdn.discordapp.com",
+      "media.kitsu.io",
     ],
     minimumCacheTTL: 604800, // a week,
     deviceSizes: [360, 412, 480, 640, 750, 828, 1080, 1200, 1920, 2048, 3840],

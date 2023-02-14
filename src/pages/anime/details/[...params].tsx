@@ -56,7 +56,7 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
   const { locale } = useRouter();
   const { t } = useTranslation("anime_details");
 
-  const { data: episodes, isLoading } = useEpisodes(anime.id);
+  const { data: episodes, isLoading } = useEpisodes(anime.id, true);
   const { data: watchedData, isLoading: watchedLoading } = useSavedWatched(
     anime.id
   );

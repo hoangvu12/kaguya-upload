@@ -65,11 +65,17 @@ const GlobalPlayerContextProvider: React.FC = ({ children }) => {
   const router = useRouter();
 
   const shouldPlayInBackground = useMemo(() => {
-    return !router?.pathname.includes("watch") && !isMobile;
+    return !router?.pathname.includes("watch");
   }, [router?.pathname]);
 
   useEffect(() => {
-    if (shouldPlayInBackground) return;
+    if (shouldPlayInBackground) {
+      if (isMobile) {
+        setPlayerState(null);
+      }
+
+      return;
+    }
 
     // Set the player position just in case it is dragged
     x.set(0);
@@ -205,6 +211,7 @@ const GlobalPlayerContextProvider: React.FC = ({ children }) => {
                       >
                         <div className="w-[70vw] overflow-hidden bg-background-900 p-4">
                           <LocaleEpisodeSelector
+                            media={playerProps.anime}
                             mediaId={playerProps.anime.id}
                             episodes={playerProps.episodes}
                             activeEpisode={playerProps.currentEpisode}

@@ -79,7 +79,7 @@ type ConvertOptions = {
 
 export const convert = (
   text: string,
-  type: typeof types[number],
+  type: (typeof types)[number],
   options: ConvertOptions = {}
 ) => {
   const { locale, reverse } = options;
@@ -92,7 +92,7 @@ export const convert = (
   if (!constant) return text;
 
   const index = constant.findIndex(
-    (el: typeof constant[number]) => el.value === text || el.label === text
+    (el: (typeof constant)[number]) => el.value === text || el.label === text
   );
 
   if (index === -1) return null;
@@ -124,6 +124,37 @@ export const getDescription = (data: Media, locale?: string) => {
   }
 
   return translation.description || data?.description;
+};
+
+export const getEpisodeTitle = (
+  titles: Record<string, string>,
+  locale?: string
+) => {
+  if (!titles) return null;
+
+  const keys = Object.keys(titles);
+
+  if (!keys.length) return null;
+
+  if (titles[locale]) return titles[locale];
+
+  return titles[keys[0]];
+};
+export const getEpisodeDescription = (
+  descriptions: Record<string, string>,
+  locale?: string
+) => {
+  if (!descriptions) return null;
+
+  const keys = Object.keys(descriptions);
+
+  if (!keys.length) return null;
+
+  if (descriptions[locale]) {
+    return descriptions[locale];
+  }
+
+  return descriptions[keys[0]];
 };
 
 export const sortMediaUnit = <T extends Chapter | Episode>(data: T[]) => {
