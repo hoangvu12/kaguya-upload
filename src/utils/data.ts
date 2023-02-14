@@ -150,7 +150,7 @@ export const getEpisodeDescription = (
 
   if (!keys.length) return null;
 
-  if (locale) {
+  if (descriptions[locale]) {
     return descriptions[locale];
   }
 

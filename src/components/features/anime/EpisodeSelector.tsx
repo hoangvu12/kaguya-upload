@@ -374,7 +374,7 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
             className={classNames(
               showType === EpisodeShowType.Grid
                 ? "xl:grid-cols-8 lg:grid-cols-7 md:grid-cols-6 sm:grid-cols-5 grid-cols-4"
-                : "xl:grid-cols-3 lg:grid-cols-3 grid-cols-2",
+                : "xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 grid-cols-1",
               "grid gap-4"
             )}
           >
