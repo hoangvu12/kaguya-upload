@@ -1,7 +1,21 @@
 import Script from "next/script";
-import React from "react";
+import React, { useEffect } from "react";
 
 const StickyBanner = () => {
+  useEffect(() => {
+    setInterval(() => {
+      const slots = window.googletag.pubads().getSlots();
+
+      for (const slot of slots) {
+        if (slot.getSlotElementId() == "protag-sticky-bottom-ad-unit") {
+          window.googletag.cmd.push(() => {
+            window.googletag.pubads().refresh([slot]);
+          });
+        }
+      }
+    }, 30000);
+  }, []);
+
   return (
     <React.Fragment>
       <div id="pf-63e46763ca8fd80027a851ae">
