@@ -75,15 +75,15 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
 
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/70"></div>
 
-      <div className="w-full absolute bottom-0 p-2 space-y-1">
-        <p className="text-sm line-clamp-1 font-semibold">
+      <div className="w-full absolute bottom-0 p-2 space-y-2">
+        <p className="text-sm line-clamp-1 font-semibold leading-none">
           {episodeDisplayTitle}
         </p>
 
         {episodeDescription && (
           <p
             title={episodeDescription}
-            className="text-xs line-clamp-1 font-semibold text-gray-300"
+            className="text-xs line-clamp-1 font-semibold text-gray-300 leading-none"
           >
             {episodeDescription}
           </p>
