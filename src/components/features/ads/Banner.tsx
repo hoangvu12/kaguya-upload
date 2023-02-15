@@ -82,8 +82,6 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type }) => {
   useEffect(() => {
     const script = document.createElement("script");
     script.innerHTML = `
-      console.log("loading script")
-
       window.googletag = window.googletag || { cmd: [] };
       window.protag = window.protag || { cmd: [] };
       window.protag.cmd.push(function () {
@@ -108,7 +106,7 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type }) => {
 
   return (
     <div
-      className="flex items-center justify-center my-8"
+      className="flex items-center justify-center my-4 md:my-8"
       id={divId}
       style={{
         minWidth: bannerSize?.width,

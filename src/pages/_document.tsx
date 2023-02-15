@@ -84,6 +84,31 @@ class MyDocument extends Document {
               `,
             }}
           ></script>
+
+          {process.env.NODE_ENV == "development" && (
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.googletag = window.googletag || { cmd: [] };
+                  window.googletag.cmd.push(function () {
+                      const slotIds = ['protag-before_content', 'protag-in_content', 'protag-after_content', 'protag-header', 'protag-sidebar']
+                      for (const slotId of slotIds) {
+                      console.log('define: ' + slotId)
+                        window.googletag
+                          .defineSlot(
+                            "/6355419/Travel/Europe/France/Paris",
+                            [300, 250],
+                            slotId
+                          )
+                          .addService(window.googletag.pubads())
+                        // Enable the PubAdsService.
+                      }
+                      window.googletag.enableServices()
+                  })
+                `,
+              }}
+            />
+          )}
         </Head>
         <body>
           <Main />

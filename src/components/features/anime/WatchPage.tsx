@@ -1,9 +1,12 @@
 import { WatchPlayerProps } from "@/components/features/anime/WatchPlayer";
 import Button from "@/components/shared/Button";
 import Description from "@/components/shared/Description";
+import DetailsSection from "@/components/shared/DetailsSection";
 import Head from "@/components/shared/Head";
+import HorizontalCard from "@/components/shared/HorizontalCard";
 import Loading from "@/components/shared/Loading";
 import Portal from "@/components/shared/Portal";
+import Section from "@/components/shared/Section";
 import { useGlobalPlayer } from "@/contexts/GlobalPlayerContext";
 import useDevice from "@/hooks/useDevice";
 import useEventListener from "@/hooks/useEventListener";
@@ -29,9 +32,15 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { isMobileOnly } from "react-device-detect";
 import { useQueryClient } from "react-query";
+import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 import { toast } from "react-toastify";
+import Banner from "../ads/Banner";
+import Comments from "../comment/Comments";
+import MediaDetails from "../upload/MediaDetails";
 import ErrorMessage from "./ErrorMessage";
+import LocaleEpisodeSelector from "./Player/LocaleEpisodeSelector";
 
 const WatchPlayer = dynamic(
   () => import("@/components/features/anime/WatchPlayer"),
@@ -414,6 +423,71 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
         image={anime.bannerImage}
       />
 
+      <Section className="py-4 md:py-8 flex flex-col md:flex-row gap-8 w-full h-full bg-background-900">
+        <div className="md:w-2/3 space-y-8">
+          <Banner desktop="970x250" mobile="300x250" type="atf" />
+
+          <DetailsSection title={t("episodes_section")}>
+            <div className="bg-background-800 p-4 md:p-8">
+              <LocaleEpisodeSelector
+                mediaId={anime.id}
+                media={anime}
+                episodes={episodes}
+                activeEpisode={currentEpisode}
+                episodeLinkProps={{ shallow: true, replace: true }}
+              />
+            </div>
+          </DetailsSection>
+
+          {isMobileOnly && (
+            <Banner desktop="300x250" mobile="320x100" type="middle" />
+          )}
+
+          <DetailsSection className="w-full" title={t("info_section")}>
+            <MediaDetails
+              media={anime}
+              className="!bg-background-800 !p-4 md:!p-8"
+            />
+          </DetailsSection>
+
+          <DetailsSection title={t("comments_section")}>
+            <Comments topic={`anime-${anime.id}`} />
+          </DetailsSection>
+        </div>
+
+        <div className="md:w-1/3">
+          {!isMobileOnly && (
+            <Banner desktop="300x250" mobile="300x250" type="atf" />
+          )}
+
+          <Tabs selectedTabClassName="!bg-primary-500 hover:bg-primary-500">
+            <TabList className="mb-4 flex items-center gap-2">
+              <Tab className="px-3 py-2 bg-background-600 hover:bg-white/20 transition duration-300 rounded-md cursor-pointer">
+                {t("relations_section")}
+              </Tab>
+              <Tab className="px-3 py-2 bg-background-600 hover:bg-white/20 transition duration-300 rounded-md cursor-pointer">
+                {t("recommendations_section")}
+              </Tab>
+            </TabList>
+
+            <TabPanel>
+              {anime.relations.nodes.map((relation) => (
+                <HorizontalCard key={relation.id} data={relation} />
+              ))}
+            </TabPanel>
+
+            <TabPanel>
+              {anime.recommendations.nodes.map((recommendation) => (
+                <HorizontalCard
+                  key={recommendation.id}
+                  data={recommendation.mediaRecommendation}
+                />
+              ))}
+            </TabPanel>
+          </Tabs>
+        </div>
+      </Section>
+
       {isLoading && (
         <Portal retryInterval={1000} selector=".netplayer-container">
           <Loading />
@@ -433,38 +507,17 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
 
       {videoLoadError && <ErrorMessage errorMessage={videoLoadError} />}
 
-      {showInfoOverlay && (
-        <Portal>
-          <div
-            className="fixed inset-0 z-[9999] flex items-center bg-black/70"
-            onMouseMove={() => setShowInfoOverlay(false)}
-          >
-            <div className="w-11/12 px-40">
-              <p className="mb-2 text-xl text-gray-200">{t("blur_heading")}</p>
-              <p className="mb-8 text-5xl font-semibold">
-                {title} - {currentEpisode.name}
-              </p>
-
-              <Description
-                description={description || t("common:updating") + "..."}
-                className="text-lg text-gray-300 line-clamp-6"
-              />
-            </div>
-          </div>
-        </Portal>
-      )}
-
       {showWatchedOverlay && !declinedRewatch && (
         <Portal selector=".netplayer-container">
           <div
-            className="fixed inset-0 z-40 bg-black/70"
+            className="absolute inset-0 z-40 bg-black/70"
             onClick={() => {
               setShowWatchedOverlay(false);
               setDeclinedRewatch(true);
             }}
           />
 
-          <div className="fixed left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 z-50 w-2/3 p-8 rounded-md bg-background-900">
+          <div className="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 z-50 w-2/3 p-8 rounded-md bg-background-900">
             <h1 className="text-4xl font-bold mb-4">
               {t("rewatch_heading", { episodeName: watchedEpisode.name })}
             </h1>

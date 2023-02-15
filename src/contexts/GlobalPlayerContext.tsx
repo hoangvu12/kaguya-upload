@@ -5,7 +5,12 @@ import CircleButton from "@/components/shared/CircleButton";
 import Popup from "@/components/shared/Popup";
 import { createProxyUrl } from "@/utils";
 import classNames from "classnames";
-import { AnimatePresence, motion, useMotionValue } from "framer-motion";
+import {
+  AnimatePresence,
+  motion,
+  MotionStyle,
+  useMotionValue,
+} from "framer-motion";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import React, {
@@ -15,7 +20,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { isMobile } from "react-device-detect";
+import { isMobile, isMobileOnly } from "react-device-detect";
 import { AiOutlineClose, AiOutlineExpandAlt } from "react-icons/ai";
 import { BsArrowLeft } from "react-icons/bs";
 import { toast } from "react-toastify";
@@ -82,11 +87,12 @@ const GlobalPlayerContextProvider: React.FC = ({ children }) => {
     y.set(0);
   }, [shouldPlayInBackground, x, y]);
 
-  const playerSize = useMemo(() => {
+  const playerSize: MotionStyle = useMemo(() => {
     if (!shouldPlayInBackground) {
       return {
-        width: "100vw",
-        height: "100vh",
+        width: "100%",
+        height: "56.25vw",
+        maxHeight: `calc(100vh - ${isMobileOnly ? "100" : "170"}px)`,
       };
     }
 
@@ -152,8 +158,6 @@ const GlobalPlayerContextProvider: React.FC = ({ children }) => {
         setPlayerProps,
       }}
     >
-      {children}
-
       <div
         className="fixed inset-0 pointer-events-none"
         ref={constraintsRef}
@@ -163,8 +167,8 @@ const GlobalPlayerContextProvider: React.FC = ({ children }) => {
         <AnimatePresence initial={false}>
           <div
             className={classNames(
-              "fixed shadow-2xl",
-              shouldPlayInBackground && "bottom-4 right-4 z-[9999]"
+              "shadow-2xl",
+              shouldPlayInBackground && "fixed bottom-4 right-4 z-[9999]"
             )}
           >
             <motion.div
@@ -173,10 +177,9 @@ const GlobalPlayerContextProvider: React.FC = ({ children }) => {
               dragMomentum={false}
               dragConstraints={constraintsRef}
               style={{
-                width: playerSize.width,
-                height: playerSize.height,
                 x,
                 y,
+                ...playerSize,
               }}
             >
               {!isEmbed ? (
@@ -264,6 +267,8 @@ const GlobalPlayerContextProvider: React.FC = ({ children }) => {
           </div>
         </AnimatePresence>
       ) : null}
+
+      {children}
     </PlayerContext.Provider>
   );
 };

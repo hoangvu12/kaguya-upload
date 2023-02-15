@@ -1,5 +1,4 @@
 {
-  "blur_heading": "You are watching",
   "rewatch_description": "The system recognizes you have watched {{episodeName}}",
   "rewatch_heading": "Rewatch {{episodeName}}",
   "rewatch_no": "No",
@@ -8,5 +7,10 @@
   "error_message": "An error has occured ({{error}})",
   "error_fallback_suggest": "Try to refresh the page or choose another source.",
   "no_episodes_message": "There are no episodes",
-  "error_goback": "Go back"
+  "error_goback": "Go back",
+  "episodes_section": "Episodes",
+  "info_section": "Info",
+  "comments_section": "Comments",
+  "relations_section": "Related",
+  "recommendations_section": "Recommendations"
 }

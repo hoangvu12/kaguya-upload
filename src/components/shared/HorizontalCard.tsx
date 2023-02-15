@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import React, { useMemo } from "react";
 import DotList from "./DotList";
 import PlainCard from "./PlainCard";
+import { useTranslation } from "next-i18next";
 
 interface HorizontalCardProps extends React.HTMLAttributes<HTMLDivElement> {
   data: Media;
@@ -20,6 +21,7 @@ const HorizontalCard = ({
   ...props
 }: HorizontalCardProps) => {
   const { locale } = useRouter();
+  const { t } = useTranslation("common");
 
   const title = useMemo(() => getTitle(data, locale), [data, locale]);
 
@@ -46,9 +48,11 @@ const HorizontalCard = ({
         </Link>
 
         <DotList className="text-sm text-gray-300">
-          {data.format && <span>{convert(data.format, "format")}</span>}
+          {data.format && (
+            <span>{convert(data.format, "format") || t("unknown")}</span>
+          )}
 
-          {"season" in data && "seasonYear" in data && (
+          {data.season && data.seasonYear && (
             <span>
               {convert(data.season, "season", { locale })} {data.seasonYear}
             </span>
