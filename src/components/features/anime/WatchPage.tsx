@@ -427,8 +427,6 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
 
       <Section className="py-4 md:py-8 flex flex-col md:flex-row gap-8 w-full h-full bg-background-900">
         <div className="md:w-2/3 space-y-8">
-          <Banner refresh desktop="970x250" mobile="300x250" type="atf" />
-
           <DetailsSection title={t("episodes_section")}>
             <div className="bg-background-900 p-4 md:p-8">
               <LocaleEpisodeSelector
@@ -441,9 +439,7 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
             </div>
           </DetailsSection>
 
-          {isMobileOnly && (
-            <Banner refresh desktop="300x250" mobile="320x100" type="middle" />
-          )}
+          <Banner refresh desktop="970x250" mobile="300x250" type="atf" />
 
           <DetailsSection className="w-full" title={t("info_section")}>
             <MediaDetails
@@ -451,6 +447,10 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
               className="!bg-background-900 !p-4 md:!p-8"
             />
           </DetailsSection>
+
+          {isMobileOnly && (
+            <Banner refresh desktop="300x250" mobile="320x100" type="middle" />
+          )}
 
           <DetailsSection title={t("comments_section")}>
             <Comments topic={`anime-${anime.id}`} />
