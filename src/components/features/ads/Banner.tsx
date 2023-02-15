@@ -53,7 +53,7 @@ type BannerProps = {
 };
 
 //https://support.google.com/admanager/answer/1100453?hl=en
-const Banner: React.FC<BannerProps> = ({ desktop, mobile, type }) => {
+const Banner: React.FC<BannerProps> = ({ desktop, mobile, type, refresh }) => {
   const size = useMemo(
     () => (isMobileOnly ? mobile : desktop),
     [mobile, desktop]
@@ -82,8 +82,6 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type }) => {
   useEffect(() => {
     const script = document.createElement("script");
     script.innerHTML = `
-      console.log("loading script")
-
       window.googletag = window.googletag || { cmd: [] };
       window.protag = window.protag || { cmd: [] };
       window.protag.cmd.push(function () {
@@ -93,10 +91,45 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type }) => {
 
     document.body.appendChild(script);
 
+    let interval: NodeJS.Timer = null;
+
+    if (refresh) {
+      interval = setInterval(() => {
+        const slots = window.googletag.pubads().getSlots();
+
+        for (const slot of slots) {
+          const adsId = slot.getSlotElementId();
+
+          const ignoreAds = ["sticky", "interstitial"];
+
+          if (ignoreAds.some((id) => adsId.includes(id))) {
+            continue;
+          }
+
+          const adElement = document.querySelector("#" + adsId);
+
+          if (adElement) {
+            const isParent = adElement.closest("#" + divId);
+            if (isParent) {
+              window.googletag.cmd.push(() => {
+                window.googletag.pubads().refresh([slot]);
+              });
+
+              break;
+            }
+          }
+        }
+      }, 30000);
+    }
+
     return () => {
       document.body.removeChild(script);
+
+      if (interval) {
+        clearInterval(interval);
+      }
     };
-  }, [divId]);
+  }, [divId, refresh]);
 
   const bannerSize = useMemo(() => {
     if (isMobileOnly) {
@@ -108,7 +141,7 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type }) => {
 
   return (
     <div
-      className="flex items-center justify-center my-8"
+      className="flex items-center justify-center my-4 md:my-8"
       id={divId}
       style={{
         minWidth: bannerSize?.width,

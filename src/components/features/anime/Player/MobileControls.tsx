@@ -5,7 +5,7 @@ import {
   useInteract,
   useVideo,
 } from "netplayer";
-import * as React from "react";
+import { useState, memo, useEffect } from "react";
 import ProgressSlider from "./ProgressSlider";
 import SkipButton from "./SkipButton";
 
@@ -16,6 +16,21 @@ interface MobileControlsProps {
 const MobileControls: React.FC<MobileControlsProps> = ({ controlsSlot }) => {
   const { isInteracting } = useInteract();
   const { videoState } = useVideo();
+  const [screenWidth, setScreenWidth] = useState(0);
+
+  useEffect(() => {
+    setScreenWidth(window.innerWidth);
+
+    const handleResize = () => {
+      setScreenWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   return (
     <div
@@ -36,13 +51,16 @@ const MobileControls: React.FC<MobileControlsProps> = ({ controlsSlot }) => {
       <div className="px-4 w-full mt-2">
         <ProgressSlider />
       </div>
-      <div className="flex justify-evenly items-center py-6">
-        <SkipButton />
 
-        {controlsSlot}
-      </div>{" "}
+      {screenWidth >= 640 && (
+        <div className="flex justify-evenly items-center py-6">
+          <SkipButton />
+
+          {controlsSlot}
+        </div>
+      )}
     </div>
   );
 };
 
-export default React.memo(MobileControls);
+export default memo(MobileControls);

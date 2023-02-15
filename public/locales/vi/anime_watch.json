@@ -1,5 +1,4 @@
 {
-  "blur_heading": "Bạn đang xem",
   "rewatch_description": "Hệ thống ghi nhận bạn đã xem {{episodeName}}",
   "rewatch_heading": "Xem {{episodeName}}",
   "rewatch_no": "Không",
@@ -8,5 +7,10 @@
   "error_message": "Đã có lỗi xảy ra ({{error}})",
   "error_fallback_suggest": "Hãy thử tải lại trang hoặc chọn source khác.",
   "no_episodes_message": "Không có tập nào",
-  "error_goback": "Quay lại trang chủ"
+  "error_goback": "Quay lại trang chủ",
+  "episodes_section": "Tập phim",
+  "info_section": "Thông tin",
+  "comments_section": "Bình luận",
+  "relations_section": "Liên quan",
+  "recommendations_section": "Anime hay khác"
 }

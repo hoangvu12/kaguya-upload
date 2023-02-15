@@ -73,7 +73,7 @@ const EpisodeButton: React.FC<EpisodeButtonProps> = ({
   return (
     <div
       className={classNames(
-        "relative rounded-md bg-background-800 col-span-1 aspect-w-2 aspect-h-1 group",
+        "relative rounded-md bg-background-700 col-span-1 aspect-w-2 aspect-h-1 group",
         episode.sourceEpisodeId === activeEpisode?.sourceEpisodeId
           ? "text-primary-300"
           : watchedData?.episode?.episodeNumber >= episode.episodeNumber &&

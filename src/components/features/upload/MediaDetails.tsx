@@ -1,11 +1,13 @@
 import Description from "@/components/shared/Description";
 import DotList from "@/components/shared/DotList";
 import InfoItem from "@/components/shared/InfoItem";
+import Link from "@/components/shared/Link";
 import PlainCard from "@/components/shared/PlainCard";
 import TextIcon from "@/components/shared/TextIcon";
 import { Media } from "@/types/anilist";
-import { numberWithCommas } from "@/utils";
+import { createMediaDetailsUrl, numberWithCommas } from "@/utils";
 import { getTitle, getDescription, convert } from "@/utils/data";
+import classNames from "classnames";
 import { useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
 import React, { useMemo } from "react";
@@ -14,9 +16,10 @@ import { MdTagFaces } from "react-icons/md";
 
 interface MediaDetailsProps {
   media: Media;
+  className?: string;
 }
 
-const MediaDetails: React.FC<MediaDetailsProps> = ({ media }) => {
+const MediaDetails: React.FC<MediaDetailsProps> = ({ media, className }) => {
   const { t } = useTranslation();
   const { locale } = useRouter();
 
@@ -27,17 +30,32 @@ const MediaDetails: React.FC<MediaDetailsProps> = ({ media }) => {
   );
 
   return (
-    <div className="p-8 bg-background-900 text-center md:text-left flex flex-col md:flex-row items-start gap-4">
+    <div
+      className={classNames(
+        "w-full p-8 bg-background-900 text-center md:text-left flex flex-col md:flex-row items-start gap-4",
+        className
+      )}
+    >
       <div className="w-[183px] shrink-0 mx-auto md:mx-0">
-        <PlainCard src={media.coverImage.extraLarge} alt={title} />
+        <Link href={createMediaDetailsUrl(media)}>
+          <a>
+            <PlainCard src={media.coverImage.extraLarge} alt={title} />
+          </a>
+        </Link>
       </div>
 
-      <div className="space-y-4">
-        <h1 className="text-2xl font-semibold">{title}</h1>
+      <div className="w-full space-y-8 md:space-y-4">
+        <Link href={createMediaDetailsUrl(media)}>
+          <a>
+            <h1 className="text-2xl font-semibold hover:text-primary-300 transition duration-300">
+              {title}
+            </h1>
+          </a>
+        </Link>
 
         <p className="text-gray-300">{media.title.native}</p>
 
-        <div className="flex flex-wrap items-center text-lg gap-x-8">
+        <div className="flex flex-wrap items-center justify-center md:justify-start text-lg gap-x-8">
           {media.averageScore && (
             <TextIcon LeftIcon={MdTagFaces} iconClassName="text-green-300">
               <p>{media.averageScore}%</p>
@@ -55,7 +73,7 @@ const MediaDetails: React.FC<MediaDetailsProps> = ({ media }) => {
           </DotList>
         </div>
 
-        <div className="flex space-x-8 overflow-x-auto snap-x snap-mandatory md:space-x-16">
+        <div className="flex space-x-8 w-full overflow-x-auto snap-x snap-mandatory md:space-x-16">
           <InfoItem title={t("common:country")} value={media.countryOfOrigin} />
 
           {media.episodes && (
