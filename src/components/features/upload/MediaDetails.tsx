@@ -1,10 +1,11 @@
 import Description from "@/components/shared/Description";
 import DotList from "@/components/shared/DotList";
 import InfoItem from "@/components/shared/InfoItem";
+import Link from "@/components/shared/Link";
 import PlainCard from "@/components/shared/PlainCard";
 import TextIcon from "@/components/shared/TextIcon";
 import { Media } from "@/types/anilist";
-import { numberWithCommas } from "@/utils";
+import { createMediaDetailsUrl, numberWithCommas } from "@/utils";
 import { getTitle, getDescription, convert } from "@/utils/data";
 import classNames from "classnames";
 import { useTranslation } from "next-i18next";
@@ -36,11 +37,21 @@ const MediaDetails: React.FC<MediaDetailsProps> = ({ media, className }) => {
       )}
     >
       <div className="w-[183px] shrink-0 mx-auto md:mx-0">
-        <PlainCard src={media.coverImage.extraLarge} alt={title} />
+        <Link href={createMediaDetailsUrl(media)}>
+          <a>
+            <PlainCard src={media.coverImage.extraLarge} alt={title} />
+          </a>
+        </Link>
       </div>
 
       <div className="w-full space-y-8 md:space-y-4">
-        <h1 className="text-2xl font-semibold">{title}</h1>
+        <Link href={createMediaDetailsUrl(media)}>
+          <a>
+            <h1 className="text-2xl font-semibold hover:text-primary-300 transition duration-300">
+              {title}
+            </h1>
+          </a>
+        </Link>
 
         <p className="text-gray-300">{media.title.native}</p>
 
