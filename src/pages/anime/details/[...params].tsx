@@ -40,7 +40,7 @@ import classNames from "classnames";
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { isMobile } from "react-device-detect";
 import { AiOutlineUpload } from "react-icons/ai";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
@@ -55,6 +55,7 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
   const user = useUser();
   const { locale } = useRouter();
   const { t } = useTranslation("anime_details");
+  const episodeSelectorRef = useRef<HTMLDivElement>(null);
 
   const { data: episodes, isLoading } = useEpisodes(anime.id, true);
   const { data: watchedData, isLoading: watchedLoading } = useSavedWatched(
@@ -81,25 +82,16 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
     [anime, locale]
   );
 
-  const watchDisabled = useMemo(
-    () => anime.status === MediaStatus.Not_yet_released || !episodes?.length,
-    [anime.status, episodes?.length]
-  );
-
   const handleWatchClick = () => {
-    if (!watchDisabled) return;
-
     if (anime.status === MediaStatus.Not_yet_released) {
       toast.error("This anime hasn't been released yet");
       return;
     }
 
-    if (isLoading) {
-      toast.info("Please wait for the episodes to load");
-      return;
-    }
-
-    toast.error("No episodes were found.");
+    episodeSelectorRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
   };
 
   useEffect(() => {
@@ -143,20 +135,13 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
             <div className="flex flex-col justify-between md:py-4 ml-4 text-left items-start md:-mt-16 space-y-4">
               <div className="flex flex-col items-start space-y-4 md:no-scrollbar">
                 <div className="hidden md:flex items-center flex-wrap gap-2 mb-4">
-                  <Link
-                    disabled={watchDisabled}
-                    href={`/anime/watch/${anime.id}`}
+                  <Button
+                    onClick={handleWatchClick}
+                    primary
+                    LeftIcon={BsFillPlayFill}
                   >
-                    <a>
-                      <Button
-                        onClick={handleWatchClick}
-                        primary
-                        LeftIcon={BsFillPlayFill}
-                      >
-                        <p>{t("common:watch_now")}</p>
-                      </Button>
-                    </a>
-                  </Link>
+                    <p>{t("common:watch_now")}</p>
+                  </Button>
 
                   <Popup
                     reference={
@@ -459,18 +444,20 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
               title={t("episodes_section")}
               className="overflow-hidden"
             >
-              {isLoading || watchedLoading ? (
-                <div className="h-full w-full flex items-center justify-center">
-                  <Spinner />
-                </div>
-              ) : (
-                <LocaleEpisodeSelector
-                  watchedData={watchedData}
-                  mediaId={anime.id}
-                  episodes={episodes}
-                  media={anime}
-                />
-              )}
+              <div ref={episodeSelectorRef}>
+                {isLoading || watchedLoading ? (
+                  <div className="h-full w-full flex items-center justify-center">
+                    <Spinner />
+                  </div>
+                ) : (
+                  <LocaleEpisodeSelector
+                    watchedData={watchedData}
+                    mediaId={anime.id}
+                    episodes={episodes}
+                    media={anime}
+                  />
+                )}
+              </div>
             </DetailsSection>
 
             {!!anime?.characters?.edges?.length && (
