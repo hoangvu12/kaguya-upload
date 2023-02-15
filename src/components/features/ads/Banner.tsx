@@ -50,10 +50,19 @@ type BannerProps = {
   desktop: (typeof desktopBanners)[number]["size"];
   type: "btf" | "atf" | "middle";
   refresh?: boolean;
+  width?: number | string;
+  height?: number | string;
 };
 
 //https://support.google.com/admanager/answer/1100453?hl=en
-const Banner: React.FC<BannerProps> = ({ desktop, mobile, type, refresh }) => {
+const Banner: React.FC<BannerProps> = ({
+  desktop,
+  mobile,
+  type,
+  refresh,
+  width,
+  height,
+}) => {
   const size = useMemo(
     () => (isMobileOnly ? mobile : desktop),
     [mobile, desktop]
@@ -121,7 +130,7 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type, refresh }) => {
             }
           }
         }
-      }, 30000);
+      }, 120000);
     }
 
     return () => {
@@ -146,8 +155,8 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type, refresh }) => {
       className="flex items-center justify-center my-4 md:my-8"
       id={divId}
       style={{
-        minWidth: bannerSize?.width,
-        minHeight: bannerSize?.height,
+        ...(width ? { width: width } : { minWidth: bannerSize?.width }),
+        ...(height ? { height: height } : { minHeight: bannerSize?.height }),
       }}
     />
   );

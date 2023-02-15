@@ -437,7 +437,15 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
             </div>
           </DetailsSection>
 
-          <Banner refresh desktop="970x250" mobile="300x250" type="atf" />
+          <div className="w-full overflow-hidden">
+            <Banner
+              width="100%"
+              refresh
+              desktop="970x250"
+              mobile="300x250"
+              type="atf"
+            />
+          </div>
 
           <DetailsSection className="w-full" title={t("info_section")}>
             <MediaDetails
