@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 
 const StickyBanner = () => {
   useEffect(() => {
-    setInterval(() => {
+    const interval = setInterval(() => {
       const slots = window.googletag.pubads().getSlots();
 
       for (const slot of slots) {
@@ -14,6 +14,10 @@ const StickyBanner = () => {
         }
       }
     }, 30000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   return (

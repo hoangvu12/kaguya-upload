@@ -415,6 +415,8 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
     });
   }, [anime, animeId, currentEpisode.name, nextEpisode]);
 
+  console.log(anime.recommendations);
+
   return (
     <React.Fragment>
       <Head
@@ -425,10 +427,10 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
 
       <Section className="py-4 md:py-8 flex flex-col md:flex-row gap-8 w-full h-full bg-background-900">
         <div className="md:w-2/3 space-y-8">
-          <Banner desktop="970x250" mobile="300x250" type="atf" />
+          <Banner refresh desktop="970x250" mobile="300x250" type="atf" />
 
           <DetailsSection title={t("episodes_section")}>
-            <div className="bg-background-800 p-4 md:p-8">
+            <div className="bg-background-900 p-4 md:p-8">
               <LocaleEpisodeSelector
                 mediaId={anime.id}
                 media={anime}
@@ -440,13 +442,13 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
           </DetailsSection>
 
           {isMobileOnly && (
-            <Banner desktop="300x250" mobile="320x100" type="middle" />
+            <Banner refresh desktop="300x250" mobile="320x100" type="middle" />
           )}
 
           <DetailsSection className="w-full" title={t("info_section")}>
             <MediaDetails
               media={anime}
-              className="!bg-background-800 !p-4 md:!p-8"
+              className="!bg-background-900 !p-4 md:!p-8"
             />
           </DetailsSection>
 
@@ -457,11 +459,11 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
 
         <div className="md:w-1/3">
           {!isMobileOnly && (
-            <Banner desktop="300x250" mobile="300x250" type="atf" />
+            <Banner refresh desktop="300x250" mobile="300x250" type="atf" />
           )}
 
           <Tabs selectedTabClassName="!bg-primary-500 hover:bg-primary-500">
-            <TabList className="mb-4 flex items-center gap-2">
+            <TabList className="mb-4 flex overflow-x-auto w-full items-center gap-2">
               <Tab className="px-3 py-2 bg-background-600 hover:bg-white/20 transition duration-300 rounded-md cursor-pointer">
                 {t("relations_section")}
               </Tab>
@@ -471,12 +473,24 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
             </TabList>
 
             <TabPanel>
+              {!anime.relations.nodes.length && (
+                <p className="block text-center text-white/60">
+                  No relations found
+                </p>
+              )}
+
               {anime.relations.nodes.map((relation) => (
                 <HorizontalCard key={relation.id} data={relation} />
               ))}
             </TabPanel>
 
             <TabPanel>
+              {!anime.recommendations.nodes.length && (
+                <p className="block text-center text-white/60">
+                  No recommendations found
+                </p>
+              )}
+
               {anime.recommendations.nodes.map((recommendation) => (
                 <HorizontalCard
                   key={recommendation.id}

@@ -53,7 +53,7 @@ type BannerProps = {
 };
 
 //https://support.google.com/admanager/answer/1100453?hl=en
-const Banner: React.FC<BannerProps> = ({ desktop, mobile, type }) => {
+const Banner: React.FC<BannerProps> = ({ desktop, mobile, type, refresh }) => {
   const size = useMemo(
     () => (isMobileOnly ? mobile : desktop),
     [mobile, desktop]
@@ -91,10 +91,30 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type }) => {
 
     document.body.appendChild(script);
 
+    let interval: NodeJS.Timer = null;
+
+    if (refresh) {
+      interval = setInterval(() => {
+        const slots = window.googletag.pubads().getSlots();
+
+        for (const slot of slots) {
+          if (slot.getSlotElementId() == "protag-sticky-bottom-ad-unit") {
+            window.googletag.cmd.push(() => {
+              window.googletag.pubads().refresh([slot]);
+            });
+          }
+        }
+      }, 30000);
+    }
+
     return () => {
       document.body.removeChild(script);
+
+      if (interval) {
+        clearInterval(interval);
+      }
     };
-  }, [divId]);
+  }, [divId, refresh]);
 
   const bannerSize = useMemo(() => {
     if (isMobileOnly) {
