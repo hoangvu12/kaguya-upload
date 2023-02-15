@@ -415,8 +415,6 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
     });
   }, [anime, animeId, currentEpisode.name, nextEpisode]);
 
-  console.log(anime.recommendations);
-
   return (
     <React.Fragment>
       <Head

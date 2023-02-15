@@ -98,10 +98,25 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type, refresh }) => {
         const slots = window.googletag.pubads().getSlots();
 
         for (const slot of slots) {
-          if (slot.getSlotElementId() == "protag-sticky-bottom-ad-unit") {
-            window.googletag.cmd.push(() => {
-              window.googletag.pubads().refresh([slot]);
-            });
+          const adsId = slot.getSlotElementId();
+
+          const ignoreAds = ["sticky", "interstitial"];
+
+          if (ignoreAds.some((id) => adsId.includes(id))) {
+            continue;
+          }
+
+          const adElement = document.querySelector("#" + adsId);
+
+          if (adElement) {
+            const isParent = adElement.closest("#" + divId);
+            if (isParent) {
+              window.googletag.cmd.push(() => {
+                window.googletag.pubads().refresh([slot]);
+              });
+
+              break;
+            }
           }
         }
       }, 30000);
