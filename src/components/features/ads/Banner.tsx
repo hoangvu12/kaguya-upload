@@ -102,6 +102,8 @@ const Banner: React.FC<BannerProps> = ({ desktop, mobile, type, refresh }) => {
 
           const ignoreAds = ["sticky", "interstitial"];
 
+          if (!adsId) return;
+
           if (ignoreAds.some((id) => adsId.includes(id))) {
             continue;
           }
