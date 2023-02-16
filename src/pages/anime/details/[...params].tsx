@@ -493,6 +493,7 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
                 </List>
               </DetailsSection>
             )}
+
             {!anime.isAdult && (
               <Banner desktop="300x250" mobile="320x100" type="btf" />
             )}
