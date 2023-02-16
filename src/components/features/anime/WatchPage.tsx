@@ -1,6 +1,5 @@
 import { WatchPlayerProps } from "@/components/features/anime/WatchPlayer";
 import Button from "@/components/shared/Button";
-import Description from "@/components/shared/Description";
 import DetailsSection from "@/components/shared/DetailsSection";
 import Head from "@/components/shared/Head";
 import HorizontalCard from "@/components/shared/HorizontalCard";
@@ -8,8 +7,6 @@ import Loading from "@/components/shared/Loading";
 import Portal from "@/components/shared/Portal";
 import Section from "@/components/shared/Section";
 import { useGlobalPlayer } from "@/contexts/GlobalPlayerContext";
-import useDevice from "@/hooks/useDevice";
-import useEventListener from "@/hooks/useEventListener";
 import {
   fetchSource,
   getQueryKey,
@@ -71,33 +68,16 @@ interface WatchPageProps {
 const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const router = useRouter();
-  const { isMobile } = useDevice();
-  const [showInfoOverlay, setShowInfoOverlay] = useState(false);
   const [showWatchedOverlay, setShowWatchedOverlay] = useState(false);
   const [declinedRewatch, setDeclinedRewatch] = useState(false);
   const [videoLoadError, setVideoLoadError] = useState("");
 
-  const showInfoTimeout = useRef<NodeJS.Timeout>(null);
   const saveWatchedInterval = useRef<NodeJS.Timer>(null);
   const saveWatchedMutation = useSaveWatched();
   const { t } = useTranslation("anime_watch");
   const queryClient = useQueryClient();
 
   const { params } = router.query;
-
-  useEventListener("visibilitychange", () => {
-    if (isMobile) return;
-
-    if (showInfoTimeout.current) {
-      clearTimeout(showInfoTimeout.current);
-    }
-
-    if (!document.hidden) return;
-
-    showInfoTimeout.current = setTimeout(() => {
-      setShowInfoOverlay(true);
-    }, 5000);
-  });
 
   const sortedEpisodes = useMemo(
     () => sortMediaUnit(episodes || []),
@@ -273,17 +253,23 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
     }, 30000);
 
     const handleVideoTimeUpdate = () => {
+      videoEl.removeEventListener("timeupdate", handleVideoTimeUpdate);
+
       clearTimeout(videoNotLoadedTimeout);
 
       setVideoLoadError(null);
     };
 
-    videoEl.addEventListener("timeupdate", handleVideoTimeUpdate, {
-      once: true,
-    });
+    const handleVideoCanPlay = () => {
+      videoEl.addEventListener("timeupdate", handleVideoTimeUpdate, {
+        once: true,
+      });
+    };
+
+    videoEl.addEventListener("canplay", handleVideoCanPlay);
 
     return () => {
-      videoEl.removeEventListener("timeupdate", handleVideoTimeUpdate);
+      videoEl.removeEventListener("canplay", handleVideoCanPlay);
 
       clearTimeout(videoNotLoadedTimeout);
     };
@@ -425,17 +411,15 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
 
       <Section className="py-4 md:py-8 flex flex-col md:flex-row gap-8 w-full h-full bg-background-900">
         <div className="md:w-2/3 space-y-8">
-          <DetailsSection title={t("episodes_section")}>
-            <div className="bg-background-900 p-4 md:p-8">
-              <LocaleEpisodeSelector
-                mediaId={anime.id}
-                media={anime}
-                episodes={episodes}
-                activeEpisode={currentEpisode}
-                episodeLinkProps={{ shallow: true, replace: true }}
-              />
-            </div>
-          </DetailsSection>
+          <div className="bg-background-900 p-4 md:p-8">
+            <LocaleEpisodeSelector
+              mediaId={anime.id}
+              media={anime}
+              episodes={episodes}
+              activeEpisode={currentEpisode}
+              episodeLinkProps={{ shallow: true, replace: true }}
+            />
+          </div>
 
           <div className="w-full overflow-hidden">
             <Banner
