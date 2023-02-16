@@ -222,14 +222,18 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
   }, [activeChunk, chunkOptions]);
 
   const sectionOptions = useMemo(() => {
-    if (Object.keys(sections).length <= 1) {
+    const sectionKeys = Object.keys(sections).filter(
+      (section) => section && section !== "null"
+    );
+
+    if (!sectionKeys.length) {
       return [];
     }
 
-    return Object.keys(sections).map((section) => {
+    return sectionKeys.map((section) => {
       return {
         value: section,
-        label: section,
+        label: section === "null" ? "Default" : section,
       };
     });
   }, [sections]);
