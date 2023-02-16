@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo } from "react";
+import { useTranslation } from "next-i18next";
+import React, { useEffect, useMemo, useState } from "react";
 import { isMobileOnly } from "react-device-detect";
 
 declare global {
@@ -54,6 +55,9 @@ type BannerProps = {
   height?: number | string;
 };
 
+const defaultAdBlockerMessage =
+  "Help support Kaguya by disabling your ad-blocker. Ads on our site allow us to continue providing high-quality content for you. Your support is greatly appreciated.";
+
 //https://support.google.com/admanager/answer/1100453?hl=en
 const Banner: React.FC<BannerProps> = ({
   desktop,
@@ -63,6 +67,9 @@ const Banner: React.FC<BannerProps> = ({
   width,
   height,
 }) => {
+  const [isError, setIsError] = useState(false);
+  const { t } = useTranslation("common");
+
   const size = useMemo(
     () => (isMobileOnly ? mobile : desktop),
     [mobile, desktop]
@@ -89,6 +96,12 @@ const Banner: React.FC<BannerProps> = ({
   }, [size, type]);
 
   useEffect(() => {
+    if (!("display" in window.protag)) {
+      setIsError(true);
+
+      return;
+    }
+
     const script = document.createElement("script");
     script.innerHTML = `
       window.googletag = window.googletag || { cmd: [] };
@@ -150,7 +163,18 @@ const Banner: React.FC<BannerProps> = ({
     }
   }, [size]);
 
-  return (
+  return isError ? (
+    <div
+      style={{
+        ...(height ? { height: height } : { minHeight: bannerSize?.height }),
+      }}
+      className="flex items-center justify-center gap-8 px-8 py-3 my-8 bg-primary-800 mx-auto w-full max-w-[90vw] md:max-w-[60vw]"
+    >
+      <p className="text-lg">
+        {t("adblock_message", { defaultValue: defaultAdBlockerMessage })}
+      </p>
+    </div>
+  ) : (
     <div
       className="flex items-center justify-center my-4 md:my-8"
       id={divId}
