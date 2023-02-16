@@ -460,6 +460,10 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
               </div>
             </DetailsSection>
 
+            {!anime.isAdult && (
+              <Banner desktop="300x250" mobile="320x100" type="btf" />
+            )}
+
             {!!anime?.characters?.edges?.length && (
               <DetailsSection
                 title={t("characters_section")}
@@ -492,10 +496,6 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
                   {(node) => <Card data={node} />}
                 </List>
               </DetailsSection>
-            )}
-
-            {!anime.isAdult && (
-              <Banner desktop="300x250" mobile="320x100" type="btf" />
             )}
 
             <DetailsSection title={t("comments_section")}>

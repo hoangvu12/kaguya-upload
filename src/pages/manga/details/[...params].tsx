@@ -335,6 +335,10 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
               </div>
             </DetailsSection>
 
+            {!manga.isAdult && (
+              <Banner desktop="300x250" mobile="320x100" type="btf" />
+            )}
+
             {!!manga?.characters?.edges.length && (
               <DetailsSection
                 title={t("characters_section")}
@@ -367,10 +371,6 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
                   {(node) => <Card data={node} />}
                 </List>
               </DetailsSection>
-            )}
-
-            {!manga.isAdult && (
-              <Banner desktop="300x250" mobile="320x100" type="btf" />
             )}
 
             <DetailsSection title={t("comments_section")}>
