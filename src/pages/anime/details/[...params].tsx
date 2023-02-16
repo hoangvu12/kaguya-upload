@@ -41,7 +41,7 @@ import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef } from "react";
-import { isMobile } from "react-device-detect";
+import { isMobile, isMobileOnly } from "react-device-detect";
 import { AiOutlineUpload } from "react-icons/ai";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { BsFillPlayFill } from "react-icons/bs";
@@ -117,11 +117,17 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
       />
 
       <div className="pb-8">
-        <DetailsBanner image={anime.bannerImage} />
+        <DetailsBanner image={anime.bannerImage}>
+          {!anime.isAdult && !isMobileOnly && (
+            <div className="absolute right-4 bottom-12 w-[300px] h-[250px] z-10">
+              <Banner desktop="300x250" mobile="300x250" type="atf" />
+            </div>
+          )}
+        </DetailsBanner>
 
         <Section className="relative pb-4 bg-background-900">
           <div className="flex flex-row md:space-x-8">
-            <div className="shrink-0 relative md:static md:left-0 md:-translate-x-0 w-[120px] md:w-[186px] -mt-20 space-y-6">
+            <div className="shrink-0 relative md:static md:left-0 md:-translate-x-0 w-[120px] md:w-[186px] mt-4 md:-mt-20 space-y-6">
               <PlainCard src={anime.coverImage.extraLarge} alt={title} />
 
               {user && !isMobile && (
@@ -248,6 +254,10 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
             </div>
           </div>
 
+          {isMobileOnly && !anime.isAdult && (
+            <Banner desktop="970x250" mobile="300x250" type="atf" />
+          )}
+
           <MediaDescription
             description={description}
             containerClassName="my-4 block md:hidden"
@@ -259,23 +269,26 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
               <SourceStatus type={MediaType.Anime} source={anime} />
             )}
 
-            <Link href={`/anime/watch/${anime.id}`}>
-              <a className={classNames(!user && "flex-1")}>
-                {user ? (
-                  <CircleButton secondary LeftIcon={BsFillPlayFill} />
-                ) : (
-                  <Button
-                    primary
-                    LeftIcon={BsFillPlayFill}
-                    className="relative w-full"
-                  >
-                    <p className="!mx-0 absolute left-1/2 -translate-x-1/2">
-                      {t("common:watch_now")}
-                    </p>
-                  </Button>
-                )}
-              </a>
-            </Link>
+            <div className={classNames(!user && "flex-1")}>
+              {user ? (
+                <CircleButton
+                  onClick={handleWatchClick}
+                  secondary
+                  LeftIcon={BsFillPlayFill}
+                />
+              ) : (
+                <Button
+                  onClick={handleWatchClick}
+                  primary
+                  LeftIcon={BsFillPlayFill}
+                  className="relative w-full"
+                >
+                  <p className="!mx-0 absolute left-1/2 -translate-x-1/2">
+                    {t("common:watch_now")}
+                  </p>
+                </Button>
+              )}
+            </div>
 
             {user && isMobile && (
               <NotificationButton type={MediaType.Anime} source={anime} />
@@ -434,11 +447,11 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
           </div>
 
           <div className="space-y-12 md:col-span-8">
-            {!anime.isAdult && (
-              <Banner desktop="970x250" mobile="300x250" type="middle" />
-            )}
-
             <NativeBanner />
+
+            {!anime.isAdult && (
+              <Banner desktop="970x250" mobile="320x100" type="middle" />
+            )}
 
             <DetailsSection
               title={t("episodes_section")}
@@ -459,10 +472,6 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
                 )}
               </div>
             </DetailsSection>
-
-            {!anime.isAdult && (
-              <Banner desktop="300x250" mobile="320x100" type="btf" />
-            )}
 
             {!!anime?.characters?.edges?.length && (
               <DetailsSection

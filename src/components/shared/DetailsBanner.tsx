@@ -1,7 +1,11 @@
 import React from "react";
 import Image from "@/components/shared/Image";
 
-const DetailsBanner = ({ image }: { image?: string }) => {
+interface DetailsBannerProps {
+  image?: string;
+}
+
+const DetailsBanner: React.FC<DetailsBannerProps> = ({ image, children }) => {
   return (
     <div className="relative z-0 w-full h-[200px] md:h-[400px]">
       {image && (
@@ -15,6 +19,8 @@ const DetailsBanner = ({ image }: { image?: string }) => {
       )}
 
       <div className="banner__overlay absolute inset-0 z-10"></div>
+
+      {children}
     </div>
   );
 };

@@ -36,7 +36,7 @@ import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
 import { useMemo, useRef } from "react";
-import { isMobile } from "react-device-detect";
+import { isMobile, isMobileOnly } from "react-device-detect";
 import { AiOutlineUpload } from "react-icons/ai";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { BsFillPlayFill } from "react-icons/bs";
@@ -81,11 +81,17 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
       />
 
       <div className="pb-8">
-        <DetailsBanner image={manga.bannerImage} />
+        <DetailsBanner image={manga.bannerImage}>
+          {!manga.isAdult && !isMobileOnly && (
+            <div className="absolute right-4 bottom-12 w-[300px] h-[250px] z-10">
+              <Banner desktop="300x250" mobile="300x250" type="atf" />
+            </div>
+          )}
+        </DetailsBanner>
 
         <Section className="relative z-10 bg-background-900 pb-4">
           <div className="flex md:space-x-8">
-            <div className="shrink-0 relative md:static md:left-0 md:-translate-x-0 w-[120px] md:w-[186px] -mt-20 space-y-6">
+            <div className="shrink-0 relative md:static md:left-0 md:-translate-x-0 w-[120px] md:w-[186px] mt-4 md:-mt-20 space-y-6">
               <PlainCard src={manga.coverImage.extraLarge} alt={title} />
 
               {user && !isMobile && (
@@ -181,6 +187,10 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
               </div>
             </div>
           </div>
+
+          {isMobileOnly && !manga.isAdult && (
+            <Banner desktop="970x250" mobile="300x250" type="atf" />
+          )}
 
           <MediaDescription
             description={description}
@@ -313,11 +323,11 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
           </div>
 
           <div className="md:col-span-8 space-y-12">
-            {!manga.isAdult && (
-              <Banner desktop="970x250" mobile="300x250" type="middle" />
-            )}
-
             <NativeBanner />
+
+            {!manga.isAdult && (
+              <Banner desktop="970x250" mobile="320x100" type="middle" />
+            )}
 
             <DetailsSection title={t("chapters_section")} className="relative">
               <div ref={chapterSelectorRef}>
@@ -334,10 +344,6 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
                 )}
               </div>
             </DetailsSection>
-
-            {!manga.isAdult && (
-              <Banner desktop="300x250" mobile="320x100" type="btf" />
-            )}
 
             {!!manga?.characters?.edges.length && (
               <DetailsSection
