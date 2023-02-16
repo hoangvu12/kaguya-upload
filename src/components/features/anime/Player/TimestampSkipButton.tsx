@@ -76,7 +76,14 @@ const TimestampSkipButton: React.FC<TimestampSkipButtonProps> = ({
   const [timestamp, setTimeStamp] = useState<SkipTimeStamp>(null);
 
   useEffect(() => {
-    if (!timestamps?.length) return null;
+    if (!timestamps?.length) {
+      setState((prev) => ({
+        ...prev,
+        timestamps: [],
+      }));
+
+      return;
+    }
 
     const composedTimestamps = timestamps.map((ts) => ({
       startTime: ts.interval.startTime,
