@@ -21,16 +21,6 @@ export const randomElement = <T>(array: T[]): T => {
   return array[index];
 };
 
-export const randomElements = <T>(array: T[], length: number): T[] => {
-  const randomArr: T[] = [];
-
-  for (let i = 0; i < length; i++) {
-    randomArr.push(randomElement(array));
-  }
-
-  return randomArr;
-};
-
 //https://stackoverflow.com/questions/9733288/how-to-programmatically-calculate-the-contrast-ratio-between-two-colors
 export function luminance(r: number, g: number, b: number) {
   var a = [r, g, b].map(function (v) {
@@ -112,10 +102,6 @@ export const chunk = <T>(arr: T[], chunkSize: number): T[][] => {
   return array;
 };
 
-export const includesArr = (text: string, array: any[]) => {
-  return array.some((element) => text.includes(element));
-};
-
 export const getPagination = (page?: number, limit: number = 15) => {
   const from = page - 1 > 0 ? limit * (page - 1) + 1 : 0;
   const to = page - 1 > 0 ? from + limit : limit;
@@ -173,10 +159,6 @@ export const parseBetween = (str, start, end) => {
   return str.substring(startIndex, endIndex);
 };
 
-// https://stackoverflow.com/questions/28360978/css-how-to-get-browser-scrollbar-width-for-hover-overflow-auto-nice-margi
-export const getScrollbarSize = () =>
-  window.innerWidth - document.documentElement.offsetWidth;
-
 export const isFalsy = (value: any) => {
   return value === undefined || value === null || value === "";
 };
@@ -192,19 +174,6 @@ export const base64ToUint8Array = (base64: string) => {
     outputArray[i] = rawData.charCodeAt(i);
   }
   return outputArray;
-};
-
-// https://stackoverflow.com/questions/1064089/inserting-a-text-where-cursor-is-using-javascript-jquery
-export const insertTextAtCursor = (input: HTMLInputElement, text: string) => {
-  const { selectionStart, selectionEnd, value } = input;
-
-  const beforeStr = value.substring(0, selectionStart);
-  const afterStr = value.substring(selectionEnd, value.length);
-  const newSelection = selectionStart + text.length;
-
-  input.value = `${beforeStr}${text}${afterStr}`;
-  input.selectionStart = newSelection;
-  input.selectionEnd = newSelection;
 };
 
 export const arePropertiesFalsy = (obj: any) =>
@@ -349,22 +318,6 @@ export const removeArrayOfObjectDup = <T extends object, K extends keyof T>(
   );
 };
 
-export const fulfilledPromises = <T extends Promise<any>>(promises: T[]) =>
-  Promise.allSettled(promises).then((results) =>
-    results
-      .filter((result) => result.status === "fulfilled")
-      .map((result) => (result as PromiseFulfilledResult<Awaited<T>>).value)
-  );
-
-// This is for avoiding anilist's rate limit on build time
-export const prodSleep = (ms: number) => {
-  if (process.env.NODE_ENV === "production") {
-    return sleep(ms);
-  }
-
-  return Promise.resolve();
-};
-
 // https://stackoverflow.com/questions/10420352/converting-file-size-in-bytes-to-human-readable-string
 export const humanFileSize = (size: number) => {
   if (size === 0) return "0 KB";
@@ -501,92 +454,6 @@ export const sortObjectByValue = <T extends object>(
 
   return sortedObj;
 };
-
-// https://stackoverflow.com/questions/5306680/move-an-array-element-from-one-array-position-to-another
-export const array_move = <T>(
-  arr: T[],
-  old_index: number,
-  new_index: number
-) => {
-  const clonedArr = [...arr];
-
-  if (new_index >= arr.length) {
-    let k = new_index - clonedArr.length + 1;
-    while (k--) {
-      clonedArr.push(undefined);
-    }
-  }
-
-  clonedArr.splice(new_index, 0, clonedArr.splice(old_index, 1)[0]);
-  return clonedArr;
-};
-
-/**
- * By Ken Fyrstenberg Nilsen
- *
- * drawImageProp(context, image [, x, y, width, height [,offsetX, offsetY]])
- *
- * If image and context are only arguments rectangle will equal canvas
- */
-export function drawImageProp(
-  ctx: CanvasRenderingContext2D,
-  img: HTMLImageElement,
-  x?: number,
-  y?: number,
-  w?: number,
-  h?: number,
-  offsetX?: number,
-  offsetY?: number
-) {
-  if (arguments.length === 2) {
-    x = y = 0;
-    w = ctx.canvas.width;
-    h = ctx.canvas.height;
-  }
-
-  // default offset is center
-  offsetX = typeof offsetX === "number" ? offsetX : 0.5;
-  offsetY = typeof offsetY === "number" ? offsetY : 0.5;
-
-  // keep bounds [0.0, 1.0]
-  if (offsetX < 0) offsetX = 0;
-  if (offsetY < 0) offsetY = 0;
-  if (offsetX > 1) offsetX = 1;
-  if (offsetY > 1) offsetY = 1;
-
-  let iw = img.width,
-    ih = img.height,
-    r = Math.min(w / iw, h / ih),
-    nw = iw * r, // new prop. width
-    nh = ih * r, // new prop. height
-    cx = 0,
-    cy = 0,
-    cw = 0,
-    ch = 0,
-    ar = 1;
-
-  // decide which gap to fill
-  if (nw < w) ar = w / nw;
-  if (Math.abs(ar - 1) < 1e-14 && nh < h) ar = h / nh; // updated
-  nw *= ar;
-  nh *= ar;
-
-  // calc source rectangle
-  cw = iw / (nw / w);
-  ch = ih / (nh / h);
-
-  cx = (iw - cw) * offsetX;
-  cy = (ih - ch) * offsetY;
-
-  // make sure source rectangle is valid
-  if (cx < 0) cx = 0;
-  if (cy < 0) cy = 0;
-  if (cw > iw) cw = iw;
-  if (ch > ih) ch = ih;
-
-  // fill image in dest. rectangle
-  ctx.drawImage(img, cx, cy, cw, ch, x, y, w, h);
-}
 
 export const removeDup = <T>(a: T[]) =>
   a.filter(function (item, pos) {
