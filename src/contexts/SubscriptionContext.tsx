@@ -34,7 +34,11 @@ export const SubscriptionContextProvider: React.FC = ({ children }) => {
 
     if (isSubscriptionSent.current) return;
 
-    isSubscriptionSent.current = true;
+    if (isSavedSub) {
+      isSubscriptionSent.current = true;
+
+      return;
+    }
 
     navigator.serviceWorker.getRegistration().then(async (registration) => {
       let subscription = await registration.pushManager.getSubscription();

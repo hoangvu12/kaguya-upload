@@ -20,7 +20,6 @@ const useNotifications = () => {
     },
     {
       enabled: !!user,
-      refetchOnWindowFocus: true,
     }
   );
 };
