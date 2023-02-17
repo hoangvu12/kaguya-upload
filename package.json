@@ -11,7 +11,8 @@
     "ts": "tsc --noEmit --incremental",
     "ts:watch": "yarn ts --watch",
     "postbuild": "next-sitemap",
-    "partytown": "partytown copylib public/~partytown"
+    "partytown": "partytown copylib public/~partytown",
+    "find:unused": "next-unused"
   },
   "dependencies": {
     "@builder.io/partytown": "^0.7.3",
@@ -83,6 +84,7 @@
     "eslint": "<8.0.0",
     "eslint-config-next": "12.0.1",
     "fork-ts-checker-webpack-plugin": "^6.5.0",
+    "next-unused": "^0.0.6",
     "postcss": "^8.4.12",
     "postcss-import": "^14.0.2",
     "tailwind": "^4.0.0",
@@ -93,5 +95,16 @@
     "commitizen": {
       "path": "git-cz"
     }
+  },
+  "next-unused": {
+    "alias": {},
+    "include": [
+      "src/"
+    ],
+    "exclude": [],
+    "entrypoints": [
+      "src/pages",
+      "src/components"
+    ]
   }
 }
