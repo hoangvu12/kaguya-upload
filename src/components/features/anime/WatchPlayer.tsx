@@ -1,4 +1,5 @@
 import { useGlobalPlayer } from "@/contexts/GlobalPlayerContext";
+import { useHistory } from "@/contexts/HistoryContext";
 import { parseNumberFromString } from "@/utils";
 import classNames from "classnames";
 import { ControlButton, TimeIndicator, useInteract } from "netplayer";
@@ -201,7 +202,8 @@ const PlayerMobileControls = React.memo(() => {
 PlayerMobileControls.displayName = "PlayerMobileControls";
 
 const PlayerOverlay = React.memo(() => {
-  const router = useRouter();
+  const { back } = useHistory();
+  const { push } = useRouter();
   const { isInteracting } = useInteract();
   const {
     playerProps: { currentEpisode, anime },
@@ -220,7 +222,7 @@ const PlayerOverlay = React.memo(() => {
                   isInteracting ? "visible opacity-100" : "invisible opacity-0"
                 )}
                 onClick={() =>
-                  router.push(
+                  push(
                     `/anime/watch/${anime?.id}/${currentEpisode?.sourceId}/${currentEpisode.sourceEpisodeId}`
                   )
                 }
@@ -249,7 +251,7 @@ const PlayerOverlay = React.memo(() => {
               "transition-al absolute top-10 left-10 h-10 w-10 cursor-pointer duration-300 hover:text-gray-200",
               isInteracting ? "visible opacity-100" : "invisible opacity-0"
             )}
-            onClick={router.back}
+            onClick={back}
           />
 
           {anime?.idMal && (
@@ -269,6 +271,8 @@ PlayerOverlay.displayName = "PlayerOverlay";
 
 const PlayerMobileOverlay = React.memo(() => {
   const router = useRouter();
+  const { back } = useHistory();
+
   const { isInteracting } = useInteract();
   const {
     playerProps: { currentEpisode, anime },
@@ -285,7 +289,7 @@ const PlayerMobileOverlay = React.memo(() => {
               "absolute top-4 left-4 h-8 w-8 cursor-pointer transition-all duration-300 hover:text-gray-200",
               isInteracting ? "visible opacity-100" : "invisible opacity-0"
             )}
-            onClick={router.back}
+            onClick={back}
           />
         )}
 

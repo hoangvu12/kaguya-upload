@@ -3,6 +3,7 @@ import Button from "@/components/shared/Button";
 import Head from "@/components/shared/Head";
 import Loading from "@/components/shared/Loading";
 import { REVALIDATE_TIME } from "@/constants";
+import { useHistory } from "@/contexts/HistoryContext";
 import useChapters from "@/hooks/useChapters";
 import { getMediaDetails } from "@/services/anilist";
 import { Media, MediaType } from "@/types/anilist";
@@ -18,7 +19,8 @@ interface ReadPageContainerProps {
 
 const ReadPageContainer: NextPage<ReadPageContainerProps> = ({ media }) => {
   const { data: chapters, isLoading } = useChapters(media.id);
-  const { locale, back } = useRouter();
+  const { locale } = useRouter();
+  const { back } = useHistory();
   const { t } = useTranslation("manga_read");
 
   const title = useMemo(() => getTitle(media, locale), [media, locale]);

@@ -3,6 +3,7 @@ import CircleButton from "@/components/shared/CircleButton";
 import Input from "@/components/shared/Input";
 import Kbd from "@/components/shared/Kbd";
 import Select from "@/components/shared/Select";
+import { useHistory } from "@/contexts/HistoryContext";
 import { useReadInfo } from "@/contexts/ReadContext";
 import { useReadPanel } from "@/contexts/ReadPanelContext";
 import {
@@ -10,7 +11,6 @@ import {
   fitModes,
   useReadSettings,
 } from "@/contexts/ReadSettingsContext";
-import useDevice from "@/hooks/useDevice";
 import { groupBy, sortObjectByValue } from "@/utils";
 import { getTitle } from "@/utils/data";
 import classNames from "classnames";
@@ -18,7 +18,7 @@ import { motion, Variants } from "framer-motion";
 import { useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
-import { BrowserView, MobileView } from "react-device-detect";
+import { BrowserView, isMobileOnly, MobileView } from "react-device-detect";
 import { AiOutlineSearch } from "react-icons/ai";
 import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
 import { BsArrowLeft } from "react-icons/bs";
@@ -52,7 +52,7 @@ const mobileSidebarVarants: Variants = {
 const transition = [0.33, 1, 0.68, 1];
 
 const Sidebar = () => {
-  const { isMobile } = useDevice();
+  const { back } = useHistory();
   const {
     state: { isSidebarOpen },
     setState,
@@ -140,12 +140,12 @@ const Sidebar = () => {
 
   return (
     <motion.div
-      variants={isMobile ? mobileSidebarVarants : sidebarVariants}
+      variants={isMobileOnly ? mobileSidebarVarants : sidebarVariants}
       animate={isSidebarOpen ? "animate" : "initial"}
       initial="initial"
       className={classNames(
         "bg-background-800 flex-shrink-0 flex-grow-0",
-        isMobile && "fixed top-0 w-full min-h-[content] z-50"
+        isMobileOnly && "fixed top-0 w-full min-h-[content] z-50"
       )}
       transition={{ ease: transition, duration: 0.6 }}
     >
@@ -156,7 +156,7 @@ const Sidebar = () => {
             LeftIcon={BsArrowLeft}
             iconClassName="w-7 h-7"
             secondary
-            onClick={router.back}
+            onClick={back}
           />
 
           <p className="text-center text-lg font-semibold line-clamp-1">

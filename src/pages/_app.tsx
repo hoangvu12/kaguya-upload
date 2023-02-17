@@ -7,6 +7,7 @@ import BaseLayout from "@/components/layouts/BaseLayout";
 import { AppErrorFallback } from "@/components/shared/AppErrorFallback";
 import { AuthContextProvider } from "@/contexts/AuthContext";
 import GlobalPlayerContextProvider from "@/contexts/GlobalPlayerContext";
+import { HistoryProvider } from "@/contexts/HistoryContext";
 import { SubscriptionContextProvider } from "@/contexts/SubscriptionContext";
 import { pageview } from "@/lib/gtag";
 import "@/styles/index.css";
@@ -207,25 +208,27 @@ function App({ Component, pageProps, router, err }: WorkaroundAppProps) {
 
       <QueryClientProvider client={queryClient}>
         <AuthContextProvider>
-          <SubscriptionContextProvider>
-            <GlobalPlayerContextProvider>
-              <ErrorBoundary
-                onError={(_, info) => {
-                  setErrorInfo(info);
-                }}
-                fallbackRender={(fallbackProps) => {
-                  return (
-                    <AppErrorFallback
-                      {...fallbackProps}
-                      errorInfo={errorInfo}
-                    />
-                  );
-                }}
-              >
-                {getLayout(<Component {...pageProps} err={err} />)}
-              </ErrorBoundary>
-            </GlobalPlayerContextProvider>
-          </SubscriptionContextProvider>
+          <HistoryProvider>
+            <SubscriptionContextProvider>
+              <GlobalPlayerContextProvider>
+                <ErrorBoundary
+                  onError={(_, info) => {
+                    setErrorInfo(info);
+                  }}
+                  fallbackRender={(fallbackProps) => {
+                    return (
+                      <AppErrorFallback
+                        {...fallbackProps}
+                        errorInfo={errorInfo}
+                      />
+                    );
+                  }}
+                >
+                  {getLayout(<Component {...pageProps} err={err} />)}
+                </ErrorBoundary>
+              </GlobalPlayerContextProvider>
+            </SubscriptionContextProvider>
+          </HistoryProvider>
         </AuthContextProvider>
 
         {process.env.NODE_ENV === "development" && <ReactQueryDevtools />}

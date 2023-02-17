@@ -3,6 +3,7 @@ import Button from "@/components/shared/Button";
 import Head from "@/components/shared/Head";
 import Loading from "@/components/shared/Loading";
 import { REVALIDATE_TIME } from "@/constants";
+import { useHistory } from "@/contexts/HistoryContext";
 import useEpisodes from "@/hooks/useEpisodes";
 import { getMediaDetails } from "@/services/anilist";
 import { Media, MediaType } from "@/types/anilist";
@@ -18,7 +19,8 @@ interface WatchPageContainerProps {
 
 const WatchPageContainer: NextPage<WatchPageContainerProps> = ({ media }) => {
   const { data: episodes, isLoading } = useEpisodes(media.id, true);
-  const { locale, back } = useRouter();
+  const { locale } = useRouter();
+  const { back } = useHistory();
   const { t } = useTranslation("anime_watch");
 
   const title = useMemo(() => getTitle(media, locale), [media, locale]);

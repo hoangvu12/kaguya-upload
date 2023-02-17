@@ -24,6 +24,7 @@ import { isMobile, isMobileOnly } from "react-device-detect";
 import { AiOutlineClose, AiOutlineExpandAlt } from "react-icons/ai";
 import { BsArrowLeft } from "react-icons/bs";
 import { toast } from "react-toastify";
+import { useHistory } from "./HistoryContext";
 import { WatchPlayerContextProps } from "./WatchContext";
 
 const WatchPlayer = dynamic(
@@ -63,6 +64,7 @@ const GlobalPlayerContextProvider: React.FC = ({ children }) => {
   const [playerProps, setPlayerProps] = useState<WatchPlayerContextProps>(null);
   const alertRef = useRef<Boolean>(false);
   const { locale } = useRouter();
+  const { back } = useHistory();
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -191,7 +193,7 @@ const GlobalPlayerContextProvider: React.FC = ({ children }) => {
                       className={classNames(
                         "transition-al absolute top-10 left-10 h-10 w-10 cursor-pointer duration-300 hover:text-gray-200"
                       )}
-                      onClick={router.back}
+                      onClick={back}
                     />
                   )}
 
