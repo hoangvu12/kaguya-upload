@@ -86,7 +86,8 @@ export type UpsertChapterArgs = {
 };
 
 const client = axios.create({
-  baseURL: config.nodeServer.global,
+  // Use Vietnam server to get Bilibili's info
+  baseURL: config.nodeServer.vn,
 });
 
 client.interceptors.request.use((config) => {
