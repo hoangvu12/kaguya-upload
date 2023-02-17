@@ -493,7 +493,7 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
             {!!anime?.relations?.nodes?.length && (
               <DetailsSection title={t("relations_section")}>
                 <List data={anime.relations.nodes.filter(Boolean)}>
-                  {(node) => <Card data={node} />}
+                  {(node) => <Card data={node} showType />}
                 </List>
               </DetailsSection>
             )}

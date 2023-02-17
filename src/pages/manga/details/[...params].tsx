@@ -365,7 +365,7 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
             {!!manga?.relations?.nodes?.length && (
               <DetailsSection title={t("relations_section")}>
                 <List data={manga.relations.nodes.filter(Boolean)}>
-                  {(node) => <Card data={node} />}
+                  {(node) => <Card data={node} showType />}
                 </List>
               </DetailsSection>
             )}

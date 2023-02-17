@@ -25,6 +25,7 @@ interface CardProps {
   containerEndSlot?: React.ReactNode;
   imageEndSlot?: React.ReactNode;
   redirectUrl?: string;
+  showType?: boolean;
 }
 
 const popupOptions: Partial<Options> = {
@@ -58,6 +59,7 @@ const Card: React.FC<CardProps> = (props) => {
     className,
     imageEndSlot,
     redirectUrl = createMediaDetailsUrl(data),
+    showType,
   } = props;
 
   const router = useRouter();
@@ -130,8 +132,14 @@ const Card: React.FC<CardProps> = (props) => {
                 </div>
               </div>
 
+              {showType && (
+                <p className="mt-2 uppercase font-medium text-sm text-gray-300 italic">
+                  {data.type}
+                </p>
+              )}
+
               <p
-                className="mt-2 text-base font-semibold line-clamp-2"
+                className="mt-1 text-base font-semibold line-clamp-2"
                 style={{ color: primaryColor }}
               >
                 {title}
