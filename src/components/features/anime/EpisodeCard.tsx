@@ -90,6 +90,12 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
         )}
       </div>
 
+      {episode.isFiller && (
+        <p className="absolute top-0 left-0 bg-primary-500 text-white text-xs font-semibold px-1 rounded-bl-md">
+          Filler
+        </p>
+      )}
+
       <div
         className="absolute bottom-0 h-1 bg-primary-500"
         style={{ width: `${watchProgressPercent}%` }}

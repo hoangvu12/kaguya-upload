@@ -92,6 +92,12 @@ const EpisodeButton: React.FC<EpisodeButtonProps> = ({
           />
         )}
       </div>
+
+      {episode.isFiller && (
+        <p className="absolute w-[max-content] h-[max-content] -top-2 -right-4 p-1 text-xs text-white bg-primary-500 rounded-md">
+          Filler
+        </p>
+      )}
     </div>
   );
 };

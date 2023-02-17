@@ -1,8 +1,7 @@
 import supabaseClient from "@/lib/supabase";
-import { getEpisodes } from "@/services/kitsu";
 import { AnimeSourceConnection } from "@/types";
-import { Episode } from "@/types/kitsu";
 import { sortMediaUnit } from "@/utils/data";
+import axios from "axios";
 import { useQuery } from "react-query";
 
 const query = `
@@ -15,22 +14,39 @@ const query = `
   )
 `;
 
-const useEpisodes = (mediaId: number, useKitsu?: boolean) => {
+type EpisodeInfo = {
+  id: string;
+  title: string;
+  description: string;
+  number: number;
+  image: string;
+  isFiller: boolean;
+};
+
+const fetchEpisodeInfo = async (mediaId: number) => {
+  const { data } = await axios.get<EpisodeInfo[]>(
+    `https://api.consumet.org/meta/anilist/episodes/${mediaId}?fetchFiller=true`
+  );
+
+  return data;
+};
+
+const useEpisodes = (mediaId: number, includeEpisodeInfo?: boolean) => {
   return useQuery(["episodes", mediaId], async () => {
     const kaguyaEpisodesPromise = supabaseClient
       .from<AnimeSourceConnection>("kaguya_anime_source")
       .select(query)
       .eq("mediaId", mediaId);
 
-    let kitsuEpisodesPromise: Promise<Episode[]> = Promise.resolve([]);
+    let episodeInfoPromise: Promise<EpisodeInfo[]> = Promise.resolve([]);
 
-    if (useKitsu) {
-      kitsuEpisodesPromise = getEpisodes(mediaId);
+    if (includeEpisodeInfo) {
+      episodeInfoPromise = fetchEpisodeInfo(mediaId);
     }
 
-    const [{ data, error }, kitsuEpisodes] = await Promise.all([
+    const [{ data, error }, infoEpisodes] = await Promise.all([
       kaguyaEpisodesPromise,
-      kitsuEpisodesPromise,
+      episodeInfoPromise,
     ]);
 
     if (error) throw error;
@@ -41,18 +57,22 @@ const useEpisodes = (mediaId: number, useKitsu?: boolean) => {
       episodes.filter((episode) => episode.published)
     );
 
-    if (useKitsu) {
-      if (kitsuEpisodes?.length) {
+    if (includeEpisodeInfo) {
+      if (infoEpisodes?.length) {
         episodes.forEach((episode) => {
-          const kitsuEpisode = kitsuEpisodes.find(
-            (kitsuEpisode) => kitsuEpisode.number === episode.episodeNumber
+          const infoEpisode = infoEpisodes.find(
+            (infoEpisode) => infoEpisode.number === episode.episodeNumber
           );
 
-          if (!kitsuEpisode) return;
+          if (!infoEpisode) return;
 
-          episode.description = kitsuEpisode.description;
-          episode.thumbnail = kitsuEpisode.thumbnail?.original?.url;
-          episode.title = kitsuEpisode.titles?.localized;
+          episode.description = {};
+          episode.title = {};
+
+          episode.description.en = infoEpisode.description;
+          episode.thumbnail = infoEpisode.image;
+          episode.title.en = infoEpisode.title;
+          episode.isFiller = infoEpisode.isFiller;
         });
       }
     }

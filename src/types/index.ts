@@ -80,6 +80,7 @@ export type Episode = {
   episodeNumber: number;
   description?: Record<string, string>;
   title?: Record<string, string>;
+  isFiller?: boolean;
 };
 
 export type Chapter = {
