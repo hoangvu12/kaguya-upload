@@ -29,7 +29,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { isMobileOnly } from "react-device-detect";
 import { useQueryClient } from "react-query";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 import { toast } from "react-toastify";
@@ -411,7 +410,11 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
 
       <Section className="py-4 md:py-8 flex flex-col md:flex-row gap-8 w-full h-full bg-background-900">
         <div className="md:w-2/3 space-y-8">
-          <div className="bg-background-900 p-4 md:p-8">
+          <div className="w-full overflow-hidden">
+            <Banner width="100%" refresh mobile="300x250" type="atf" />
+          </div>
+
+          <div className="bg-background-900">
             <LocaleEpisodeSelector
               mediaId={anime.id}
               media={anime}
@@ -422,43 +425,37 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
           </div>
 
           <div className="w-full overflow-hidden">
-            <Banner
-              width="100%"
-              refresh
-              desktop="970x250"
-              mobile="300x250"
-              type="atf"
-            />
+            <Banner width="100%" refresh desktop="970x250" type="atf" />
           </div>
 
-          <DetailsSection className="w-full" title={t("info_section")}>
-            <MediaDetails
-              media={anime}
-              className="!bg-background-900 !p-4 md:!p-8"
-            />
+          <DetailsSection
+            className="w-full"
+            title={t("info_section", { defaultValue: "Info" })}
+          >
+            <MediaDetails media={anime} className="!bg-background-900 !p-0" />
           </DetailsSection>
 
-          {isMobileOnly && (
-            <Banner refresh desktop="300x250" mobile="320x100" type="middle" />
-          )}
+          <Banner refresh mobile="320x100" type="middle" />
 
-          <DetailsSection title={t("comments_section")}>
+          <DetailsSection
+            title={t("comments_section", { defaultValue: "Comments" })}
+          >
             <Comments topic={`anime-${anime.id}`} />
           </DetailsSection>
         </div>
 
         <div className="md:w-1/3">
-          {!isMobileOnly && (
-            <Banner refresh desktop="300x250" mobile="300x250" type="atf" />
-          )}
+          <Banner refresh desktop="300x250" type="atf" />
 
           <Tabs selectedTabClassName="!bg-primary-500 hover:bg-primary-500">
             <TabList className="mb-4 flex overflow-x-auto w-full items-center gap-2">
               <Tab className="px-3 py-2 bg-background-600 hover:bg-white/20 transition duration-300 rounded-md cursor-pointer">
-                {t("relations_section")}
+                {t("relations_section", { defaultValue: "Relations" })}
               </Tab>
               <Tab className="px-3 py-2 bg-background-600 hover:bg-white/20 transition duration-300 rounded-md cursor-pointer">
-                {t("recommendations_section")}
+                {t("recommendations_section", {
+                  defaultValue: "Recommendations",
+                })}
               </Tab>
             </TabList>
 

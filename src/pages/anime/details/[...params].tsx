@@ -7,6 +7,7 @@ import Button from "@/components/shared/Button";
 import Card from "@/components/shared/Card";
 import CharacterConnectionCard from "@/components/shared/CharacterConnectionCard";
 import CircleButton from "@/components/shared/CircleButton";
+import ClientOnly from "@/components/shared/ClientOnly";
 import DetailsBanner from "@/components/shared/DetailsBanner";
 import DetailsSection from "@/components/shared/DetailsSection";
 import DotList from "@/components/shared/DotList";
@@ -118,9 +119,9 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
 
       <div className="pb-8">
         <DetailsBanner image={anime.bannerImage}>
-          {!anime.isAdult && !isMobileOnly && (
+          {!anime.isAdult && (
             <div className="absolute right-4 bottom-12 w-[300px] h-[250px] z-10">
-              <Banner desktop="300x250" mobile="300x250" type="atf" />
+              <Banner desktop="300x250" type="atf" />
             </div>
           )}
         </DetailsBanner>
@@ -254,8 +255,10 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
             </div>
           </div>
 
-          {isMobileOnly && !anime.isAdult && (
-            <Banner desktop="970x250" mobile="300x250" type="atf" />
+          {!anime.isAdult && (
+            <ClientOnly>
+              <Banner mobile="300x250" type="atf" />
+            </ClientOnly>
           )}
 
           <MediaDescription

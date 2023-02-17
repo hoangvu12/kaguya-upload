@@ -7,6 +7,7 @@ import Button from "@/components/shared/Button";
 import Card from "@/components/shared/Card";
 import CharacterConnectionCard from "@/components/shared/CharacterConnectionCard";
 import CircleButton from "@/components/shared/CircleButton";
+import ClientOnly from "@/components/shared/ClientOnly";
 import DetailsBanner from "@/components/shared/DetailsBanner";
 import DetailsSection from "@/components/shared/DetailsSection";
 import DotList from "@/components/shared/DotList";
@@ -36,7 +37,7 @@ import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
 import { useMemo, useRef } from "react";
-import { isMobile, isMobileOnly } from "react-device-detect";
+import { isMobile } from "react-device-detect";
 import { AiOutlineUpload } from "react-icons/ai";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { BsFillPlayFill } from "react-icons/bs";
@@ -82,9 +83,9 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
 
       <div className="pb-8">
         <DetailsBanner image={manga.bannerImage}>
-          {!manga.isAdult && !isMobileOnly && (
+          {!manga.isAdult && (
             <div className="absolute right-4 bottom-12 w-[300px] h-[250px] z-10">
-              <Banner desktop="300x250" mobile="300x250" type="atf" />
+              <Banner desktop="300x250" type="atf" />
             </div>
           )}
         </DetailsBanner>
@@ -188,8 +189,10 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
             </div>
           </div>
 
-          {isMobileOnly && !manga.isAdult && (
-            <Banner desktop="970x250" mobile="300x250" type="atf" />
+          {!manga.isAdult && (
+            <ClientOnly>
+              <Banner mobile="300x250" type="atf" />
+            </ClientOnly>
           )}
 
           <MediaDescription

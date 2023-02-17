@@ -180,10 +180,8 @@ const ChapterSelector: React.FC<ChapterSelectorProps> = ({
         href={`/manga/read/${mediaId}/${chapter.sourceId}/${chapter.sourceChapterId}`}
         key={chapter.sourceChapterId}
       >
-        <a className="relative block">
-          <p className="line-clamp-1 bg-background-800 p-2 text-sm font-semibold hover:bg-white/20 duration-300 transition">
-            {chapter.name}
-          </p>
+        <a className="relative block p-2 bg-background-800 hover:bg-white/20 duration-300 transition">
+          <p className="line-clamp-1 text-sm font-semibold">{chapter.name}</p>
 
           {isRead && (
             <div className="absolute left-0 top-0 w-0.5 h-full bg-primary-500"></div>

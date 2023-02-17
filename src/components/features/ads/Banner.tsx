@@ -47,8 +47,8 @@ const desktopBanners = [
 ] as const;
 
 type BannerProps = {
-  mobile: (typeof mobileBanners)[number]["size"];
-  desktop: (typeof desktopBanners)[number]["size"];
+  mobile?: (typeof mobileBanners)[number]["size"];
+  desktop?: (typeof desktopBanners)[number]["size"];
   type: "btf" | "atf" | "middle";
   refresh?: boolean;
   width?: number | string;
@@ -92,10 +92,14 @@ const Banner: React.FC<BannerProps> = ({
         if (type == "btf") {
           return "protag-after_content";
         }
+      default:
+        "";
     }
   }, [size, type]);
 
   useEffect(() => {
+    if (!divId) return;
+
     if (!("display" in window.protag)) {
       setIsError(true);
 
@@ -174,7 +178,7 @@ const Banner: React.FC<BannerProps> = ({
         {t("adblock_message", { defaultValue: defaultAdBlockerMessage })}
       </p>
     </div>
-  ) : (
+  ) : divId ? (
     <div
       className="flex items-center justify-center my-4 md:my-8"
       id={divId}
@@ -183,7 +187,7 @@ const Banner: React.FC<BannerProps> = ({
         ...(height ? { height: height } : { minHeight: bannerSize?.height }),
       }}
     />
-  );
+  ) : null;
 };
 
 export default Banner;
