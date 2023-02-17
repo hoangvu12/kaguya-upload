@@ -20,6 +20,7 @@ import { NextPage } from "next";
 import { useTranslation } from "next-i18next";
 import React, { useMemo } from "react";
 import { getSelectorsByUserAgent } from "react-device-detect";
+import RecommendedAnimeSection from "@/components/features/anime/RecommendedAnimeSection";
 
 interface HomeProps {
   selectors: DeviceSelectors;
@@ -68,6 +69,7 @@ const Home: NextPage<HomeProps> = ({ selectors }) => {
 
         <div className="space-y-8">
           <WatchedSection />
+          <RecommendedAnimeSection />
 
           {recentlyUpdatedLoading ? (
             <ListSwiperSkeleton />
