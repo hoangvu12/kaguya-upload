@@ -16,21 +16,28 @@ import MobileTimestampsButton from "./MobileTimestampsButton";
 interface MobileOverlayProps {}
 
 const MobileOverlay: React.FC<MobileOverlayProps> = ({ children }) => {
-  const { isInteracting } = useInteract();
+  const { isInteracting, isShowingIndicator } = useInteract();
   const { i18n } = useVideoProps();
   const { videoState } = useVideo();
 
-  const shouldOverlayVisible = React.useMemo(
-    () => isInteracting || videoState.seeking || videoState.buffering,
-    [isInteracting, videoState.buffering, videoState.seeking]
-  );
+  const shouldInactive = React.useMemo(() => {
+    return (
+      (!isInteracting && !videoState.seeking && !videoState.buffering) ||
+      isShowingIndicator
+    );
+  }, [
+    isInteracting,
+    isShowingIndicator,
+    videoState.buffering,
+    videoState.seeking,
+  ]);
 
   return (
     <div
       className={classNames(
         "mobile-overlay",
         "z-40 w-full h-full bg-black/80 transition-all duration-300 relative",
-        !shouldOverlayVisible ? "invisible opacity-0" : "visible opacity-100"
+        shouldInactive ? "invisible opacity-0" : "visible opacity-100"
       )}
     >
       <TextIcon
@@ -55,9 +62,7 @@ const MobileOverlay: React.FC<MobileOverlayProps> = ({ children }) => {
             <div
               className={classNames(
                 "w-12 h-12",
-                shouldOverlayVisible
-                  ? "pointer-events-auto"
-                  : "pointer-events-none"
+                !shouldInactive ? "pointer-events-auto" : "pointer-events-none"
               )}
             >
               <BackwardButton />
@@ -66,9 +71,7 @@ const MobileOverlay: React.FC<MobileOverlayProps> = ({ children }) => {
             <div
               className={classNames(
                 "w-16 h-16",
-                shouldOverlayVisible
-                  ? "pointer-events-auto"
-                  : "pointer-events-none"
+                !shouldInactive ? "pointer-events-auto" : "pointer-events-none"
               )}
             >
               <PlayPauseButton />
@@ -77,9 +80,7 @@ const MobileOverlay: React.FC<MobileOverlayProps> = ({ children }) => {
             <div
               className={classNames(
                 "w-12 h-12",
-                shouldOverlayVisible
-                  ? "pointer-events-auto"
-                  : "pointer-events-none"
+                !shouldInactive ? "pointer-events-auto" : "pointer-events-none"
               )}
             >
               <ForwardButton />

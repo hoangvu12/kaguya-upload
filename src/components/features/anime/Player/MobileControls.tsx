@@ -5,7 +5,7 @@ import {
   useInteract,
   useVideo,
 } from "netplayer";
-import { useState, memo, useEffect } from "react";
+import { useState, memo, useEffect, useMemo } from "react";
 import ProgressSlider from "./ProgressSlider";
 import SkipButton from "./SkipButton";
 
@@ -14,7 +14,7 @@ interface MobileControlsProps {
 }
 
 const MobileControls: React.FC<MobileControlsProps> = ({ controlsSlot }) => {
-  const { isInteracting } = useInteract();
+  const { isInteracting, isShowingIndicator } = useInteract();
   const { videoState } = useVideo();
   const [screenWidth, setScreenWidth] = useState(0);
 
@@ -32,13 +32,23 @@ const MobileControls: React.FC<MobileControlsProps> = ({ controlsSlot }) => {
     };
   }, []);
 
+  const shouldInactive = useMemo(() => {
+    return (
+      (!videoState.seeking && !isInteracting && !videoState.buffering) ||
+      isShowingIndicator
+    );
+  }, [
+    isInteracting,
+    isShowingIndicator,
+    videoState.buffering,
+    videoState.seeking,
+  ]);
+
   return (
     <div
       className={classNames(
         "mobile-controls-container w-full bg-gradient-to-t from-black/80 via-black/40 to-transparent transition-all duration-300",
-        !videoState.seeking && !isInteracting && !videoState.buffering
-          ? "opacity-0 invisible"
-          : "opacity-100 visible"
+        shouldInactive ? "opacity-0 invisible" : "opacity-100 visible"
       )}
     >
       <div className="px-4 flex w-full items-center justify-between">

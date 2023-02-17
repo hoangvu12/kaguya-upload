@@ -4824,10 +4824,10 @@ negotiator@0.6.3:
   resolved "https://registry.yarnpkg.com/negotiator/-/negotiator-0.6.3.tgz#58e323a72fedc0d6f9cd4d31fe49f51479590ccd"
   integrity sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==
 
-netplayer@^1.4.12:
-  version "1.4.12"
-  resolved "https://registry.yarnpkg.com/netplayer/-/netplayer-1.4.12.tgz#a1c1678635304bdb6c3456a3357da51f5878a2dd"
-  integrity sha512-HJ/vRrJybYBm1ojhONs4YPt4QU1QSkDeVqzT3H6R4Q5LJgJ4+diZCRg2XmdFMupB4XdQDZuShWMUtT8z2qdtZA==
+netplayer@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/netplayer/-/netplayer-1.5.0.tgz#7ef083255226e7d19f07feb9b2943f2bf5dd8353"
+  integrity sha512-i3MCzKu9AkTlDDPDNkNacVqL57fYmpxB7ppwKyM9SBQN8A06UfEnOGi1jMXUyyAURWMN7PmMghQgYpVqACP3/A==
   dependencies:
     "@plussub/srt-vtt-parser" "^1.1.0"
     load-script "^2.0.0"
