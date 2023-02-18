@@ -3,9 +3,10 @@ import CircleButton from "@/components/shared/CircleButton";
 import { useReadInfo } from "@/contexts/ReadContext";
 import { useReadPanel } from "@/contexts/ReadPanelContext";
 import { useReadSettings } from "@/contexts/ReadSettingsContext";
+import classNames from "classnames";
 import { motion } from "framer-motion";
 import React, { useEffect, useRef } from "react";
-import { BrowserView, isMobile } from "react-device-detect";
+import { BrowserView, isMobile, MobileView } from "react-device-detect";
 import { AiOutlineZoomIn, AiOutlineZoomOut } from "react-icons/ai";
 import { BiChevronRight } from "react-icons/bi";
 import ImageNavigator from "./ImageNavigator";
@@ -97,6 +98,17 @@ const ViewPanel: React.FC = ({ children }) => {
           </motion.div>
         )}
       </BrowserView>
+
+      <MobileView renderWithFragment>
+        <div
+          className={classNames(
+            "z-40 flex items-center justify-center fixed w-full h-full bg-black/90 transition-all duration-300",
+            isSidebarOpen ? "opacity-100 visible" : "opacity-0 invisible"
+          )}
+        >
+          <p className="text-xl font-semibold">Tap here to close the panel</p>
+        </div>
+      </MobileView>
 
       <ImageNavigator />
 
