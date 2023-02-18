@@ -1,5 +1,4 @@
 import NativeBanner from "@/components/features/ads/NativeBanner";
-import Banner from "@/components/features/ads/Banner";
 import AnimeSchedule from "@/components/features/anime/AiringSchedule";
 import WatchedSection from "@/components/features/anime/WatchedSection";
 import CardSwiper from "@/components/shared/CardSwiper";
@@ -21,6 +20,11 @@ import { useTranslation } from "next-i18next";
 import React, { useMemo } from "react";
 import { getSelectorsByUserAgent } from "react-device-detect";
 import RecommendedAnimeSection from "@/components/features/anime/RecommendedAnimeSection";
+import dynamic from "next/dynamic";
+
+const Banner = dynamic(() => import("@/components/features/ads/Banner"), {
+  ssr: false,
+});
 
 interface HomeProps {
   selectors: DeviceSelectors;
@@ -40,12 +44,17 @@ const Home: NextPage<HomeProps> = ({ selectors }) => {
   const { data: recentlyUpdated, isLoading: recentlyUpdatedLoading } =
     useRecentlyUpdated();
 
-  const { data: upcoming, isLoading: upcomingLoading } = useMedia({
-    status: MediaStatus.Not_yet_released,
-    sort: [MediaSort.Trending_desc],
-    perPage: isMobileOnly ? 5 : 10,
-    type: MediaType.Anime,
-  });
+  const { data: upcoming, isLoading: upcomingLoading } = useMedia(
+    {
+      status: MediaStatus.Not_yet_released,
+      sort: [MediaSort.Trending_desc],
+      perPage: 10,
+      type: MediaType.Anime,
+    },
+    {
+      enabled: !isMobileOnly,
+    }
+  );
 
   const randomTrendingAnime = useMemo(() => {
     return randomElement(trendingAnime || []);
@@ -69,51 +78,54 @@ const Home: NextPage<HomeProps> = ({ selectors }) => {
 
         <div className="space-y-8">
           <WatchedSection />
-          <RecommendedAnimeSection />
+
+          {!isMobileOnly && <RecommendedAnimeSection />}
 
           {recentlyUpdatedLoading ? (
             <ListSwiperSkeleton />
-          ) : (
+          ) : recentlyUpdated?.length ? (
             <Section title={t("common:newly_added")}>
               <CardSwiper data={recentlyUpdated} />
             </Section>
-          )}
+          ) : null}
 
           {upcomingLoading ? (
             <ListSwiperSkeleton />
-          ) : (
+          ) : upcoming?.length ? (
             <Section title={t("anime_home:upcoming")}>
               <CardSwiper data={upcoming} />
             </Section>
-          )}
+          ) : null}
 
-          <NewestComments type={MediaType.Anime} />
+          {!isMobileOnly && <NewestComments type={MediaType.Anime} />}
 
-          <div
-            className={classNames(
-              "flex gap-8",
-              isMobileOnly ? "flex-col" : "flex-row"
-            )}
-          >
-            <Section
-              title={t("anime_home:should_watch_today")}
-              className="w-full md:w-[80%] md:!pr-0"
-            >
-              {randomTrendingAnime && (
-                <ShouldWatch
-                  data={randomTrendingAnime}
-                  isLoading={!randomTrendingAnime}
-                />
+          {!isMobileOnly && (
+            <div
+              className={classNames(
+                "flex gap-8",
+                isMobileOnly ? "flex-col" : "flex-row"
               )}
-            </Section>
-
-            <Section
-              title={t("common:genres")}
-              className="w-full md:w-[20%] md:!pl-0"
             >
-              <GenreSwiper selectors={selectors} className="md:h-[500px]" />
-            </Section>
-          </div>
+              <Section
+                title={t("anime_home:should_watch_today")}
+                className="w-full md:w-[80%] md:!pr-0"
+              >
+                {randomTrendingAnime && (
+                  <ShouldWatch
+                    data={randomTrendingAnime}
+                    isLoading={!randomTrendingAnime}
+                  />
+                )}
+              </Section>
+
+              <Section
+                title={t("common:genres")}
+                className="w-full md:w-[20%] md:!pl-0"
+              >
+                <GenreSwiper selectors={selectors} className="md:h-[500px]" />
+              </Section>
+            </div>
+          )}
 
           <Section>
             <NativeBanner />

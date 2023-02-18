@@ -32,11 +32,14 @@ import React, {
 import { useQueryClient } from "react-query";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 import { toast } from "react-toastify";
-import Banner from "../ads/Banner";
 import Comments from "../comment/Comments";
 import MediaDetails from "../upload/MediaDetails";
 import ErrorMessage from "./ErrorMessage";
 import LocaleEpisodeSelector from "./Player/LocaleEpisodeSelector";
+
+const Banner = dynamic(() => import("@/components/features/ads/Banner"), {
+  ssr: false,
+});
 
 const WatchPlayer = dynamic(
   () => import("@/components/features/anime/WatchPlayer"),

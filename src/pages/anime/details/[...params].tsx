@@ -1,4 +1,3 @@
-import Banner from "@/components/features/ads/Banner";
 import NativeBanner from "@/components/features/ads/NativeBanner";
 import LocaleEpisodeSelector from "@/components/features/anime/Player/LocaleEpisodeSelector";
 import Comments from "@/components/features/comment/Comments";
@@ -40,13 +39,18 @@ import { supabaseClient } from "@supabase/auth-helpers-nextjs";
 import classNames from "classnames";
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { useTranslation } from "next-i18next";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef } from "react";
-import { isMobile, isMobileOnly } from "react-device-detect";
+import { isMobile } from "react-device-detect";
 import { AiOutlineUpload } from "react-icons/ai";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { BsFillPlayFill } from "react-icons/bs";
 import { toast } from "react-toastify";
+
+const Banner = dynamic(() => import("@/components/features/ads/Banner"), {
+  ssr: false,
+});
 
 interface DetailsPageProps {
   anime: Media;

@@ -1,4 +1,3 @@
-import Banner from "@/components/features/ads/Banner";
 import NativeBanner from "@/components/features/ads/NativeBanner";
 import ReadSection from "@/components/features/manga/ReadSection";
 import RecommendedMangaSection from "@/components/features/manga/RecommendedMangaSection";
@@ -19,6 +18,11 @@ import { useTranslation } from "next-i18next";
 import { NextPage } from "next/types";
 import React, { useMemo } from "react";
 import { getSelectorsByUserAgent } from "react-device-detect";
+import dynamic from "next/dynamic";
+
+const Banner = dynamic(() => import("@/components/features/ads/Banner"), {
+  ssr: false,
+});
 
 interface HomeProps {
   selectors: DeviceSelectors;
@@ -47,7 +51,7 @@ const Home: NextPage<HomeProps> = ({ selectors }) => {
   const { data: upcoming, isLoading: upcomingLoading } = useMedia({
     status: MediaStatus.Not_yet_released,
     sort: [MediaSort.Trending_desc],
-    perPage: isMobileOnly ? 5 : 10,
+    perPage: 10,
     type: MediaType.Manga,
   });
 
@@ -73,52 +77,55 @@ const Home: NextPage<HomeProps> = ({ selectors }) => {
 
         <div className="space-y-8">
           <ReadSection />
-          <RecommendedMangaSection />
+
+          {!isMobileOnly && <RecommendedMangaSection />}
 
           {recentlyUpdatedLoading ? (
             <ListSwiperSkeleton />
-          ) : (
+          ) : recentlyUpdated?.length ? (
             <Section title={t("common:newly_added")}>
               <CardSwiper data={recentlyUpdated} />
             </Section>
-          )}
+          ) : null}
 
           {upcomingLoading ? (
             <ListSwiperSkeleton />
-          ) : (
+          ) : upcoming?.length ? (
             <Section title={t("anime_home:upcoming")}>
               <CardSwiper data={upcoming} />
             </Section>
-          )}
+          ) : null}
 
-          <NewestComments type={MediaType.Manga} />
+          {!isMobileOnly && <NewestComments type={MediaType.Manga} />}
 
           <Banner desktop="300x250" mobile="320x100" type="btf" />
 
-          <div
-            className={classNames(
-              "flex gap-8",
-              isMobileOnly ? "flex-col" : "flex-row"
-            )}
-          >
-            <Section
-              title={t("manga_home:should_read_today")}
-              className="w-full md:w-[80%] md:!pr-0"
-            >
-              {randomTrendingManga && (
-                <ShouldWatch
-                  data={randomTrendingManga}
-                  isLoading={!randomTrendingManga}
-                />
+          {!isMobileOnly && (
+            <div
+              className={classNames(
+                "flex gap-8",
+                isMobileOnly ? "flex-col" : "flex-row"
               )}
-            </Section>
-            <Section
-              title={t("common:genres")}
-              className="w-full md:w-[20%] md:!pl-0"
             >
-              <GenreSwiper selectors={selectors} className="md:h-[500px]" />
-            </Section>
-          </div>
+              <Section
+                title={t("manga_home:should_read_today")}
+                className="w-full md:w-[80%] md:!pr-0"
+              >
+                {randomTrendingManga && (
+                  <ShouldWatch
+                    data={randomTrendingManga}
+                    isLoading={!randomTrendingManga}
+                  />
+                )}
+              </Section>
+              <Section
+                title={t("common:genres")}
+                className="w-full md:w-[20%] md:!pl-0"
+              >
+                <GenreSwiper selectors={selectors} className="md:h-[500px]" />
+              </Section>
+            </div>
+          )}
 
           <Section>
             <NativeBanner />

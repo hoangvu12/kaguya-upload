@@ -2,8 +2,12 @@ import { useReadInfo } from "@/contexts/ReadContext";
 import { useReadPanel } from "@/contexts/ReadPanelContext";
 import { useReadSettings } from "@/contexts/ReadSettingsContext";
 import React, { useEffect, useMemo } from "react";
-import Banner from "../../ads/Banner";
 import ReadImage from "./ReadImage";
+import dynamic from "next/dynamic";
+
+const Banner = dynamic(() => import("@/components/features/ads/Banner"), {
+  ssr: false,
+});
 
 const VerticalContainer: React.FC = () => {
   const {

@@ -15,6 +15,8 @@ const StickyBanner = () => {
   useEffect(() => {
     if (!isLoaded || isError) return;
 
+    if (typeof window?.googletag?.pubads !== "function") return;
+
     const handleSlotRenderEnded = (
       event: googletag.events.SlotRenderEndedEvent
     ) => {

@@ -1,4 +1,3 @@
-import Banner from "@/components/features/ads/Banner";
 import NativeBanner from "@/components/features/ads/NativeBanner";
 import Comments from "@/components/features/comment/Comments";
 import LocaleChapterSelector from "@/components/features/manga/LocaleChapterSelector";
@@ -42,6 +41,11 @@ import { AiOutlineUpload } from "react-icons/ai";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { BsFillPlayFill } from "react-icons/bs";
 import { toast } from "react-toastify";
+import dynamic from "next/dynamic";
+
+const Banner = dynamic(() => import("@/components/features/ads/Banner"), {
+  ssr: false,
+});
 
 interface DetailsPageProps {
   manga: Media;

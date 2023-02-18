@@ -1,4 +1,3 @@
-import Banner from "@/components/features/ads/Banner";
 import NativeBanner from "@/components/features/ads/NativeBanner";
 import AnimeBrowseList from "@/components/features/anime/AnimeBrowseList";
 import CharacterBrowseList from "@/components/features/characters/CharacterBrowseList";
@@ -13,6 +12,12 @@ import { MediaFormat, MediaSort } from "@/types/anilist";
 import { useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
+
+import dynamic from "next/dynamic";
+
+const Banner = dynamic(() => import("@/components/features/ads/Banner"), {
+  ssr: false,
+});
 
 const components = {
   anime: AnimeBrowseList,

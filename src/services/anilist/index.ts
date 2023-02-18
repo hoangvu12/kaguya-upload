@@ -78,13 +78,19 @@ export const getPageMedia = async (
   return response?.Page;
 };
 
-export const getMedia = async (args: MediaArgs & PageArgs, fields?: string) => {
+export const getMedia = async (
+  args: MediaArgs & PageArgs,
+  fields?: string,
+  shouldFetchTranslations = true
+) => {
   const response = await anilistFetcher<PageQueryResponse>(
     mediaQuery(fields),
     args
   );
 
   const mediaList = response?.Page?.media || [];
+
+  if (!shouldFetchTranslations) return mediaList;
 
   const mediaIdList = mediaList.map((media) => media.id);
 
