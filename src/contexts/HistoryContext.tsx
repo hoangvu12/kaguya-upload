@@ -1,50 +1,30 @@
 // https://stackoverflow.com/questions/55565631/how-to-get-previous-url-in-next-js
 
 import { useRouter } from "next/router";
-import React, {
-  createContext,
-  useState,
-  useEffect,
-  useContext,
-  useCallback,
-} from "react";
+import React, { createContext, useContext, useCallback } from "react";
 
 interface HValidation {
-  history: string[];
-  setHistory(data: string[]): void;
   back(): void;
 }
 
 const HistoryContext = createContext<HValidation>({} as HValidation);
 export const HistoryProvider: React.FC = ({ children }) => {
-  const { asPath, push, pathname } = useRouter();
-  const [history, setHistory] = useState<string[]>([]);
+  const router = useRouter();
 
   const back = useCallback(() => {
-    for (let i = history.length - 2; i >= 0; i--) {
-      const route = history[i];
+    if (typeof window !== "undefined" && +window?.history?.state?.idx > 0) {
+      router.back();
 
-      if (!route?.includes("#") && route !== pathname) {
-        push(route);
-        const newHistory = history.slice(0, i);
-        setHistory(newHistory);
-        return;
-      }
+      return;
     }
 
-    push("/");
-  }, [history, pathname, push]);
-
-  useEffect(() => {
-    setHistory((previous) => [...previous, asPath]);
-  }, [asPath]);
+    router.push("/");
+  }, [router]);
 
   return (
     <HistoryContext.Provider
       value={{
         back,
-        history,
-        setHistory,
       }}
     >
       {children}
