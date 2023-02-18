@@ -1,5 +1,6 @@
+import { useAds } from "@/contexts/AdsContext";
 import { useTranslation } from "next-i18next";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import { isMobileOnly } from "react-device-detect";
 
 declare global {
@@ -7,6 +8,7 @@ declare global {
   interface Window {
     AdProvider: any;
     protag: Record<string, any>;
+    isProtagError: boolean;
   }
 }
 
@@ -67,7 +69,8 @@ const Banner: React.FC<BannerProps> = ({
   width,
   height,
 }) => {
-  const [isError, setIsError] = useState(false);
+  const { isError, isLoaded } = useAds();
+
   const { t } = useTranslation("common");
 
   const size = useMemo(
@@ -98,13 +101,10 @@ const Banner: React.FC<BannerProps> = ({
   }, [size, type]);
 
   useEffect(() => {
+    if (!isLoaded) return;
+    if (isError) return;
+
     if (!divId) return;
-
-    if (!("display" in window.protag)) {
-      setIsError(true);
-
-      return;
-    }
 
     const script = document.createElement("script");
     script.innerHTML = `
@@ -117,36 +117,44 @@ const Banner: React.FC<BannerProps> = ({
 
     document.body.appendChild(script);
 
+    let currentSlot: googletag.Slot = null;
+
+    const slots = window.googletag.pubads().getSlots();
+
+    for (const slot of slots) {
+      const adsId = slot.getSlotElementId();
+
+      const ignoreAds = ["sticky", "interstitial"];
+
+      if (!adsId) return;
+
+      if (ignoreAds.some((id) => adsId.includes(id))) {
+        continue;
+      }
+
+      const adElement = document.querySelector("#" + adsId);
+
+      if (adElement) {
+        const isParent = adElement.closest("#" + divId);
+        if (isParent) {
+          currentSlot = slot;
+
+          break;
+        }
+      }
+    }
+
+    if (!currentSlot) return;
+
     let interval: NodeJS.Timer = null;
 
     if (refresh) {
       interval = setInterval(() => {
-        const slots = window.googletag.pubads().getSlots();
+        if (!currentSlot) return;
 
-        for (const slot of slots) {
-          const adsId = slot.getSlotElementId();
-
-          const ignoreAds = ["sticky", "interstitial"];
-
-          if (!adsId) return;
-
-          if (ignoreAds.some((id) => adsId.includes(id))) {
-            continue;
-          }
-
-          const adElement = document.querySelector("#" + adsId);
-
-          if (adElement) {
-            const isParent = adElement.closest("#" + divId);
-            if (isParent) {
-              window.googletag.cmd.push(() => {
-                window.googletag.pubads().refresh([slot]);
-              });
-
-              break;
-            }
-          }
-        }
+        window.googletag.cmd.push(() => {
+          window.googletag.pubads().refresh([currentSlot]);
+        });
       }, 120000);
     }
 
@@ -157,7 +165,7 @@ const Banner: React.FC<BannerProps> = ({
         clearInterval(interval);
       }
     };
-  }, [divId, refresh]);
+  }, [divId, isError, isLoaded, refresh]);
 
   const bannerSize = useMemo(() => {
     if (isMobileOnly) {
