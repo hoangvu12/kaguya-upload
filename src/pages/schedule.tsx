@@ -154,76 +154,78 @@ const SchedulePage = () => {
                 The airing schedule is synced with your local time.
               </p>
 
-              {Object.entries(schedulesWithTime).map(([time, list]) => {
-                const airingAt = Number(time);
+              <div>
+                {Object.entries(schedulesWithTime).map(([time, list]) => {
+                  const airingAt = Number(time);
 
-                const day = dayjs.unix(airingAt);
+                  const day = dayjs.unix(airingAt);
 
-                const isReleased = day.isBefore(dayjs());
+                  const isReleased = day.isBefore(dayjs());
 
-                return (
-                  <div className="relative" key={time}>
-                    <div className="ml-4 flex items-center">
-                      <p
-                        className={classNames(
-                          "absolute left-0 h-1.5 w-1.5 rounded-full",
-                          isReleased ? "bg-primary-500" : "bg-gray-600"
-                        )}
-                      />
+                  return (
+                    <div className="relative" key={time}>
+                      <div className="ml-4 flex items-center">
+                        <p
+                          className={classNames(
+                            "absolute left-0 h-1.5 w-1.5 rounded-full",
+                            isReleased ? "bg-primary-500" : "bg-gray-600"
+                          )}
+                        />
 
-                      <p className="text-gray-300 font-semibold text-sm">
-                        {day.format("HH:mm")}
-                      </p>
-                    </div>
-
-                    <div className="relative">
-                      <div className="ml-4 space-y-2">
-                        {list.map((schedule) => (
-                          <div
-                            className="flex flex-col md:flex-row md:justify-between last:pb-4"
-                            key={schedule.mediaId}
-                          >
-                            <HorizontalCard
-                              data={schedule.media}
-                              key={schedule.mediaId}
-                              endSlot={
-                                <p className="text-sm text-gray-300">
-                                  {t("common:episode")} {schedule.episode}
-                                </p>
-                              }
-                            />
-
-                            {!isMobileOnly && (
-                              <Link
-                                href={createMediaDetailsUrl(schedule.media)}
-                              >
-                                <a>
-                                  <Button
-                                    primary
-                                    LeftIcon={BsFillPlayFill}
-                                    className="relative min-w-[12rem]"
-                                  >
-                                    <p className="w-full absolute left-1/2 -translate-x-1/2">
-                                      {t("common:episode")} {schedule.episode}
-                                    </p>
-                                  </Button>
-                                </a>
-                              </Link>
-                            )}
-                          </div>
-                        ))}
+                        <p className="text-gray-300 font-semibold text-sm">
+                          {day.format("HH:mm")}
+                        </p>
                       </div>
 
-                      <p
-                        className={classNames(
-                          "absolute translate-x-full top-1/2 -translate-y-1/2 h-full w-0.5",
-                          isReleased ? "bg-primary-500" : "bg-gray-600"
-                        )}
-                      ></p>
+                      <div className="relative">
+                        <div className="ml-4 space-y-2">
+                          {list.map((schedule) => (
+                            <div
+                              className="flex flex-col md:flex-row md:justify-between last:pb-4"
+                              key={schedule.mediaId}
+                            >
+                              <HorizontalCard
+                                data={schedule.media}
+                                key={schedule.mediaId}
+                                endSlot={
+                                  <p className="text-sm text-gray-300">
+                                    {t("common:episode")} {schedule.episode}
+                                  </p>
+                                }
+                              />
+
+                              {!isMobileOnly && (
+                                <Link
+                                  href={createMediaDetailsUrl(schedule.media)}
+                                >
+                                  <a>
+                                    <Button
+                                      primary
+                                      LeftIcon={BsFillPlayFill}
+                                      className="relative min-w-[12rem]"
+                                    >
+                                      <p className="w-full absolute left-1/2 -translate-x-1/2">
+                                        {t("common:episode")} {schedule.episode}
+                                      </p>
+                                    </Button>
+                                  </a>
+                                </Link>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+
+                        <p
+                          className={classNames(
+                            "absolute translate-x-full top-1/2 -translate-y-1/2 h-full w-0.5",
+                            isReleased ? "bg-primary-500" : "bg-gray-600"
+                          )}
+                        ></p>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>
