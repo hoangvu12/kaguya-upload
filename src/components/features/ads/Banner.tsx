@@ -1,6 +1,6 @@
 import { useAds } from "@/contexts/AdsContext";
 import { useTranslation } from "next-i18next";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { isMobileOnly } from "react-device-detect";
 
 declare global {
@@ -70,6 +70,8 @@ const Banner: React.FC<BannerProps> = ({
   height,
 }) => {
   const { isError, isLoaded } = useAds();
+  const slotRef = useRef<googletag.Slot>();
+  const refreshRef = useRef<NodeJS.Timer>();
 
   const { t } = useTranslation("common");
 
@@ -117,43 +119,43 @@ const Banner: React.FC<BannerProps> = ({
 
     document.body.appendChild(script);
 
-    let currentSlot: googletag.Slot = null;
+    // @ts-ignore
+    window.googletag = window.googletag || { cmd: [] };
+    window.protag = window.protag || { cmd: [] };
 
-    const slots = window.googletag.pubads().getSlots();
+    window.googletag.cmd.push(() => {
+      const slots = window.googletag.pubads().getSlots();
 
-    for (const slot of slots) {
-      const adsId = slot.getSlotElementId();
+      for (const slot of slots) {
+        const adsId = slot.getSlotElementId();
 
-      const ignoreAds = ["sticky", "interstitial"];
+        const ignoreAds = ["sticky", "interstitial"];
 
-      if (!adsId) return;
+        if (!adsId) return;
 
-      if (ignoreAds.some((id) => adsId.includes(id))) {
-        continue;
-      }
+        if (ignoreAds.some((id) => adsId.includes(id))) {
+          continue;
+        }
 
-      const adElement = document.querySelector("#" + adsId);
+        const adElement = document.querySelector("#" + adsId);
 
-      if (adElement) {
-        const isParent = adElement.closest("#" + divId);
-        if (isParent) {
-          currentSlot = slot;
+        if (adElement) {
+          const isParent = adElement.closest("#" + divId);
+          if (isParent) {
+            slotRef.current = slot;
 
-          break;
+            break;
+          }
         }
       }
-    }
-
-    if (!currentSlot) return;
-
-    let interval: NodeJS.Timer = null;
+    });
 
     if (refresh) {
-      interval = setInterval(() => {
-        if (!currentSlot) return;
+      refreshRef.current = setInterval(() => {
+        if (!slotRef.current) return;
 
         window.googletag.cmd.push(() => {
-          window.googletag.pubads().refresh([currentSlot]);
+          window.googletag.pubads().refresh([slotRef.current]);
         });
       }, 120000);
     }
@@ -161,8 +163,8 @@ const Banner: React.FC<BannerProps> = ({
     return () => {
       document.body.removeChild(script);
 
-      if (interval) {
-        clearInterval(interval);
+      if (refreshRef.current) {
+        clearInterval(refreshRef.current);
       }
     };
   }, [divId, isError, isLoaded, refresh]);

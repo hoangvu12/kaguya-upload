@@ -39,6 +39,10 @@ const PlayerBanner = () => {
   useEffect(() => {
     if (!isLoaded) return;
 
+    // @ts-ignore
+    window.googletag = window.googletag || { cmd: [] };
+    window.protag = window.protag || { cmd: [] };
+
     let showChunks = getShowChunks(videoEl?.duration);
 
     const handleLoadedMetadata = () => {
@@ -59,8 +63,6 @@ const PlayerBanner = () => {
       if (!showChunk) return;
 
       shownChunks.current.push(showChunk);
-
-      console.log("show the goddamn banner");
 
       if (hasDisplayedAdBefore.current) {
         const slots = window.googletag?.pubads()?.getSlots() || [];
@@ -110,13 +112,17 @@ const PlayerBanner = () => {
       }
     };
 
-    window.googletag
-      .pubads()
-      .addEventListener("slotRenderEnded", handleSlotRenderEnded);
+    window.googletag.cmd.push(() => {
+      window.googletag
+        .pubads()
+        .addEventListener("slotRenderEnded", handleSlotRenderEnded);
+    });
 
     return () => {
       videoEl.removeEventListener("loadedmetadata", handleLoadedMetadata);
       videoEl.removeEventListener("timeupdate", handleTimeUpdate);
+
+      if (typeof window?.googletag?.pubads !== "function") return;
 
       window.googletag
         .pubads()

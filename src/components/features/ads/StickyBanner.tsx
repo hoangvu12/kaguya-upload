@@ -15,7 +15,9 @@ const StickyBanner = () => {
   useEffect(() => {
     if (!isLoaded || isError) return;
 
-    if (typeof window?.googletag?.pubads !== "function") return;
+    // @ts-ignore
+    window.googletag = window.googletag || { cmd: [] };
+    window.protag = window.protag || { cmd: [] };
 
     const handleSlotRenderEnded = (
       event: googletag.events.SlotRenderEndedEvent
@@ -30,9 +32,12 @@ const StickyBanner = () => {
         }
       }
     };
-    window.googletag
-      .pubads()
-      .addEventListener("slotRenderEnded", handleSlotRenderEnded);
+
+    window.googletag.cmd.push(() => {
+      window.googletag
+        .pubads()
+        .addEventListener("slotRenderEnded", handleSlotRenderEnded);
+    });
 
     // @ts-ignore
     window.googletag = window.googletag || { cmd: [] };
@@ -42,6 +47,8 @@ const StickyBanner = () => {
     });
 
     return () => {
+      if (typeof window?.googletag?.pubads !== "function") return;
+
       window.googletag
         .pubads()
         .removeEventListener("slotRenderEnded", handleSlotRenderEnded);
