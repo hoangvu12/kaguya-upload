@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { ThemeSettingsContextProvider } from "@/contexts/ThemeSettingsContext";
 import { fetchRandomTheme, useAnimeTheme } from "@/hooks/useAnimeTheme";
@@ -26,9 +26,14 @@ interface ThemesPageProps {
 const ThemesPage = ({ slug, type }: ThemesPageProps) => {
   const router = useRouter();
   const { data, isLoading } = useAnimeTheme({ slug, type });
+  const [isFetchingRandomTheme, setIsFetchingRandomTheme] = useState(false);
 
   const handleNewTheme = useCallback(async () => {
+    setIsFetchingRandomTheme(true);
+
     const { slug, type } = await fetchRandomTheme();
+
+    setIsFetchingRandomTheme(false);
 
     router.replace({
       pathname: router.pathname,
@@ -40,8 +45,11 @@ const ThemesPage = ({ slug, type }: ThemesPageProps) => {
   }, [router]);
 
   const sources = useMemo(
-    () => (isLoading || !data?.sources?.length ? blankVideo : data?.sources),
-    [data?.sources, isLoading]
+    () =>
+      isLoading || isFetchingRandomTheme || !data?.sources?.length
+        ? blankVideo
+        : data?.sources,
+    [data?.sources, isFetchingRandomTheme, isLoading]
   );
 
   useEffect(() => {
@@ -76,7 +84,11 @@ const ThemesPage = ({ slug, type }: ThemesPageProps) => {
       />
 
       <ThemePlayerContextProvider
-        value={{ theme: data, refresh: handleNewTheme, isLoading }}
+        value={{
+          theme: data,
+          refresh: handleNewTheme,
+          isLoading: isLoading || isFetchingRandomTheme,
+        }}
       >
         <ThemeSettingsContextProvider>
           <ThemePlayer sources={sources} className="w-full h-screen" />
