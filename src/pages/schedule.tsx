@@ -1,6 +1,7 @@
 import Button from "@/components/shared/Button";
 import Head from "@/components/shared/Head";
 import HorizontalCard from "@/components/shared/HorizontalCard";
+import InView from "@/components/shared/InView";
 import Link from "@/components/shared/Link";
 import Loading from "@/components/shared/Loading";
 import Section from "@/components/shared/Section";
@@ -10,6 +11,7 @@ import Swiper, {
 } from "@/components/shared/Swiper";
 import useAiringSchedules from "@/hooks/useAiringSchedules";
 import useConstantTranslation from "@/hooks/useConstantTranslation";
+import usePageAiringSchedules from "@/hooks/usePageAiringSchedules";
 import { createMediaDetailsUrl, groupBy } from "@/utils";
 import classNames from "classnames";
 import dayjs, { Dayjs } from "dayjs";
@@ -37,10 +39,24 @@ const SchedulePage = () => {
     [activeDay]
   );
 
-  const { data: schedules, isLoading } = useAiringSchedules({
+  const {
+    data: schedulePage,
+    isLoading,
+    isFetchingNextPage,
+    isError,
+    hasNextPage,
+    fetchNextPage,
+  } = usePageAiringSchedules({
     airingAt_greater,
     airingAt_lesser,
+    perPage: 50,
   });
+
+  const schedules = useMemo(() => {
+    if (!schedulePage?.pages?.length) return null;
+
+    return schedulePage.pages.flatMap((page) => page.airingSchedules);
+  }, [schedulePage]);
 
   const days = useMemo(() => {
     const aWeeksAgo = dayjs().subtract(1, "week");
@@ -66,6 +82,12 @@ const SchedulePage = () => {
 
     return schedulesWithTime;
   }, [schedules]);
+
+  const handleFetch = () => {
+    if (isFetchingNextPage || !hasNextPage) return;
+
+    fetchNextPage();
+  };
 
   useEffect(() => {
     if (!swiper) return;
@@ -145,7 +167,7 @@ const SchedulePage = () => {
           ))}
         </Swiper>
 
-        <div className="mt-8">
+        <div className="relative mt-8 min-h-[10rem]">
           {isLoading ? (
             <Loading />
           ) : (
@@ -225,6 +247,22 @@ const SchedulePage = () => {
                     </div>
                   );
                 })}
+
+                {isFetchingNextPage && !isError && (
+                  <div className="relative mt-4 min-h-[10rem]">
+                    <Loading />
+                  </div>
+                )}
+
+                {((schedules.length && !isFetchingNextPage) || hasNextPage) && (
+                  <InView onInView={handleFetch} />
+                )}
+
+                {!hasNextPage && !!schedules.length && (
+                  <p className="mt-8 text-2xl text-center">
+                    {t("common:no_list_results")}
+                  </p>
+                )}
               </div>
             </div>
           )}

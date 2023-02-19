@@ -159,6 +159,27 @@ export const getAiringSchedules = async (
   return response?.Page.airingSchedules;
 };
 
+export const getPageAiringSchedules = async (
+  args: AiringScheduleArgs & PageArgs,
+  fields?: string
+) => {
+  const response = await anilistFetcher<PageQueryResponse>(
+    airingSchedulesQuery(fields),
+    args
+  );
+
+  if (!response?.Page?.airingSchedules?.length) return response?.Page;
+
+  response.Page.airingSchedules = removeArrayOfObjectDup(
+    response?.Page?.airingSchedules.filter(
+      (schedule) => !schedule.media.isAdult
+    ),
+    "mediaId"
+  );
+
+  return response?.Page;
+};
+
 export const getRecommendations = async (
   args: RecommendationArgs & PageArgs,
   fields?: string
@@ -169,33 +190,6 @@ export const getRecommendations = async (
   );
 
   return response?.Page.recommendations;
-};
-
-export const getAllAiringSchedules = async (
-  args: PageArgs & AiringScheduleArgs,
-  fields?: string
-) => {
-  let list: AiringSchedule[] = [];
-
-  let page = 1;
-
-  const fetch = async () => {
-    const response = await anilistFetcher<PageQueryResponse>(
-      airingSchedulesQuery(fields),
-      { ...args, page }
-    );
-
-    list = list.concat(response?.Page.airingSchedules);
-
-    if (response?.Page.pageInfo.hasNextPage) {
-      page++;
-      await fetch();
-    }
-  };
-
-  await fetch();
-
-  return removeArrayOfObjectDup(list, "mediaId");
 };
 
 export const getCharacters = async (
