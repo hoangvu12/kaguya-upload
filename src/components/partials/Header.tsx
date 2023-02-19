@@ -52,7 +52,7 @@ const routes = [
   {
     title: "Donate",
     href: "/donate",
-    defaultValue: "",
+    defaultValue: "Donate",
   },
 ];
 

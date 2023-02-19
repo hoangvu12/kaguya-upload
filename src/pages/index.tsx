@@ -62,10 +62,7 @@ const Home: NextPage<HomeProps> = ({ selectors }) => {
 
   return (
     <React.Fragment>
-      <Head
-        title="Home (Anime) - Kaguya"
-        description="Watch Anime Online for Free in High Quality and Fast Streaming, Watch and Download Anime Free on Kaguya"
-      />
+      <Head title="Home (Anime) - Kaguya" />
 
       <div className="pb-8">
         <HomeBanner

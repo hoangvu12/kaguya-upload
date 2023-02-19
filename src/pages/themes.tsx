@@ -72,7 +72,7 @@ const ThemesPage = ({ slug, type }: ThemesPageProps) => {
         title={
           !data ? `Themes - Kaguya` : `${data.name} (${data.type}) - Kaguya`
         }
-        description="Xem OP/ED của các Anime mà bạn yêu thích."
+        description="Immerse yourself in the world of anime music with our Anime Openings and Endings page. Here, you can watch and listen to your favorite anime songs, including opening and ending themes from popular anime shows. Our page features a vast collection of anime music, from the latest releases to classic favorites. You can easily search and sort by anime name, song title, and artist to find the perfect tune. Whether you're looking for an upbeat opening theme or a moving ending theme, our Anime Openings and Endings page has something for every anime fan. Visit us now and start enjoying the music of your favorite anime shows!"
       />
 
       <ThemePlayerContextProvider

@@ -63,7 +63,7 @@ const Home: NextPage<HomeProps> = ({ selectors }) => {
     <React.Fragment>
       <Head
         title="Home (Manga) - Kaguya"
-        description="Read Manga Online for Free in High Quality and Fast Updating, Read Manga Online, Absolutely Free and Updated Daily on Kaguya"
+        description="Welcome to our manga website, your ultimate source for the latest manga releases. Here, you can explore the vast world of manga and read your favorite titles online. Our extensive library features a wide range of manga genres, from action and adventure to romance and drama. You can easily search and sort by manga name, author, and genre to find the perfect read. Our website is updated regularly with the latest manga releases, so you'll never miss a beat. Whether you're a long-time manga fan or a newcomer, our website is the perfect destination for all your manga needs. Visit us now and start reading the latest manga releases!"
       />
 
       <div className="pb-8">

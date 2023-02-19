@@ -119,6 +119,9 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ character }) => {
     <>
       <Head
         title={`${character.name.userPreferred} - Kaguya`}
+        description={`
+        Get to know ${character.name.userPreferred} with our comprehensive character profile page. Here, you'll find a detailed biography, appearance information, and personality traits of this popular anime character. Our page includes character artwork, and voice actor information to give you a well-rounded understanding of this character's role in the anime series. Whether you're a long-time fan or a newcomer to the anime world, our ${character.name.userPreferred} page is the perfect place to learn more about this beloved character. Discover the unique qualities that make ${character.name.userPreferred} stand out and explore the impact they have on the anime series. Visit our ${character.name.userPreferred} page now and start your journey into this character's world!
+        `}
         image={character.image.large}
       />
 

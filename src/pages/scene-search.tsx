@@ -45,7 +45,7 @@ const TracePage = () => {
     <React.Fragment>
       <Head
         title={`${t("tab_title")} - Kaguya`}
-        description="Tìm kiếm Anime, số tập mà khoảnh khắc trong ảnh đó xuất hiện."
+        description="Want to find the anime name and episode of a specific scene? Our Anime Scene Search page can help! Simply upload a screenshot or image of the scene you're looking for, and the image recognition technology will identify the anime name and episode for you. With our Anime Scene Search page, you'll never have to search through multiple episodes or guess at the anime name again. Find the anime scene you're looking for in just a few clicks. Visit our Anime Scene Search page now and try it out for yourself!"
       />
 
       <Section className="pt-20 space-y-16 flex flex-col items-center justify-center">
