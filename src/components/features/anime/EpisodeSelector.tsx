@@ -154,6 +154,9 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
                 watchedTime={watchedTime}
                 media={media}
                 duration={media.duration * 60}
+                isActive={
+                  episode.sourceEpisodeId === activeEpisode?.sourceEpisodeId
+                }
               />
             </a>
           )}

@@ -4,6 +4,7 @@ import Image from "@/components/shared/Image";
 import { getEpisodeDescription, getEpisodeTitle } from "@/utils/data";
 import { useRouter } from "next/router";
 import { Media } from "@/types/anilist";
+import classNames from "classnames";
 
 interface EpisodeCardProps {
   episode: Episode;
@@ -76,7 +77,12 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/70"></div>
 
       <div className="w-full absolute bottom-0 p-2 space-y-2">
-        <p className="text-sm line-clamp-1 font-semibold leading-none">
+        <p
+          className={classNames(
+            "text-sm line-clamp-1 font-semibold leading-none",
+            isActive && "text-primary-300"
+          )}
+        >
           {episodeDisplayTitle}
         </p>
 
