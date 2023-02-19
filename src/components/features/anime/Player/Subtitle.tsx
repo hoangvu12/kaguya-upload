@@ -13,7 +13,7 @@ import { useEffect, useMemo, useState } from "react";
 import { isDesktop } from "react-device-detect";
 import { toast } from "react-toastify";
 import { buildAbsoluteURL } from "url-toolkit";
-import PlayerBanner from "../../ads/PlayerBanner";
+// import PlayerBanner from "../../ads/PlayerBanner";
 
 const textStyles = {
   none: "",
@@ -167,7 +167,8 @@ const Subtitle = () => {
         ></p>
       )}
 
-      <PlayerBanner />
+      {/* Temporary disabled */}
+      {/* <PlayerBanner /> */}
     </div>
   );
 };
