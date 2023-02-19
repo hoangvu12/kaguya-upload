@@ -194,7 +194,7 @@ const SchedulePage = () => {
                           )}
                         />
 
-                        <p className="text-gray-300 font-semibold text-sm">
+                        <p className="text-gray-300 font-semibold text-xl">
                           {day.format("HH:mm")}
                         </p>
                       </div>
@@ -214,6 +214,8 @@ const SchedulePage = () => {
                                     {t("common:episode")} {schedule.episode}
                                   </p>
                                 }
+                                cardContainerClassName="!w-32"
+                                size="lg"
                               />
 
                               {!isMobileOnly && (
