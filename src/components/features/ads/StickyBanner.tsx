@@ -57,7 +57,7 @@ const StickyBanner = () => {
         {isRendered && (
           <CircleButton
             onClick={handleClose}
-            className="!bg-background-600 absolute -top-5 -right-5"
+            className="!bg-background-600 absolute -top-5 left-1/2 -translate-x-1/2"
             secondary
             iconClassName="w-4 h-4"
             LeftIcon={AiOutlineClose}
