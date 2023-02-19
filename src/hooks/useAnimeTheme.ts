@@ -122,6 +122,7 @@ const composeTheme = (
     type: theme.slug,
     song: {
       title: theme?.song?.title,
+      slug: theme?.slug,
     },
     anilistId: anime?.resources?.[0]?.external_id,
   };
@@ -159,12 +160,6 @@ export const useAnimeTheme = ({ slug, type }: UseAnimeThemeProps) => {
       fetchThemeByAnime(slug as string, type as string),
     {
       enabled: !!slug,
-      cacheTime: 0,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-      refetchInterval: 0,
-      refetchIntervalInBackground: false,
     }
   );
 };

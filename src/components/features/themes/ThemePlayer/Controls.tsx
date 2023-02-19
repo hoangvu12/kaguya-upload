@@ -13,6 +13,7 @@ import LoopToggle from "./LoopToggle";
 import RefreshButton from "./RefreshButton";
 import { useThemePlayer } from "@/contexts/ThemePlayerContext";
 import DotList from "@/components/shared/DotList";
+import Link from "@/components/shared/Link";
 
 const Controls: React.FC = () => {
   const { isInteracting } = useInteract();
@@ -41,6 +42,17 @@ const Controls: React.FC = () => {
               </span>
 
               <span>{theme.name}</span>
+
+              <span>
+                <a
+                  className="text-primary-300 underline"
+                  href={`https://animethemes.moe/anime/${theme.slug}/${theme.song.slug}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  AnimeThemes
+                </a>
+              </span>
             </DotList>
           )}
         </div>
