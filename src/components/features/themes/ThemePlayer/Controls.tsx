@@ -46,7 +46,7 @@ const Controls: React.FC = () => {
               <span>
                 <a
                   className="text-primary-300 underline"
-                  href={`https://animethemes.moe/anime/${theme.slug}/${theme.song.slug}`}
+                  href={`https://animethemes.moe/anime/${theme.slug}`}
                   target="_blank"
                   rel="noreferrer"
                 >

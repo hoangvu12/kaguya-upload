@@ -122,7 +122,6 @@ const composeTheme = (
     type: theme.slug,
     song: {
       title: theme?.song?.title,
-      slug: theme?.slug,
     },
     anilistId: anime?.resources?.[0]?.external_id,
   };
