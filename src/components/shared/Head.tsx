@@ -14,7 +14,7 @@ const Head: React.FC<HeadProps> = (props) => {
   const {
     title = "Kaguya",
     description = "Welcome to Kaguya! Our website offers the latest and most popular anime series, with new episodes added regularly. You can watch your favorite anime shows online and on-demand, anytime, anywhere. Our extensive library features a vast selection of anime genres, including action, romance, comedy, and more. Explore our website and discover new anime series, get access to show synopses, and stay up-to-date with the latest news and release dates. Whether you're a long-time anime fan or a newcomer, our website is the perfect destination for all your anime needs. Visit us now and start watching!",
-    image = "https://i.ibb.co/JnDDN9j/localhost-3000-2.png",
+    image = "https://i.ibb.co/ckj3n48/image-2023-02-19-173520415.png",
   } = props;
 
   const { asPath, locale } = useRouter();
