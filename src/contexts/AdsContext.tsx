@@ -1,4 +1,4 @@
-import { debounce } from "@/utils";
+import { debounce, removeDup } from "@/utils";
 import Script from "next/script";
 import React, {
   createContext,
@@ -27,9 +27,10 @@ export const AdsProvider: React.FC = ({ children }) => {
   };
 
   const handleLoad = debounce(() => {
-    if (registeredScripts.current.length === loadedScripts.current.length) {
-      console.log("set is loaded");
+    const registered = removeDup(registeredScripts.current);
+    const loaded = removeDup(loadedScripts.current);
 
+    if (registered.length === loaded.length) {
       setIsLoaded(true);
     }
   }, 500);
@@ -41,9 +42,7 @@ export const AdsProvider: React.FC = ({ children }) => {
       }
 
       return () => {
-        if (registeredScripts.current.includes(scriptId)) {
-          loadedScripts.current.push(scriptId);
-        }
+        loadedScripts.current.push(scriptId);
 
         handleLoad();
       };
@@ -101,7 +100,7 @@ export const AdsProvider: React.FC = ({ children }) => {
             __html: `
                   window.googletag = window.googletag || { cmd: [] };
                   window.googletag.cmd.push(function () {
-                      const slotIds = ['protag-before_content', 'protag-in_content', 'protag-after_content', 'protag-header', 'protag-sidebar', 'protag-mobile_leaderboard']
+                      const slotIds = ['protag-before_content', 'protag-in_content', 'protag-after_content', 'protag-header', 'protag-sidebar', 'protag-mobile_leaderboard', 'protag-fullwidth']
                       for (const slotId of slotIds) {
                       console.log('define: ' + slotId)
                         window.googletag
