@@ -1,5 +1,6 @@
 import { getAiringSchedules } from "@/services/anilist";
 import { AiringSchedule, AiringScheduleArgs, PageArgs } from "@/types/anilist";
+import { removeArrayOfObjectDup } from "@/utils";
 import { AxiosError } from "axios";
 import { useQuery, UseQueryOptions } from "react-query";
 
@@ -15,7 +16,10 @@ const useAiringSchedules = (
     async () => {
       const airingSchedules = await getAiringSchedules(args);
 
-      return airingSchedules.filter((schedule) => !schedule.media.isAdult);
+      return removeArrayOfObjectDup(
+        airingSchedules.filter((schedule) => !schedule.media.isAdult),
+        "mediaId"
+      );
     },
     options
   );

@@ -22,26 +22,37 @@ const routes = [
   {
     title: "Anime",
     href: "/",
+    defaultValue: "Anime",
   },
   {
     title: "Manga",
     href: "/manga",
+    defaultValue: "Manga",
   },
   {
     title: "anime_scene_search",
     href: "/scene-search",
+    defaultValue: "Anime Scene Search",
   },
   {
     title: "watch_with_friends",
     href: "/wwf",
+    defaultValue: "Watch With Friends",
   },
   {
     title: "Anime Themes",
     href: "/themes",
+    defaultValue: "Anime Themes",
+  },
+  {
+    title: "airing_schedule",
+    href: "/schedule",
+    defaultValue: "Airing Schedule",
   },
   {
     title: "Donate",
     href: "/donate",
+    defaultValue: "",
   },
 ];
 
@@ -95,7 +106,7 @@ const Header = () => {
                           : "border-background-900 text-typography-secondary"
                       )}
                     >
-                      {t(route.title)}
+                      {t(route.title, { defaultValue: route.defaultValue })}
                     </p>
                   )}
                 </NavItem>

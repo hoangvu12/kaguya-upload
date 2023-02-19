@@ -12,12 +12,14 @@ import { useTranslation } from "next-i18next";
 interface HorizontalCardProps extends React.HTMLAttributes<HTMLDivElement> {
   data: Media;
   redirectUrl?: string;
+  endSlot?: React.ReactNode;
 }
 
 const HorizontalCard = ({
   data,
   className,
   redirectUrl = createMediaDetailsUrl(data),
+  endSlot,
   ...props
 }: HorizontalCardProps) => {
   const { locale } = useRouter();
@@ -68,6 +70,8 @@ const HorizontalCard = ({
             <span key={genre}>{convert(genre, "genre", { locale })}</span>
           ))}
         </DotList>
+
+        {endSlot}
       </div>
     </div>
   );
