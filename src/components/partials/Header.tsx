@@ -137,7 +137,7 @@ const Header = () => {
                   isActive && "text-primary-300"
                 )}
               >
-                {t(route.title)}
+                {t(route.title, { defaultValue: route.defaultValue })}
               </p>
             )}
           </NavItem>
