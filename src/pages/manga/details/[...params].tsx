@@ -88,7 +88,7 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
       <div className="pb-8">
         <DetailsBanner image={manga.bannerImage}>
           {!manga.isAdult && (
-            <div className="absolute right-4 bottom-12 w-[300px] h-[250px] z-10">
+            <div className="absolute right-4 bottom-12 min-w-[300px] min-h-[250px] z-10">
               <Banner desktop="300x250" type="atf" />
             </div>
           )}
