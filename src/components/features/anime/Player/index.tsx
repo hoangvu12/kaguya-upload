@@ -199,6 +199,13 @@ const Player = React.forwardRef<HTMLVideoElement, PlayerProps>(
           subtitles={notAssSubtitles}
           onInit={handleVideoInit}
           changeSourceUrl={proxyBuilder}
+          preferQuality={(qualities) => {
+            const priority = ["1080p", "720p", "480p", "360p", "240p"];
+
+            return (
+              findHighestPriorityString(qualities, priority) || qualities[0]
+            );
+          }}
           // @ts-ignore
           crossOrigin={null}
           {...props}
@@ -213,3 +220,28 @@ const Player = React.forwardRef<HTMLVideoElement, PlayerProps>(
 Player.displayName = "Player";
 
 export default Player;
+
+function findHighestPriorityString(strings: string[], priorityList: string[]) {
+  const priorityMap = new Map<string, number>();
+
+  // Create a map of each string's priority
+  for (let i = 0; i < priorityList.length; i++) {
+    priorityMap.set(priorityList[i], i);
+  }
+
+  let highestPriorityString: string = "";
+  let highestPriority = Infinity;
+
+  // Iterate over the strings and update the highest priority string
+  for (let i = 0; i < strings.length; i++) {
+    const string = strings[i];
+    const priority = priorityMap.get(string);
+
+    if (priority !== undefined && priority < highestPriority) {
+      highestPriorityString = string;
+      highestPriority = priority;
+    }
+  }
+
+  return highestPriorityString;
+}
