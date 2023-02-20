@@ -132,7 +132,7 @@ const Card: React.FC<AnimeCardProps> = (props) => {
                     className="rounded-sm"
                     alt={title}
                     layout="fill"
-                    quality={35}
+                    quality={80}
                   />
 
                   <div className="z-[5] flex flex-col justify-end absolute inset-0">
@@ -167,7 +167,7 @@ const Card: React.FC<AnimeCardProps> = (props) => {
                     objectFit="cover"
                     className="rounded-sm"
                     alt={title}
-                    quality={35}
+                    quality={80}
                     layout="fill"
                   />
 

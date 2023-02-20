@@ -113,7 +113,7 @@ const Card: React.FC<CardProps> = (props) => {
                   objectFit="cover"
                   className="rounded-sm"
                   alt={title}
-                  quality={35}
+                  quality={80}
                 />
 
                 <div className="z-[5] flex flex-col justify-end absolute inset-0">
@@ -156,7 +156,7 @@ const Card: React.FC<CardProps> = (props) => {
             className="rounded-sm shadow-2xl"
             alt={title}
             layout="fill"
-            quality={35}
+            quality={80}
           />
 
           <div className="absolute inset-0 bg-black/70"></div>
