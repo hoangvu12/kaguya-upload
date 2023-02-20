@@ -3,6 +3,7 @@ import NativeFloater from "@/components/features/ads/NativeFloater";
 import Popunder from "@/components/features/ads/Popunder";
 import Preload from "@/components/features/ads/Preload";
 import StickyBanner from "@/components/features/ads/StickyBanner";
+import IosAlert from "@/components/features/others/IosAlert";
 import BaseLayout from "@/components/layouts/BaseLayout";
 import { AppErrorFallback } from "@/components/shared/AppErrorFallback";
 import { AdsProvider } from "@/contexts/AdsContext";
@@ -196,6 +197,8 @@ function App({ Component, pageProps, router, err }: WorkaroundAppProps) {
         pauseOnHover
         theme="dark"
       />
+
+      <IosAlert />
 
       <QueryClientProvider client={queryClient}>
         <AuthContextProvider>
