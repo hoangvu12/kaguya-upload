@@ -214,8 +214,8 @@ const SchedulePage = () => {
                                     {t("common:episode")} {schedule.episode}
                                   </p>
                                 }
-                                cardContainerClassName="!w-32"
-                                size="lg"
+                                cardContainerClassName="!w-16 md:!w-24 lg:!w-32"
+                                size={isMobileOnly ? "md" : "lg"}
                               />
 
                               {!isMobileOnly && (
