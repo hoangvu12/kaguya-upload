@@ -3,6 +3,7 @@ import Input from "@/components/shared/Input";
 import Modal, { ModalRef } from "@/components/shared/Modal";
 import useUpdateProfile from "@/hooks/useUpdateProfile";
 import { AdditionalUser } from "@/types";
+import { stringToSlug } from "@/utils";
 import { Editor as EditorType } from "@tiptap/react";
 import { useTranslation } from "next-i18next";
 import React, { useRef } from "react";
@@ -27,7 +28,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ user }) => {
 
   const handleSaveEdit = () => {
     const name = nameInputRef.current.value?.trim();
-    const username = usernameInputRef.current.value?.trim();
+    const username = stringToSlug(usernameInputRef.current.value?.trim());
     const bio = editorRef.current.isEmpty
       ? ""
       : editorRef.current.getHTML().trim();
