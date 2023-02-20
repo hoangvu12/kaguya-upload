@@ -26,9 +26,11 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ user }) => {
     useUpdateProfile();
 
   const handleSaveEdit = () => {
-    const name = nameInputRef.current.value;
-    const username = usernameInputRef.current.value;
-    const bio = editorRef.current.isEmpty ? "" : editorRef.current.getHTML();
+    const name = nameInputRef.current.value?.trim();
+    const username = usernameInputRef.current.value?.trim();
+    const bio = editorRef.current.isEmpty
+      ? ""
+      : editorRef.current.getHTML().trim();
 
     if (!name || !username) {
       toast.error("Name and username are required.");
