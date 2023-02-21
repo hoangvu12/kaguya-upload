@@ -89,17 +89,17 @@ const SchedulePage = () => {
     fetchNextPage();
   };
 
+  const activeDayIndex = useMemo(() => {
+    return days.findIndex((day) => day.isSame(activeDay, "day"));
+  }, [activeDay, days]);
+
   useEffect(() => {
     if (!swiper) return;
-
-    const activeDayIndex = days.findIndex((day) =>
-      day.isSame(activeDay, "day")
-    );
 
     if (activeDayIndex === -1) return;
 
     swiper.slideTo(activeDayIndex);
-  }, [activeDay, days, swiper]);
+  }, [activeDayIndex, days, swiper]);
 
   return (
     <React.Fragment>
@@ -112,6 +112,7 @@ const SchedulePage = () => {
         <Swiper
           slidesPerGroup={1}
           centeredSlides
+          initialSlide={activeDayIndex}
           breakpoints={{
             1536: {
               slidesPerView: 7,
