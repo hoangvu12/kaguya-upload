@@ -53,11 +53,12 @@ const useEpisodes = (mediaId: number, includeEpisodeInfo?: boolean) => {
       throw episodePromise.reason;
     }
 
-    if (infoEpisodesPromise.status === "rejected") {
-      throw infoEpisodesPromise.reason;
+    let infoEpisodes: EpisodeInfo[] = [];
+
+    if (infoEpisodesPromise.status === "fulfilled") {
+      infoEpisodes = infoEpisodesPromise.value;
     }
 
-    const infoEpisodes = infoEpisodesPromise.value;
     const { data, error } = episodePromise.value;
 
     if (error) throw error;
