@@ -130,6 +130,23 @@ const Sidebar = () => {
     setChapter(sourceChapters[index]);
   };
 
+  const handleChangeSource = (source: string) => {
+    setActiveSource(source);
+  };
+
+  useEffect(() => {
+    const currentChapterNumber = currentChapter?.chapterNumber;
+
+    const sourceChapter =
+      sourceChapters.find(
+        (chapter) => chapter.chapterNumber === currentChapterNumber
+      ) || sourceChapters[0];
+
+    setChapter(sourceChapter);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeSource]);
+
   useEffect(() => {
     const currentChapterEl = document.querySelector(".active-chapter");
 
@@ -184,7 +201,7 @@ const Sidebar = () => {
                     : "hover:text-white"
                 )}
                 key={source}
-                onClick={() => setActiveSource(source)}
+                onClick={() => handleChangeSource(source)}
               >
                 {source}
               </div>
