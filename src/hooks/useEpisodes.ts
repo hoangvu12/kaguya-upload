@@ -44,10 +44,21 @@ const useEpisodes = (mediaId: number, includeEpisodeInfo?: boolean) => {
       episodeInfoPromise = fetchEpisodeInfo(mediaId);
     }
 
-    const [{ data, error }, infoEpisodes] = await Promise.all([
+    const [episodePromise, infoEpisodesPromise] = await Promise.allSettled([
       kaguyaEpisodesPromise,
       episodeInfoPromise,
     ]);
+
+    if (episodePromise.status === "rejected") {
+      throw episodePromise.reason;
+    }
+
+    if (infoEpisodesPromise.status === "rejected") {
+      throw infoEpisodesPromise.reason;
+    }
+
+    const infoEpisodes = infoEpisodesPromise.value;
+    const { data, error } = episodePromise.value;
 
     if (error) throw error;
 
