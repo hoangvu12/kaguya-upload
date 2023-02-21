@@ -6,7 +6,7 @@ import { chunk, groupBy, parseNumberFromString } from "@/utils";
 import classNames from "classnames";
 import { LinkProps } from "next/link";
 import { useRouter } from "next/router";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { isMobileOnly } from "react-device-detect";
 import { HiOutlineViewGrid } from "react-icons/hi";
 import { IoMdImage } from "react-icons/io";
@@ -113,6 +113,7 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
   });
 
   const { asPath } = useRouter();
+  const containerEl = useRef<HTMLDivElement>(null);
 
   const {
     watchedData,
@@ -291,7 +292,10 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
       return;
     }
 
-    setVideoContainer(videoElement);
+    // check if container el is inside video container
+    if (videoElement.contains(containerEl.current)) {
+      setVideoContainer(videoElement);
+    }
   }, [asPath]);
 
   useEffect(() => {
@@ -320,7 +324,10 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
 
   return (
     <React.Fragment>
-      <div className="flex flex-col md:flex-row md:justify-end items-end md:items-start gap-4">
+      <div
+        ref={containerEl}
+        className="flex flex-col md:flex-row md:justify-end items-end md:items-start gap-4"
+      >
         <Select
           options={chunkOptions}
           isClearable={false}

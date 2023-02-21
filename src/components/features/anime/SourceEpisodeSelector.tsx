@@ -2,7 +2,7 @@ import Popup from "@/components/shared/Popup";
 import Select from "@/components/shared/Select";
 import { groupBy, sortObjectByValue } from "@/utils";
 import { useRouter } from "next/router";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import EpisodeSelector, { EpisodeSelectorProps } from "./EpisodeSelector";
 
 export interface SourceEpisodeSelectorProps extends EpisodeSelectorProps {}
@@ -17,6 +17,7 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
   ...episodeSelectorProps
 }) => {
   const [videoContainer, setVideoContainer] = useState<HTMLElement>();
+  const containerEl = useRef<HTMLDivElement>(null);
 
   const { asPath } = useRouter();
 
@@ -106,12 +107,15 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
       return;
     }
 
-    setVideoContainer(videoElement);
+    // check if container el is inside video container
+    if (videoElement.contains(containerEl.current)) {
+      setVideoContainer(videoElement);
+    }
   }, [asPath]);
 
   return (
     <React.Fragment>
-      <div className="flex justify-end w-full mx-auto mb-8">
+      <div ref={containerEl} className="flex justify-end w-full mx-auto mb-8">
         <div className="flex md:items-center flex-col md:flex-row gap-2">
           <Popup
             reference={
