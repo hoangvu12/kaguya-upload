@@ -33,7 +33,7 @@ const ReadImage: React.FC<ReadImageProps> = ({
   const imageRef = useRef<HTMLImageElement>(null);
   const { locale } = useRouter();
 
-  const entry = useIntersectionObserver(ref, {
+  const entry = useIntersectionObserver(imageRef, {
     rootMargin: "0px 0px 10px 0px",
   });
 
@@ -47,7 +47,6 @@ const ReadImage: React.FC<ReadImageProps> = ({
 
   useEffect(() => {
     if (!entry?.isIntersecting) return;
-    if (!ref.current) return;
     if (!imageRef.current) return;
     if (!imageRef.current.complete) return;
 
