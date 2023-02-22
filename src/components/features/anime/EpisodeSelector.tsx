@@ -1,3 +1,7 @@
+import HeadlessSwiper, {
+  SwiperInstance,
+  SwiperSlide,
+} from "@/components/shared/HeadlessSwiper";
 import Link from "@/components/shared/Link";
 import Select from "@/components/shared/Select";
 import { Episode, Watched } from "@/types";
@@ -6,10 +10,17 @@ import { chunk, groupBy, parseNumberFromString } from "@/utils";
 import classNames from "classnames";
 import { LinkProps } from "next/link";
 import { useRouter } from "next/router";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { isMobileOnly } from "react-device-detect";
 import { HiOutlineViewGrid } from "react-icons/hi";
 import { IoMdImage } from "react-icons/io";
+import { SwiperOptions } from "swiper";
 import EpisodeCard from "./EpisodeCard";
 
 export interface EpisodeSelectorProps {
@@ -35,6 +46,38 @@ export enum EpisodeShowType {
   Thumbnail = "thumbnail",
   Grid = "grid",
 }
+
+const swiperOptions: SwiperOptions = {
+  spaceBetween: 10,
+  mousewheel: true,
+  keyboard: true,
+  breakpoints: {
+    1536: {
+      slidesPerView: 8.5,
+      slidesPerGroup: 8.5,
+    },
+    1280: {
+      slidesPerView: 7.5,
+      slidesPerGroup: 7.5,
+    },
+    1024: {
+      slidesPerView: 6.5,
+      slidesPerGroup: 6.5,
+    },
+    768: {
+      slidesPerView: 5.5,
+      slidesPerGroup: 5.5,
+    },
+    640: {
+      slidesPerView: 4.5,
+      slidesPerGroup: 4.5,
+    },
+    0: {
+      slidesPerView: 3.5,
+      slidesPerGroup: 3.5,
+    },
+  },
+};
 
 const EpisodeButton: React.FC<EpisodeButtonProps> = ({
   media,
@@ -112,6 +155,8 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
     return EpisodeShowType.Grid;
   });
 
+  const swiperRef = useRef<SwiperInstance>();
+
   const { asPath } = useRouter();
   const containerEl = useRef<HTMLDivElement>(null);
 
@@ -167,6 +212,7 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
   } = props;
 
   const [videoContainer, setVideoContainer] = useState<HTMLElement>();
+  const savedActiveChunkIndex = useRef<number>(0);
 
   const sections = useMemo(
     () => groupBy(episodes, (episode) => episode.section),
@@ -202,6 +248,10 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
     );
   });
 
+  const activeChunkIndex = useMemo(() => {
+    return chunks.findIndex((chunk) => chunk === activeChunk);
+  }, [activeChunk, chunks]);
+
   const chunkOptions = useMemo(() => {
     const options = chunks.map((chunk, i) => {
       const firstEpisodeName = parseNumberFromString(
@@ -226,10 +276,6 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
 
     return options;
   }, [chunks]);
-
-  const activeChunkOption = useMemo(() => {
-    return chunkOptions.find((option) => option.value === activeChunk);
-  }, [activeChunk, chunkOptions]);
 
   const sectionOptions = useMemo(() => {
     const sectionKeys = Object.keys(sections).filter(
@@ -271,6 +317,10 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
 
   const onChunkChange = ({ value }) => {
     setActiveChunk(value);
+
+    const index = chunks.findIndex((chunk) => chunk === value);
+
+    savedActiveChunkIndex.current = index;
   };
 
   const onSectionChange = ({ value }) => {
@@ -307,38 +357,80 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
   }, [sections]);
 
   useEffect(() => {
-    setActiveChunk(
-      chunks.find((chunk) =>
-        chunk.some(
-          (episode) =>
-            episode.sourceEpisodeId === activeEpisode?.sourceEpisodeId ||
-            episode.episodeNumber === watchedData?.episode?.episodeNumber
-        )
-      ) || chunks.sort((a, b) => b.length - a.length)[0]
+    const chunk = chunks.find((chunk) =>
+      chunk.some(
+        (episode) =>
+          episode.sourceEpisodeId === activeEpisode?.sourceEpisodeId ||
+          episode.episodeNumber === watchedData?.episode?.episodeNumber
+      )
     );
+
+    let fallbackChunk = null;
+
+    if (savedActiveChunkIndex.current === -1) {
+      fallbackChunk = chunks[0];
+    } else if (savedActiveChunkIndex.current < chunks.length) {
+      fallbackChunk = chunks[savedActiveChunkIndex.current];
+    } else {
+      fallbackChunk = chunks[0];
+    }
+
+    setActiveChunk(chunk || fallbackChunk);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
+    savedActiveChunkIndex.current,
     activeEpisode?.sourceEpisodeId,
     chunks,
     watchedData?.episode?.episodeNumber,
   ]);
 
+  useEffect(() => {
+    if (!swiperRef.current) return;
+
+    swiperRef.current.slideTo(activeChunkIndex, 300);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeChunkIndex]);
+
+  useEffect(() => {
+    if (!swiperRef.current) return;
+
+    swiperRef.current.activeIndex = savedActiveChunkIndex.current;
+    swiperRef.current.update();
+  }, [chunkOptions]);
+
   return (
     <React.Fragment>
       <div
         ref={containerEl}
-        className="flex flex-col md:flex-row md:justify-end items-end md:items-start gap-4"
+        className="flex flex-col md:flex-row md:items-center items-end gap-4"
       >
-        <Select
-          options={chunkOptions}
-          isClearable={false}
-          defaultValue={activeChunkOption}
-          value={activeChunkOption}
-          onChange={onChunkChange}
-          menuPortalTarget={videoContainer}
-        />
+        <HeadlessSwiper
+          ref={swiperRef}
+          defaultValue={activeChunkIndex}
+          className="overflow-hidden grow w-full"
+          options={swiperOptions}
+        >
+          {chunkOptions.map((option) => (
+            <SwiperSlide key={option.label}>
+              <button
+                type="button"
+                className={classNames(
+                  "w-full text-center rounded-md px-3 py-2 line-clamp-1",
+                  option.value === activeChunk
+                    ? "bg-primary-600"
+                    : "bg-background-600"
+                )}
+                onClick={() => onChunkChange(option)}
+              >
+                {option.label}
+              </button>
+            </SwiperSlide>
+          ))}
+        </HeadlessSwiper>
 
         {sectionOptions.length ? (
           <Select
+            className="shrink-0"
             options={sectionOptions}
             isClearable={false}
             defaultValue={activeSectionOption}
