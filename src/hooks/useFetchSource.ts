@@ -38,6 +38,7 @@ export const fetchSource = async (episode: Episode, locale: string) => {
           source.file,
           source.proxy,
           source.usePublicProxy,
+          source.useEdgeProxy,
           episode?.source?.locales?.includes("vi") ? "vi" : locale
         );
       }

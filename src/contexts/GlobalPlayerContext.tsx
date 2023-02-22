@@ -140,6 +140,7 @@ const GlobalPlayerContextProvider: React.FC = ({ children }) => {
           playerSource?.file,
           playerSource?.proxy,
           playerSource?.usePublicProxy,
+          playerSource?.useEdgeProxy,
           locale
         )
       : playerSource?.file;
@@ -148,6 +149,7 @@ const GlobalPlayerContextProvider: React.FC = ({ children }) => {
     playerSource?.proxy,
     playerSource?.useProxy,
     playerSource?.usePublicProxy,
+    playerSource?.useEdgeProxy,
     locale,
   ]);
 
@@ -260,7 +262,11 @@ const GlobalPlayerContextProvider: React.FC = ({ children }) => {
                     // @ts-ignore
                     // Custom attribute
                     target={playerSource?.file}
-                    proxy={playerSource.useProxy || playerSource.usePublicProxy}
+                    proxy={
+                      playerSource.useProxy ||
+                      playerSource.usePublicProxy ||
+                      playerSource.useEdgeProxy
+                    }
                     src={playerSrc}
                   />
                 </React.Fragment>

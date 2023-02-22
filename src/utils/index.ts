@@ -367,6 +367,7 @@ export const createProxyUrl = (
   url: string,
   proxy: Proxy,
   isPublicProxy?: boolean,
+  isEdgeProxy?: boolean,
   locale = "en"
 ) => {
   if (isPublicProxy) return `https://corsproxy.io/?${encodeURIComponent(url)}`;
@@ -393,6 +394,8 @@ export const createProxyUrl = (
   });
 
   const proxyUrl = (() => {
+    if (isEdgeProxy) return config.proxyServer.edge;
+
     if (locale === "en") return config.proxyServer.global;
 
     return config.proxyServer.vn;

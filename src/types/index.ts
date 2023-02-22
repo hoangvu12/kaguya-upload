@@ -198,6 +198,7 @@ export type VideoSource = {
   usePublicProxy?: boolean;
   proxy?: Proxy;
   isEmbed?: boolean;
+  useEdgeProxy?: boolean;
 };
 
 export type ImageSource = {
@@ -205,6 +206,7 @@ export type ImageSource = {
   useProxy?: boolean;
   proxy?: Proxy;
   usePublicProxy?: boolean;
+  useEdgeProxy?: boolean;
 };
 
 export type BasicRoomUser = {

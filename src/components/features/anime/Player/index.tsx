@@ -92,7 +92,13 @@ const Player = React.forwardRef<HTMLVideoElement, PlayerProps>(
                   alwaysNormalize: true,
                 });
 
-                return createProxyUrl(finalUrl, source.proxy, false, locale);
+                return createProxyUrl(
+                  finalUrl,
+                  source.proxy,
+                  false,
+                  false,
+                  locale
+                );
               }
             });
           });
@@ -108,7 +114,8 @@ const Player = React.forwardRef<HTMLVideoElement, PlayerProps>(
 
           if (
             frag.url.includes(config.proxyServer.global) ||
-            frag.url.includes(config.proxyServer.vn)
+            frag.url.includes(config.proxyServer.vn) ||
+            frag.url.includes(config.proxyServer.edge)
           ) {
             const href = new URL(frag.baseurl);
             const targetUrl = href.searchParams.get("url");
@@ -172,7 +179,7 @@ const Player = React.forwardRef<HTMLVideoElement, PlayerProps>(
       (url: string, source: VideoSource) => {
         if (
           corsServers.some((server) => url.includes(server)) ||
-          (!source.useProxy && !source.usePublicProxy)
+          (!source.useProxy && !source.usePublicProxy && !source.useEdgeProxy)
         )
           return url;
 
@@ -180,6 +187,7 @@ const Player = React.forwardRef<HTMLVideoElement, PlayerProps>(
           url,
           source.proxy,
           source.usePublicProxy,
+          source.useEdgeProxy,
           locale
         );
 
