@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import React, { MutableRefObject, useEffect } from "react";
+import React, { MutableRefObject, useEffect, useMemo } from "react";
 import Swiper from "swiper";
 import { SwiperSlide as ReactSwiperSlide } from "swiper/react";
 import "swiper/swiper.min.css";
@@ -17,8 +17,13 @@ export interface SwiperProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const HeadlessSwiper = React.forwardRef<SwiperInstance, SwiperProps>(
   ({ children, dir, className, options, onInit, ...props }, ref) => {
+    const uniqueId = useMemo(
+      () => Math.random().toString(36).substring(2, 9),
+      []
+    );
+
     useEffect(() => {
-      const swiper = new Swiper(".headless-swiper", options);
+      const swiper = new Swiper(`.headless-swiper-${uniqueId}`, options);
 
       if (typeof ref === "function") {
         ref(swiper);
@@ -31,11 +36,11 @@ const HeadlessSwiper = React.forwardRef<SwiperInstance, SwiperProps>(
       return () => {
         swiper.destroy(true, true);
       };
-    }, [onInit, options, ref, dir]);
+    }, [onInit, options, ref, dir, uniqueId]);
 
     return (
       <div
-        className={classNames("headless-swiper", className)}
+        className={classNames(`headless-swiper-${uniqueId}`, className)}
         dir={dir}
         {...props}
       >

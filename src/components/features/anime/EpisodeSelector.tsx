@@ -146,6 +146,7 @@ const EpisodeButton: React.FC<EpisodeButtonProps> = ({
 };
 
 const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
+  const [swiper, setSwiper] = useState<SwiperInstance>();
   const [showType, setShowType] = useState<EpisodeShowType>(() => {
     if (isMobileOnly) return EpisodeShowType.Grid;
 
@@ -154,8 +155,6 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
 
     return EpisodeShowType.Grid;
   });
-
-  const swiperRef = useRef<SwiperInstance>();
 
   const { asPath } = useRouter();
   const containerEl = useRef<HTMLDivElement>(null);
@@ -385,18 +384,23 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
   ]);
 
   useEffect(() => {
-    if (!swiperRef.current) return;
+    if (!swiper) return;
 
-    swiperRef.current.slideTo(activeChunkIndex, 300);
+    swiper.slideTo(activeChunkIndex, 300);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeChunkIndex]);
 
   useEffect(() => {
-    if (!swiperRef.current) return;
+    if (!swiper) return;
 
-    swiperRef.current.activeIndex = savedActiveChunkIndex.current;
-    swiperRef.current.update();
+    swiper.activeIndex = savedActiveChunkIndex.current;
+    swiper.update();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chunkOptions]);
+
+  const handleSwiperInit = useCallback((swiper: SwiperInstance) => {
+    setSwiper(swiper);
+  }, []);
 
   return (
     <React.Fragment>
@@ -405,7 +409,7 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
         className="flex flex-col md:flex-row md:items-center items-end gap-4"
       >
         <HeadlessSwiper
-          ref={swiperRef}
+          onInit={handleSwiperInit}
           defaultValue={activeChunkIndex}
           className="overflow-hidden grow w-full"
           options={swiperOptions}
