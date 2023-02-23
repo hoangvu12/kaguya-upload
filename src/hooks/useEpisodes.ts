@@ -1,7 +1,10 @@
+import config from "@/config";
 import supabaseClient from "@/lib/supabase";
 import { AnimeSourceConnection } from "@/types";
 import { sortMediaUnit } from "@/utils/data";
 import axios from "axios";
+import { useRouter } from "next/router";
+import { useCallback } from "react";
 import { useQuery } from "react-query";
 
 const query = `
@@ -18,23 +21,33 @@ type EpisodeInfo = {
   id: string;
   title: string;
   description: string;
-  number: number;
+  episodeNumber: number;
   image: string;
   isFiller: boolean;
 };
 
-const fetchEpisodeInfo = async (mediaId: number) => {
-  const { data } = await axios.get<EpisodeInfo[]>(
-    `https://api.consumet.org/meta/anilist/episodes/${mediaId}?fetchFiller=true`,
-    {
-      timeout: 2000,
-    }
+const useEpisodes = (mediaId: number, includeEpisodeInfo?: boolean) => {
+  const { locale } = useRouter();
+
+  const fetchEpisodeInfo = useCallback(
+    async (mediaId: number) => {
+      const nodeServerUrl = (() => {
+        if (locale === "vi") {
+          return config.nodeServer.vn;
+        }
+
+        return config.nodeServer.global;
+      })();
+
+      const { data } = await axios.get<EpisodeInfo[]>(
+        `${nodeServerUrl}/episode-info/${mediaId}`
+      );
+
+      return data;
+    },
+    [locale]
   );
 
-  return data;
-};
-
-const useEpisodes = (mediaId: number, includeEpisodeInfo?: boolean) => {
   return useQuery(["episodes", mediaId], async () => {
     const kaguyaEpisodesPromise = supabaseClient
       .from<AnimeSourceConnection>("kaguya_anime_source")
@@ -76,7 +89,7 @@ const useEpisodes = (mediaId: number, includeEpisodeInfo?: boolean) => {
       if (infoEpisodes?.length) {
         episodes.forEach((episode) => {
           const infoEpisode = infoEpisodes.find(
-            (infoEpisode) => infoEpisode.number === episode.episodeNumber
+            (infoEpisode) => infoEpisode.episodeNumber === episode.episodeNumber
           );
 
           if (!infoEpisode) return;
@@ -87,7 +100,7 @@ const useEpisodes = (mediaId: number, includeEpisodeInfo?: boolean) => {
           episode.description.en = infoEpisode.description;
           episode.thumbnail = infoEpisode.image;
           episode.title.en = infoEpisode.title;
-          episode.isFiller = infoEpisode.isFiller;
+          episode.isFiller = false;
         });
       }
     }

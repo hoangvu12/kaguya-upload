@@ -16,6 +16,7 @@ module.exports = withPWA({
       "pic-bstarstatic.akamaized.net",
       "cdn.discordapp.com",
       "artworks.thetvdb.com",
+      "image.tmdb.org",
     ],
     minimumCacheTTL: 604800, // a week,
     deviceSizes: [360, 412, 480, 640, 750, 828, 1080, 1200, 1920, 2048, 3840],
