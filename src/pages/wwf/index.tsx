@@ -26,8 +26,6 @@ const WatchWithFriendPage = () => {
         description={t("browse_page_description")}
       />
 
-      <Banner desktop="970x250" mobile="300x250" type="atf" />
-
       <NativeBanner />
 
       <div className="mb-8 flex flex-col items-center gap-4 md:flex-row md:justify-between">

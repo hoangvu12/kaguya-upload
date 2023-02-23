@@ -69,8 +69,6 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ studio: initialStudio }) => {
           </div>
         </Section>
 
-        <Banner desktop="970x250" mobile="300x250" type="atf" />
-
         <Section className="px-4 sm:px-12">
           {/* Using flex column reverse because the object is not sortable */}
           <div className="flex flex-col-reverse gap-y-8">

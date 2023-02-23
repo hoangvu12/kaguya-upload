@@ -25,7 +25,10 @@ type EpisodeInfo = {
 
 const fetchEpisodeInfo = async (mediaId: number) => {
   const { data } = await axios.get<EpisodeInfo[]>(
-    `https://api.consumet.org/meta/anilist/episodes/${mediaId}?fetchFiller=true`
+    `https://api.consumet.org/meta/anilist/episodes/${mediaId}?fetchFiller=true`,
+    {
+      timeout: 2000,
+    }
   );
 
   return data;

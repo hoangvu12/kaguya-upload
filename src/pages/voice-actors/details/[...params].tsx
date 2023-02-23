@@ -158,8 +158,6 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ voiceActor }) => {
           </div>
         </Section>
 
-        <Banner desktop="970x250" mobile="300x250" type="atf" />
-
         <NativeBanner />
 
         <Section title={t("characters_section")}>
