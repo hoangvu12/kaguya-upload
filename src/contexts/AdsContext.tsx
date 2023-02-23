@@ -1,4 +1,5 @@
 import { debounce, removeDup } from "@/utils";
+import { useRouter } from "next/router";
 import Script from "next/script";
 import React, {
   createContext,
@@ -21,6 +22,7 @@ export const AdsProvider: React.FC = ({ children }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const registeredScripts = useRef<string[]>([]);
   const loadedScripts = useRef<string[]>([]);
+  const { asPath } = useRouter();
 
   const handleScriptError = () => {
     setIsError(true);
@@ -72,6 +74,35 @@ export const AdsProvider: React.FC = ({ children }) => {
       handleScriptLoad("protag-init")();
     });
   }, [handleScriptLoad]);
+
+  // Display ads if the page doesn't has any ads
+  useEffect(() => {
+    if (!isLoaded) return;
+
+    const slotIds = [
+      "protag-before_content",
+      "protag-in_content",
+      "protag-after_content",
+      "protag-header",
+      "protag-mobile_leaderboard",
+    ];
+
+    const pageHasAds = slotIds.some((slotId) =>
+      document.querySelector(`#${slotId}`)
+    );
+
+    if (!pageHasAds) return;
+
+    // @ts-ignore
+    window.googletag = window.googletag || { cmd: [] };
+    window.protag = window.protag || { cmd: [] };
+
+    for (const slotId of slotIds) {
+      window.protag.cmd.push(function () {
+        window.protag.display(slotId);
+      });
+    }
+  }, [asPath, isLoaded]);
 
   return (
     <AdsContext.Provider value={{ isError, isLoaded }}>
