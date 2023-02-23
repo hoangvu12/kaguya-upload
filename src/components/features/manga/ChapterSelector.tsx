@@ -1,6 +1,10 @@
+import HeadlessSwiper, {
+  SwiperSlide,
+} from "@/components/shared/HeadlessSwiper";
 import Link from "@/components/shared/Link";
 import Popup from "@/components/shared/Popup";
 import Select from "@/components/shared/Select";
+import { SwiperInstance } from "@/components/shared/Swiper";
 import { Chapter, Read } from "@/types";
 import {
   chunk,
@@ -8,8 +12,16 @@ import {
   parseNumberFromString,
   sortObjectByValue,
 } from "@/utils";
-import React, { useEffect, useMemo, useState } from "react";
+import classNames from "classnames";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { isMobileOnly } from "react-device-detect";
+import { SwiperOptions } from "swiper";
 
 export interface ChapterSelectorProps {
   chapters: Chapter[];
@@ -17,6 +29,38 @@ export interface ChapterSelectorProps {
   readData?: Read;
   chapterChunk?: number;
 }
+
+const swiperOptions: SwiperOptions = {
+  spaceBetween: 10,
+  mousewheel: true,
+  keyboard: true,
+  breakpoints: {
+    1536: {
+      slidesPerView: 8.5,
+      slidesPerGroup: 8.5,
+    },
+    1280: {
+      slidesPerView: 7.5,
+      slidesPerGroup: 7.5,
+    },
+    1024: {
+      slidesPerView: 6.5,
+      slidesPerGroup: 6.5,
+    },
+    768: {
+      slidesPerView: 5.5,
+      slidesPerGroup: 5.5,
+    },
+    640: {
+      slidesPerView: 4.5,
+      slidesPerGroup: 4.5,
+    },
+    0: {
+      slidesPerView: 3.5,
+      slidesPerGroup: 3.5,
+    },
+  },
+};
 
 const sourcesToOptions = (sources: string[]) =>
   sources.map((source) => ({ value: source, label: source }));
@@ -27,6 +71,9 @@ const ChapterSelector: React.FC<ChapterSelectorProps> = ({
   readData,
   chapterChunk = isMobileOnly ? 5 : 10,
 }) => {
+  const savedActiveChunkIndex = useRef<number>(0);
+  const [swiper, setSwiper] = useState<SwiperInstance>();
+
   const fastSources = useMemo(() => {
     const fastChapters = chapters.filter((chapter) => chapter.source.isFast);
 
@@ -106,6 +153,10 @@ const ChapterSelector: React.FC<ChapterSelectorProps> = ({
     );
   });
 
+  const activeChunkIndex = useMemo(() => {
+    return chunks.findIndex((chunk) => chunk === activeChunk);
+  }, [activeChunk, chunks]);
+
   const chunkOptions = useMemo(() => {
     const options = chunks.map((chunk, i) => {
       const firstChapterName = parseNumberFromString(
@@ -131,10 +182,6 @@ const ChapterSelector: React.FC<ChapterSelectorProps> = ({
     return options;
   }, [chunks]);
 
-  const activeChunkOption = useMemo(() => {
-    return chunkOptions.find((option) => option.value === activeChunk);
-  }, [activeChunk, chunkOptions]);
-
   const readSourceChapter = useMemo(() => {
     const readChapter = readData?.chapter;
 
@@ -150,6 +197,14 @@ const ChapterSelector: React.FC<ChapterSelectorProps> = ({
 
     return readEpisodeInActiveChunk;
   }, [activeChunk, readData?.chapter]);
+
+  const onChunkChange = ({ value }) => {
+    setActiveChunk(value);
+
+    const index = chunks.findIndex((chunk) => chunk === value);
+
+    savedActiveChunkIndex.current = index;
+  };
 
   useEffect(() => {
     const sourceKeys = Object.keys(sources);
@@ -172,6 +227,22 @@ const ChapterSelector: React.FC<ChapterSelectorProps> = ({
     );
   }, [chunks, readData?.chapter?.chapterNumber]);
 
+  useEffect(() => {
+    if (!swiper) return;
+
+    swiper.slideTo(activeChunkIndex, 300);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeChunkIndex]);
+
+  useEffect(() => {
+    if (!swiper) return;
+
+    swiper.activeIndex =
+      savedActiveChunkIndex.current === -1 ? 0 : savedActiveChunkIndex.current;
+    swiper.update();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chunkOptions]);
+
   const onEachChapter = (chapter: Chapter) => {
     const isRead = chapter.chapterNumber <= readData?.chapter?.chapterNumber;
 
@@ -191,10 +262,14 @@ const ChapterSelector: React.FC<ChapterSelectorProps> = ({
     );
   };
 
+  const handleSwiperInit = useCallback((swiper: SwiperInstance) => {
+    setSwiper(swiper);
+  }, []);
+
   return (
     <React.Fragment>
-      <div className="flex justify-end w-full mx-auto mb-8">
-        <div className="flex flex-col md:flex-row md:items-center gap-2">
+      <div className="flex flex-col w-full mx-auto mb-8 gap-8">
+        <div className="self-end flex flex-col md:flex-row md:items-center gap-2">
           <Popup
             reference={
               <p className="text-right font-semibold underline">Wrong title?</p>
@@ -239,7 +314,7 @@ const ChapterSelector: React.FC<ChapterSelectorProps> = ({
             />
           </div>
 
-          <Select
+          {/* <Select
             value={activeChunkOption}
             options={chunkOptions}
             className="ml-auto"
@@ -248,7 +323,33 @@ const ChapterSelector: React.FC<ChapterSelectorProps> = ({
             onChange={({ value }) => {
               setActiveChunk(value);
             }}
-          />
+          /> */}
+        </div>
+
+        <div className="flex overflow-hidden">
+          <HeadlessSwiper
+            onInit={handleSwiperInit}
+            defaultValue={activeChunkIndex}
+            className="w-full grow"
+            options={swiperOptions}
+          >
+            {chunkOptions.map((option) => (
+              <SwiperSlide key={option.label}>
+                <button
+                  type="button"
+                  className={classNames(
+                    "w-full text-center rounded-md px-3 py-2 line-clamp-1",
+                    option.value === activeChunk
+                      ? "bg-primary-600"
+                      : "bg-background-600"
+                  )}
+                  onClick={() => onChunkChange(option)}
+                >
+                  {option.label}
+                </button>
+              </SwiperSlide>
+            ))}
+          </HeadlessSwiper>
         </div>
       </div>
 
