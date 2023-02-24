@@ -465,7 +465,7 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
         />
       </div>
 
-      <div className="mt-10 space-y-4 max-h-80 overflow-y-auto">
+      <div className="mt-10 space-y-4 max-h-96 overflow-y-auto">
         {watchedSourceEpisode && (
           <div className="flex items-center gap-4">
             <p className="shrink-0">Continue watching: </p>
