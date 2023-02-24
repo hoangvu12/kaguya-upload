@@ -12,6 +12,7 @@ import { sortMediaUnit } from "@/utils/data";
 import classNames from "classnames";
 import { useInteract } from "netplayer";
 import React, { useCallback, useMemo } from "react";
+import { isDesktop } from "react-device-detect";
 import { BsArrowLeft } from "react-icons/bs";
 import Player from "../../anime/Player";
 import MobileOverlay from "../../anime/Player/MobileOverlay";
@@ -43,7 +44,6 @@ const PlayerOverlay = () => {
 
       {anime.idMal && (
         <TimestampSkipButton
-          className="absolute right-4 bottom-20"
           episode={parseNumberFromString(currentEpisode.name)}
           malId={anime.idMal}
         />
@@ -71,7 +71,6 @@ const PlayerMobileOverlay = () => {
 
       {anime.idMal && (
         <TimestampSkipButton
-          className="z-50 absolute right-4 bottom-24"
           episode={parseNumberFromString(currentEpisode.name)}
           malId={anime.idMal}
         />

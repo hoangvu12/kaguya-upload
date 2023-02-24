@@ -1,3 +1,4 @@
+import Portal from "@/components/shared/Portal";
 import { useGlobalPlayer } from "@/contexts/GlobalPlayerContext";
 import { useHistory } from "@/contexts/HistoryContext";
 import { parseNumberFromString } from "@/utils";
@@ -5,6 +6,7 @@ import classNames from "classnames";
 import { ControlButton, TimeIndicator, useInteract } from "netplayer";
 import { useRouter } from "next/router";
 import React, { useMemo } from "react";
+import { isDesktop, isMobileOnly } from "react-device-detect";
 import { AiOutlineClose, AiOutlineExpandAlt } from "react-icons/ai";
 import { BsArrowLeft } from "react-icons/bs";
 import Player, { PlayerProps } from "./Player";
@@ -256,7 +258,6 @@ const PlayerOverlay = React.memo(() => {
 
           {anime?.idMal && (
             <TimestampSkipButton
-              className="absolute right-4 bottom-20"
               episode={parseNumberFromString(currentEpisode.name)}
               malId={anime.idMal}
             />
@@ -326,11 +327,12 @@ const PlayerMobileOverlay = React.memo(() => {
       </MobileOverlay>
 
       {anime?.idMal && (
-        <TimestampSkipButton
-          className="absolute right-4 bottom-24 z-50"
-          episode={parseNumberFromString(currentEpisode.name)}
-          malId={anime.idMal}
-        />
+        <Portal retryInterval={1000} selector=".netplayer-container">
+          <TimestampSkipButton
+            episode={parseNumberFromString(currentEpisode.name)}
+            malId={anime.idMal}
+          />
+        </Portal>
       )}
     </React.Fragment>
   );

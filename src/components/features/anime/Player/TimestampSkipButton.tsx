@@ -1,11 +1,13 @@
 import { BaseButtonProps } from "@/components/shared/BaseButton";
 import Button from "@/components/shared/Button";
+import Portal from "@/components/shared/Portal";
 import { useCustomVideoState } from "@/contexts/CustomVideoStateContext";
 import { SkipTimeStamp, SkipType } from "@/types";
 import axios from "axios";
 import classNames from "classnames";
-import { useVideo } from "netplayer";
+import { useInteract, useVideo } from "netplayer";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { isMobileOnly } from "react-device-detect";
 import { useQuery } from "react-query";
 
 interface TimestampSkipButtonProps extends BaseButtonProps {
@@ -62,6 +64,7 @@ const TimestampSkipButton: React.FC<TimestampSkipButtonProps> = ({
 }) => {
   const { videoEl } = useVideo();
   const { setState } = useCustomVideoState();
+  const { isInteracting } = useInteract();
   const { data: timestamps, isLoading: timestampLoading } = useQuery<
     SkipTimeStamp[]
   >(
@@ -132,7 +135,11 @@ const TimestampSkipButton: React.FC<TimestampSkipButtonProps> = ({
   );
 
   const handleClick = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    (
+      e:
+        | React.MouseEvent<HTMLButtonElement, MouseEvent>
+        | React.TouchEvent<HTMLButtonElement>
+    ) => {
       e.stopPropagation();
 
       if (!timestamp) return;
@@ -144,18 +151,52 @@ const TimestampSkipButton: React.FC<TimestampSkipButtonProps> = ({
     [timestamp, videoEl]
   );
 
-  return timestamp && !timestampLoading ? (
-    <Button
-      className={classNames(
-        "font-semibold tracking-wider uppercase text-white/90 hover:text-white border border-solid border-white/80 hover:border-white bg-zinc-800/80 hover:bg-zinc-800/60",
-        className
-      )}
-      onClick={handleClick}
-      {...props}
-    >
-      Skip {timeStampName}
-    </Button>
-  ) : null;
+  const handleTouch = useCallback(
+    (e: React.TouchEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+
+      if (!timestamp) return;
+
+      const { endTime } = timestamp.interval;
+      videoEl.currentTime = endTime;
+    },
+    [timestamp, videoEl]
+  );
+
+  const timestampSkipButtonClassName = useMemo(() => {
+    if (isMobileOnly) {
+      if (!isInteracting) {
+        return "bottom-16 visible opacity-100";
+      }
+
+      return "bottom-16 invisible opacity-0";
+    }
+
+    if (isInteracting) {
+      return "bottom-24";
+    }
+
+    return "bottom-16";
+  }, [isInteracting]);
+
+  return (
+    <Portal retryInterval={1000} selector=".netplayer-container">
+      {timestamp && !timestampLoading ? (
+        <Button
+          className={classNames(
+            "z-[99999] absolute right-4 transition-all duration-300 font-semibold tracking-wider uppercase text-white/90 hover:text-white border border-solid border-white/80 hover:border-white bg-zinc-800/80 hover:bg-zinc-800/60",
+            timestampSkipButtonClassName,
+            className
+          )}
+          onMouseDown={handleClick}
+          onTouchStart={handleTouch}
+          {...props}
+        >
+          Skip {timeStampName}
+        </Button>
+      ) : null}
+    </Portal>
+  );
 };
 
 export default React.memo(TimestampSkipButton);
