@@ -13,7 +13,6 @@ import { useEffect, useMemo, useState } from "react";
 import { isDesktop } from "react-device-detect";
 import { toast } from "react-toastify";
 import { buildAbsoluteURL } from "url-toolkit";
-// import PlayerBanner from "../../ads/PlayerBanner";
 
 const textStyles = {
   none: "",
@@ -139,36 +138,31 @@ const Subtitle = () => {
     };
   }, [fontSize]);
 
+  if (isLoading || !subtitle?.file || !currentText || state.isSubtitleDisabled)
+    return null;
+
   return (
     <div
       className={classNames(
-        "netplayer-subtitle absolute left-1/2 -translate-x-1/2 w-[80%] flex flex-col space-y-4 items-center justify-evenly transition-all duration z-50 pointer-events-none",
+        "netplayer-subtitle absolute left-1/2 -translate-x-1/2 w-[80%] flex items-center justify-evenly transition-all duration-300",
         isInteracting && isDesktop && !isBackground ? "bottom-24" : "bottom-4"
       )}
     >
-      {isLoading ||
-      !subtitle?.file ||
-      !currentText ||
-      state.isSubtitleDisabled ? null : (
-        <p
-          className="w-fit text-white bg-black/80 rounded-sm leading-7 text-center whitespace-pre-wrap"
-          style={{
-            paddingLeft: padding.horizontal + "px",
-            paddingRight: padding.horizontal + "px",
-            paddingTop: padding.vertical + "px",
-            paddingBottom: padding.vertical + "px",
-            fontSize: fontSize + "px",
-            lineHeight: lineHeight + "px",
-            backgroundColor: `rgba(0, 0, 0, ${subtitleSettings.backgroundOpacity})`,
-            color: `rgba(255, 255, 255, ${subtitleSettings.fontOpacity})`,
-            textShadow: textStyles[subtitleSettings.textStyle],
-          }}
-          dangerouslySetInnerHTML={{ __html: currentText }}
-        ></p>
-      )}
-
-      {/* Temporary disabled */}
-      {/* <PlayerBanner /> */}
+      <p
+        className="w-fit text-white bg-black/80 rounded-sm leading-7 text-center whitespace-pre-wrap"
+        style={{
+          paddingLeft: padding.horizontal + "px",
+          paddingRight: padding.horizontal + "px",
+          paddingTop: padding.vertical + "px",
+          paddingBottom: padding.vertical + "px",
+          fontSize: fontSize + "px",
+          lineHeight: lineHeight + "px",
+          backgroundColor: `rgba(0, 0, 0, ${subtitleSettings.backgroundOpacity})`,
+          color: `rgba(255, 255, 255, ${subtitleSettings.fontOpacity})`,
+          textShadow: textStyles[subtitleSettings.textStyle],
+        }}
+        dangerouslySetInnerHTML={{ __html: currentText }}
+      ></p>
     </div>
   );
 };
