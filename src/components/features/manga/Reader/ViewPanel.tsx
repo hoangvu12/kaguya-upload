@@ -3,9 +3,10 @@ import CircleButton from "@/components/shared/CircleButton";
 import { useReadInfo } from "@/contexts/ReadContext";
 import { useReadPanel } from "@/contexts/ReadPanelContext";
 import { useReadSettings } from "@/contexts/ReadSettingsContext";
+import useRead from "@/hooks/useRead";
 import classNames from "classnames";
 import { motion } from "framer-motion";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { BrowserView, isMobile, MobileView } from "react-device-detect";
 import { AiOutlineZoomIn, AiOutlineZoomOut } from "react-icons/ai";
 import { BiChevronRight } from "react-icons/bi";
@@ -21,7 +22,7 @@ const ViewPanel: React.FC = ({ children }) => {
     setState,
   } = useReadPanel();
   const { fitMode, setSetting, zoom } = useReadSettings();
-  const { currentChapter } = useReadInfo();
+  const { currentChapter, images } = useReadInfo();
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleSidebarState = (isOpen: boolean) => () => {
@@ -51,8 +52,15 @@ const ViewPanel: React.FC = ({ children }) => {
   useEffect(() => {
     if (!containerRef.current) return;
 
-    containerRef.current.scrollTo({ top: 0 });
+    containerRef.current.scrollTo({
+      top: 0,
+    });
   }, [currentChapter]);
+
+  useEffect(() => {
+    setState((prev) => ({ ...prev, activeImageIndex: 0 }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [images]);
 
   return (
     <motion.div

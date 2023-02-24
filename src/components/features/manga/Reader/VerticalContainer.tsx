@@ -42,6 +42,11 @@ const VerticalContainer: React.FC = () => {
   }, [currentChapterIndex, sourceChapters]);
 
   useEffect(() => {
+    // Don't need tp scroll to image if it's the first image
+    if (state.activeImageIndex < 1) {
+      return;
+    }
+
     const currentImageElement: HTMLImageElement = document.querySelector(
       `[data-index="${state.activeImageIndex}"]`
     );

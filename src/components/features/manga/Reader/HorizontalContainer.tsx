@@ -35,6 +35,10 @@ const HorizontalContainer: React.FC = () => {
       `img[data-index="${state.activeImageIndex}"]`
     );
 
+    if (!activeImage) {
+      return;
+    }
+
     const imageLeft = activeImage.offsetLeft + activeImage.offsetWidth;
     const containerLeft = container.offsetLeft + container.offsetWidth;
 
@@ -73,8 +77,7 @@ const HorizontalContainer: React.FC = () => {
   useEffect(() => {
     updatePosition();
     setTimeout(updatePosition, 0);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [updatePosition, state.activeImageIndex]);
 
   useEffect(() => {
     if (isMobile) {

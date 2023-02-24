@@ -1,4 +1,3 @@
-import Image from "@/components/shared/Image";
 import { useReadSettings } from "@/contexts/ReadSettingsContext";
 import useIntersectionObserver from "@/hooks/useIntersectionObserver";
 import { ImageSource } from "@/types";
@@ -27,7 +26,6 @@ const ReadImage: React.FC<ReadImageProps> = ({
   ...props
 }) => {
   const [loaded, setLoaded] = useState(false);
-  const [isInView, setIsInView] = useState(false);
   const { fitMode } = useReadSettings();
   const ref = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
@@ -35,10 +33,6 @@ const ReadImage: React.FC<ReadImageProps> = ({
 
   const entry = useIntersectionObserver(imageRef, {
     rootMargin: "0px 0px 10px 0px",
-  });
-
-  const lazyLoadEntry = useIntersectionObserver(ref, {
-    rootMargin: "0px 0px 256px 0px",
   });
 
   useEffect(() => {
@@ -54,13 +48,6 @@ const ReadImage: React.FC<ReadImageProps> = ({
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entry?.isIntersecting]);
-
-  useEffect(() => {
-    if (!lazyLoadEntry?.isIntersecting) return;
-    if (!ref.current) return;
-
-    setIsInView(true);
-  }, [lazyLoadEntry?.isIntersecting]);
 
   const src = useMemo(
     () =>
@@ -104,29 +91,27 @@ const ReadImage: React.FC<ReadImageProps> = ({
         }}
         className={containerClassName}
       >
-        {isInView && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            ref={imageRef}
-            className={classNames(
-              fitMode === "auto" && "w-auto h-auto",
-              fitMode === "width" && "w-full h-auto",
-              fitMode === "height" && "w-auto h-screen",
-              className
-            )}
-            alt="Read Manga at Kaguya"
-            src={src}
-            onLoad={(e) => {
-              setLoaded(true);
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          ref={imageRef}
+          className={classNames(
+            fitMode === "auto" && "w-auto h-auto",
+            fitMode === "width" && "w-full h-auto",
+            fitMode === "height" && "w-auto h-screen",
+            className
+          )}
+          alt="Read Manga at Kaguya"
+          src={src}
+          onLoad={(e) => {
+            setLoaded(true);
 
-              onLoad?.(e);
-            }}
-            onError={() => {
-              setLoaded(true);
-            }}
-            {...props}
-          />
-        )}
+            onLoad?.(e);
+          }}
+          onError={() => {
+            setLoaded(true);
+          }}
+          {...props}
+        />
       </motion.div>
     </React.Fragment>
   );
