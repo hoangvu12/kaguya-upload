@@ -11,20 +11,15 @@ import {
   MotionStyle,
   useMotionValue,
 } from "framer-motion";
+import { atom, useAtom, useSetAtom } from "jotai";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import React, {
-  createContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { isMobile, isMobileOnly } from "react-device-detect";
 import { AiOutlineClose, AiOutlineExpandAlt } from "react-icons/ai";
 import { BsArrowLeft } from "react-icons/bs";
 import { toast } from "react-toastify";
-import { useHistory } from "./HistoryContext";
+import useHistory from "@/hooks/useHistory";
 import { WatchPlayerContextProps } from "./WatchContext";
 
 const WatchPlayer = dynamic(
@@ -46,22 +41,21 @@ const ForwardRefPlayer = React.memo(
 
 ForwardRefPlayer.displayName = "ForwardRefPlayer";
 
-interface ContextProps {
-  setPlayerState: React.Dispatch<React.SetStateAction<PlayerProps>>;
-  setPlayerProps: React.Dispatch<React.SetStateAction<WatchPlayerContextProps>>;
-  playerProps: WatchPlayerContextProps;
-  isBackground: boolean;
-}
-
-const PlayerContext = createContext<ContextProps>(null);
-
 const MIN_WIDTH = 400;
 const MIN_HEIGHT = 225;
 
+export const playerStateAtom = atom<PlayerProps>(null as PlayerProps);
+export const playerPropsAtom = atom<WatchPlayerContextProps>(
+  null as WatchPlayerContextProps
+);
+export const isBackgroundAtom = atom(false);
+
 const GlobalPlayerContextProvider: React.FC = ({ children }) => {
   const constraintsRef = useRef<HTMLDivElement>(null);
-  const [playerState, setPlayerState] = useState<PlayerProps>(null);
-  const [playerProps, setPlayerProps] = useState<WatchPlayerContextProps>(null);
+
+  const [playerState, setPlayerState] = useAtom(playerStateAtom);
+  const [playerProps, setPlayerProps] = useAtom(playerPropsAtom);
+  const setIsBackground = useSetAtom(isBackgroundAtom);
   const alertRef = useRef<Boolean>(false);
   const { locale } = useRouter();
   const { back } = useHistory();
@@ -76,6 +70,10 @@ const GlobalPlayerContextProvider: React.FC = ({ children }) => {
   }, [router?.pathname]);
 
   useEffect(() => {
+    setIsBackground(shouldPlayInBackground);
+  }, [shouldPlayInBackground, setIsBackground]);
+
+  useEffect(() => {
     if (shouldPlayInBackground) {
       if (isMobile) {
         setPlayerState(null);
@@ -87,7 +85,7 @@ const GlobalPlayerContextProvider: React.FC = ({ children }) => {
     // Set the player position just in case it is dragged
     x.set(0);
     y.set(0);
-  }, [shouldPlayInBackground, x, y]);
+  }, [setPlayerState, shouldPlayInBackground, x, y]);
 
   const playerSize: MotionStyle = useMemo(() => {
     if (!shouldPlayInBackground) {
@@ -154,18 +152,8 @@ const GlobalPlayerContextProvider: React.FC = ({ children }) => {
   ]);
 
   return (
-    <PlayerContext.Provider
-      value={{
-        setPlayerState,
-        isBackground: shouldPlayInBackground && !!playerState?.sources,
-        playerProps,
-        setPlayerProps,
-      }}
-    >
-      <div
-        className="fixed inset-0 pointer-events-none"
-        ref={constraintsRef}
-      ></div>
+    <React.Fragment>
+      <div className="fixed inset-0 pointer-events-none" ref={constraintsRef} />
 
       {!!playerState?.sources ? (
         <AnimatePresence initial={false}>
@@ -277,7 +265,7 @@ const GlobalPlayerContextProvider: React.FC = ({ children }) => {
       ) : null}
 
       {children}
-    </PlayerContext.Provider>
+    </React.Fragment>
   );
 };
 
@@ -287,8 +275,8 @@ export const useGlobalPlayer = (
     playerProps?: WatchPlayerContextProps;
   } = {}
 ) => {
-  const { setPlayerState, setPlayerProps, ...rest } =
-    React.useContext(PlayerContext);
+  const setPlayerState = useSetAtom(playerStateAtom);
+  const setPlayerProps = useSetAtom(playerPropsAtom);
 
   useEffect(() => {
     if (state?.playerState) {
@@ -305,11 +293,6 @@ export const useGlobalPlayer = (
     state?.playerProps?.anime,
     state?.playerProps?.currentEpisode,
   ]);
-
-  return {
-    setPlayerState,
-    ...rest,
-  };
 };
 
 export default GlobalPlayerContextProvider;

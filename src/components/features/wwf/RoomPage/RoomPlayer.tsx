@@ -1,4 +1,4 @@
-import { useHistory } from "@/contexts/HistoryContext";
+import useHistory from "@/hooks/useHistory";
 import { useRoomInfo } from "@/contexts/RoomContext";
 import {
   RoomPlayerContextProvider,

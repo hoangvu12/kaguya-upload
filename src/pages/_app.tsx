@@ -9,16 +9,15 @@ import { AppErrorFallback } from "@/components/shared/AppErrorFallback";
 import { AdsProvider } from "@/contexts/AdsContext";
 import { AuthContextProvider } from "@/contexts/AuthContext";
 import GlobalPlayerContextProvider from "@/contexts/GlobalPlayerContext";
-import { HistoryProvider } from "@/contexts/HistoryContext";
 import { SubscriptionContextProvider } from "@/contexts/SubscriptionContext";
 import { pageview } from "@/lib/gtag";
 import "@/styles/index.css";
 import { logError } from "@/utils/error";
+import { Provider } from "jotai";
 import { appWithTranslation } from "next-i18next";
 import nextI18nextConfig from "next-i18next.config";
 import { AppProps } from "next/app";
 import Router from "next/router";
-import Script from "next/script";
 import NProgress from "nprogress";
 import React, { useEffect, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
@@ -200,46 +199,40 @@ function App({ Component, pageProps, router, err }: WorkaroundAppProps) {
 
       <IosAlert />
 
-      <QueryClientProvider client={queryClient}>
-        <AuthContextProvider>
-          <HistoryProvider>
-            <AdsProvider>
-              {showAds && (
-                <React.Fragment>
-                  <Preload />
-                  <Interstitial />
-                  <Popunder />
-                  <NativeFloater />
-                  {/* <InvitePopup /> */}
-                  <StickyBanner />
-                </React.Fragment>
-              )}
+      {showAds && (
+        <React.Fragment>
+          <Preload />
+          <Interstitial />
+          <Popunder />
+          <NativeFloater />
+          {/* <InvitePopup /> */}
+          <StickyBanner />
+        </React.Fragment>
+      )}
 
-              <SubscriptionContextProvider>
-                <GlobalPlayerContextProvider>
-                  <ErrorBoundary
-                    onError={(_, info) => {
-                      setErrorInfo(info);
-                    }}
-                    fallbackRender={(fallbackProps) => {
-                      return (
-                        <AppErrorFallback
-                          {...fallbackProps}
-                          errorInfo={errorInfo}
-                        />
-                      );
-                    }}
-                  >
-                    {getLayout(<Component {...pageProps} err={err} />)}
-                  </ErrorBoundary>
-                </GlobalPlayerContextProvider>
-              </SubscriptionContextProvider>
-            </AdsProvider>
-          </HistoryProvider>
-        </AuthContextProvider>
+      <Provider>
+        <QueryClientProvider client={queryClient}>
+          <AuthContextProvider />
+          <AdsProvider />
+          <SubscriptionContextProvider />
+          <GlobalPlayerContextProvider />
 
-        {process.env.NODE_ENV === "development" && <ReactQueryDevtools />}
-      </QueryClientProvider>
+          <ErrorBoundary
+            onError={(_, info) => {
+              setErrorInfo(info);
+            }}
+            fallbackRender={(fallbackProps) => {
+              return (
+                <AppErrorFallback {...fallbackProps} errorInfo={errorInfo} />
+              );
+            }}
+          >
+            {getLayout(<Component {...pageProps} err={err} />)}
+          </ErrorBoundary>
+
+          {process.env.NODE_ENV === "development" && <ReactQueryDevtools />}
+        </QueryClientProvider>
+      </Provider>
     </React.Fragment>
   );
 }

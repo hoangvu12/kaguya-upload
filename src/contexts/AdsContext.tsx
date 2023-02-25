@@ -1,31 +1,28 @@
 import { debounce, removeDup } from "@/utils";
+import { atom, useAtom, useAtomValue } from "jotai";
 import { useRouter } from "next/router";
 import Script from "next/script";
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 
 interface AdsContextProps {
   isError: boolean;
   isLoaded: boolean;
 }
 
-const AdsContext = createContext<AdsContextProps>({} as AdsContextProps);
+const stateAtom = atom({
+  isError: false,
+  isLoaded: false,
+});
 
 export const AdsProvider: React.FC = ({ children }) => {
-  const [isError, setIsError] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [{ isLoaded }, setState] = useAtom(stateAtom);
+
   const registeredScripts = useRef<string[]>([]);
   const loadedScripts = useRef<string[]>([]);
   const { asPath } = useRouter();
 
   const handleScriptError = () => {
-    setIsError(true);
+    setState({ isLoaded: false, isError: true });
   };
 
   const handleLoad = debounce(() => {
@@ -33,7 +30,7 @@ export const AdsProvider: React.FC = ({ children }) => {
     const loaded = removeDup(loadedScripts.current);
 
     if (registered.length === loaded.length) {
-      setIsLoaded(true);
+      setState({ isLoaded: true, isError: false });
     }
   }, 500);
 
@@ -105,7 +102,7 @@ export const AdsProvider: React.FC = ({ children }) => {
   }, [asPath, isLoaded]);
 
   return (
-    <AdsContext.Provider value={{ isError, isLoaded }}>
+    <React.Fragment>
       {/* <!--Google GPT/ADM code --> */}
       <Script
         type="text/javascript"
@@ -151,11 +148,10 @@ export const AdsProvider: React.FC = ({ children }) => {
       )}
 
       {children}
-    </AdsContext.Provider>
+    </React.Fragment>
   );
 };
 
 export function useAds(): AdsContextProps {
-  const context = useContext(AdsContext);
-  return context;
+  return useAtomValue(stateAtom);
 }

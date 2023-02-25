@@ -1,7 +1,11 @@
-import { useGlobalPlayer } from "@/contexts/GlobalPlayerContext";
+import {
+  isBackgroundAtom,
+  useGlobalPlayer,
+} from "@/contexts/GlobalPlayerContext";
 import { isValidUrl } from "@/utils";
 import { parse } from "@plussub/srt-vtt-parser";
 import classNames from "classnames";
+import { useAtomValue } from "jotai";
 import {
   useInteract,
   useSubtitleSettings,
@@ -56,7 +60,7 @@ const Subtitle = () => {
   const { state } = useVideoState();
   const { state: subtitleSettings } = useSubtitleSettings();
   const { moderateScale, update } = useTextScaling();
-  const { isBackground } = useGlobalPlayer();
+  const isBackground = useAtomValue(isBackgroundAtom);
   const { videoEl } = useVideo();
   const { isInteracting } = useInteract();
   const [currentText, setCurrentText] = useState<string>("");
