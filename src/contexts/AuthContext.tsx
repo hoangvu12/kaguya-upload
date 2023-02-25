@@ -1,15 +1,17 @@
 import { default as supabase, default as supabaseClient } from "@/lib/supabase";
 import { AdditionalUser } from "@/types";
+import { atom, useAtomValue, useSetAtom } from "jotai";
 import nookies from "nookies";
-import React, { useEffect, useState } from "react";
-
-const AuthContext = React.createContext<AdditionalUser>(null);
+import React, { useEffect } from "react";
 
 const accessTokenCookieName = "sb-access-token";
 const refreshTokenCookieName = "sb-refresh-token";
 
-export const AuthContextProvider: React.FC<{}> = ({ children }) => {
-  const [user, setUser] = useState<AdditionalUser>(null);
+const userAtom = atom<AdditionalUser>(null as AdditionalUser);
+
+export const AuthContextProvider = () => {
+  // @ts-ignore
+  const setUser = useSetAtom(userAtom);
 
   // Check if user session is invalid
   useEffect(() => {
@@ -22,7 +24,7 @@ export const AuthContextProvider: React.FC<{}> = ({ children }) => {
       nookies.destroy(null, accessTokenCookieName);
       nookies.destroy(null, refreshTokenCookieName);
     }
-  }, []);
+  }, [setUser]);
 
   useEffect(() => {
     const getData = async () => {
@@ -40,7 +42,7 @@ export const AuthContextProvider: React.FC<{}> = ({ children }) => {
     };
 
     getData();
-  }, []);
+  }, [setUser]);
 
   // Set cookies on auth state change
   useEffect(() => {
@@ -86,13 +88,11 @@ export const AuthContextProvider: React.FC<{}> = ({ children }) => {
     });
 
     return data.unsubscribe;
-  }, []);
+  }, [setUser]);
 
-  return <AuthContext.Provider value={user}>{children}</AuthContext.Provider>;
+  return null;
 };
 
 export const useUser = () => {
-  return React.useContext(AuthContext);
+  return useAtomValue(userAtom);
 };
-
-export default AuthContext;

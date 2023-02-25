@@ -73,6 +73,8 @@ const Banner: React.FC<BannerProps> = ({
   const slotRef = useRef<googletag.Slot>();
   const refreshRef = useRef<NodeJS.Timer>();
 
+  console.log(isError, isLoaded);
+
   const { t } = useTranslation("common");
 
   const size = useMemo(

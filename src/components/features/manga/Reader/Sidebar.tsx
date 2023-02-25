@@ -3,7 +3,7 @@ import CircleButton from "@/components/shared/CircleButton";
 import Input from "@/components/shared/Input";
 import Kbd from "@/components/shared/Kbd";
 import Select from "@/components/shared/Select";
-import { useHistory } from "@/contexts/HistoryContext";
+import useHistory from "@/hooks/useHistory";
 import { useReadInfo } from "@/contexts/ReadContext";
 import { useReadPanel } from "@/contexts/ReadPanelContext";
 import {

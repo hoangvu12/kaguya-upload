@@ -3,7 +3,7 @@ import Button from "@/components/shared/Button";
 import Head from "@/components/shared/Head";
 import Loading from "@/components/shared/Loading";
 import { REVALIDATE_TIME } from "@/constants";
-import { useHistory } from "@/contexts/HistoryContext";
+import useHistory from "@/hooks/useHistory";
 import useChapters from "@/hooks/useChapters";
 import { getMediaDetails } from "@/services/anilist";
 import { Media, MediaType } from "@/types/anilist";

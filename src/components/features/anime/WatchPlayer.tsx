@@ -1,12 +1,16 @@
 import Portal from "@/components/shared/Portal";
-import { useGlobalPlayer } from "@/contexts/GlobalPlayerContext";
-import { useHistory } from "@/contexts/HistoryContext";
+import {
+  isBackgroundAtom,
+  playerPropsAtom,
+  playerStateAtom,
+} from "@/contexts/GlobalPlayerContext";
+import useHistory from "@/hooks/useHistory";
 import { parseNumberFromString } from "@/utils";
 import classNames from "classnames";
+import { useAtomValue, useSetAtom } from "jotai";
 import { ControlButton, TimeIndicator, useInteract } from "netplayer";
 import { useRouter } from "next/router";
 import React, { useMemo } from "react";
-import { isDesktop, isMobileOnly } from "react-device-detect";
 import { AiOutlineClose, AiOutlineExpandAlt } from "react-icons/ai";
 import { BsArrowLeft } from "react-icons/bs";
 import Player, { PlayerProps } from "./Player";
@@ -27,17 +31,16 @@ export interface WatchPlayerProps extends PlayerProps {
 }
 
 const PlayerControls = React.memo(() => {
+  const isBackground = useAtomValue(isBackgroundAtom);
   const {
-    playerProps: {
-      setEpisode,
-      episodes,
-      currentEpisodeIndex,
-      sourceId,
-      anime,
-      currentEpisode,
-    },
-    isBackground,
-  } = useGlobalPlayer();
+    setEpisode,
+    episodes,
+    currentEpisodeIndex,
+    sourceId,
+    anime,
+    currentEpisode,
+  } = useAtomValue(playerPropsAtom);
+
   const { isInteracting } = useInteract();
 
   const sourceEpisodes = React.useMemo(
@@ -113,17 +116,15 @@ const PlayerControls = React.memo(() => {
 PlayerControls.displayName = "PlayerControls";
 
 const PlayerMobileControls = React.memo(() => {
+  const isBackground = useAtomValue(isBackgroundAtom);
   const {
-    playerProps: {
-      setEpisode,
-      episodes,
-      currentEpisodeIndex,
-      sourceId,
-      anime,
-      currentEpisode,
-    },
-    isBackground,
-  } = useGlobalPlayer();
+    setEpisode,
+    episodes,
+    currentEpisodeIndex,
+    sourceId,
+    anime,
+    currentEpisode,
+  } = useAtomValue(playerPropsAtom);
 
   const sourceEpisodes = React.useMemo(
     () => episodes.filter((episode) => episode.sourceId === sourceId),
@@ -207,11 +208,10 @@ const PlayerOverlay = React.memo(() => {
   const { back } = useHistory();
   const { push } = useRouter();
   const { isInteracting } = useInteract();
-  const {
-    playerProps: { currentEpisode, anime },
-    setPlayerState,
-  } = useGlobalPlayer();
-  const { isBackground } = useGlobalPlayer();
+
+  const isBackground = useAtomValue(isBackgroundAtom);
+  const { anime, currentEpisode } = useAtomValue(playerPropsAtom);
+  const setPlayerState = useSetAtom(playerStateAtom);
 
   return (
     <Overlay>
@@ -275,11 +275,10 @@ const PlayerMobileOverlay = React.memo(() => {
   const { back } = useHistory();
 
   const { isInteracting } = useInteract();
-  const {
-    playerProps: { currentEpisode, anime },
-    isBackground,
-    setPlayerState,
-  } = useGlobalPlayer();
+
+  const isBackground = useAtomValue(isBackgroundAtom);
+  const { anime, currentEpisode } = useAtomValue(playerPropsAtom);
+  const setPlayerState = useSetAtom(playerStateAtom);
 
   return (
     <React.Fragment>
@@ -342,14 +341,12 @@ PlayerMobileOverlay.displayName = "PlayerMobileOverlay";
 
 const WatchPlayer: React.FC<WatchPlayerProps> = ({ videoRef, ...props }) => {
   const {
-    playerProps: {
-      episodes,
-      currentEpisodeIndex,
-      setEpisode,
-      sourceId,
-      currentEpisode,
-    },
-  } = useGlobalPlayer();
+    episodes,
+    currentEpisodeIndex,
+    setEpisode,
+    sourceId,
+    currentEpisode,
+  } = useAtomValue(playerPropsAtom);
 
   const sourceEpisodes = React.useMemo(
     () => episodes.filter((episode) => episode.sourceId === sourceId),

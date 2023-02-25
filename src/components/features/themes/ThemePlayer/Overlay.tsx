@@ -1,7 +1,7 @@
 import PlayerOverlay from "@/components/features/anime/Player/Overlay";
 import Link from "@/components/shared/Link";
 import Loading from "@/components/shared/Loading";
-import { useHistory } from "@/contexts/HistoryContext";
+import useHistory from "@/hooks/useHistory";
 import { useThemePlayer } from "@/contexts/ThemePlayerContext";
 import { download, getFileNameFromUrl } from "@/utils";
 import classNames from "classnames";

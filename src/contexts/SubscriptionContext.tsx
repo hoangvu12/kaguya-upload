@@ -1,29 +1,18 @@
 import config from "@/config";
+import { useUser } from "@/contexts/AuthContext";
 import useCreateSubscription from "@/hooks/useCreateSubscription";
 import useIsSavedSub from "@/hooks/useIsSavedSub";
 import { base64ToUint8Array } from "@/utils";
-import { useUser } from "@/contexts/AuthContext";
-import {
-  createContext,
-  Dispatch,
-  SetStateAction,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-
-interface ContextProps {
-  subscription: PushSubscription;
-  setSubscription: Dispatch<SetStateAction<PushSubscription>>;
-}
-
-const SubscriptionContext = createContext<ContextProps>(null);
+import { atom, useAtom, useAtomValue } from "jotai";
+import { useEffect, useRef } from "react";
 
 const isDev = process.env.NODE_ENV === "development";
 
+const subscriptionAtom = atom<PushSubscription>(null as PushSubscription);
+
 export const SubscriptionContextProvider: React.FC = ({ children }) => {
-  const [sub, setSub] = useState<PushSubscription>(null);
+  const [sub, setSub] = useAtom(subscriptionAtom);
+
   const user = useUser();
   const { data: isSavedSub, isLoading } = useIsSavedSub();
   const createSubscription = useCreateSubscription();
@@ -52,7 +41,7 @@ export const SubscriptionContextProvider: React.FC = ({ children }) => {
 
       setSub(subscription);
     });
-  }, [isLoading, isSavedSub, user]);
+  }, [isLoading, isSavedSub, setSub, user]);
 
   useEffect(() => {
     if (!user || !sub || isDev) return;
@@ -65,15 +54,9 @@ export const SubscriptionContextProvider: React.FC = ({ children }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sub, user]);
 
-  return (
-    <SubscriptionContext.Provider
-      value={{ subscription: sub, setSubscription: setSub }}
-    >
-      {children}
-    </SubscriptionContext.Provider>
-  );
+  return null;
 };
 
 export const useSubscription = () => {
-  return useContext(SubscriptionContext);
+  return useAtomValue(subscriptionAtom);
 };
