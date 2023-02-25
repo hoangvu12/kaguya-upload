@@ -1,8 +1,8 @@
 import { default as supabase, default as supabaseClient } from "@/lib/supabase";
 import { AdditionalUser } from "@/types";
-import { atom, useAtomValue, useSetAtom } from "jotai";
+import { atom, useAtom, useAtomValue } from "jotai";
 import nookies from "nookies";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 
 const accessTokenCookieName = "sb-access-token";
 const refreshTokenCookieName = "sb-refresh-token";
@@ -11,7 +11,7 @@ const userAtom = atom<AdditionalUser>(null as AdditionalUser);
 
 export const AuthContextProvider = () => {
   // @ts-ignore
-  const setUser = useSetAtom(userAtom);
+  const [user, setUser] = useAtom(userAtom);
 
   // Check if user session is invalid
   useEffect(() => {
@@ -62,6 +62,8 @@ export const AuthContextProvider = () => {
         nookies.destroy(null, accessTokenCookieName);
         nookies.destroy(null, refreshTokenCookieName);
       } else if (event === "SIGNED_IN") {
+        if (user) return;
+
         const { data: profileUser } = await supabaseClient
           .from<AdditionalUser>("users")
           .select("*")
@@ -88,7 +90,7 @@ export const AuthContextProvider = () => {
     });
 
     return data.unsubscribe;
-  }, [setUser]);
+  }, [setUser, user]);
 
   return null;
 };
