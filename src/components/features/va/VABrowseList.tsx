@@ -12,6 +12,12 @@ import React, { useMemo, useState } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
 import VACard from "./VACard";
 
+import dynamic from "next/dynamic";
+
+const Banner = dynamic(() => import("@/components/features/ads/Banner"), {
+  ssr: false,
+});
+
 interface BrowseListProps {
   defaultQuery?: UseBrowseOptions;
 }
@@ -63,6 +69,8 @@ const BrowseList: React.FC<BrowseListProps> = ({ defaultQuery }) => {
           placeholder={t("voice_actor_name")}
         />
       </form>
+
+      <Banner desktop="970x250" mobile="320x100" type="atf" />
 
       <div className="mt-8">
         {keyword ? (
