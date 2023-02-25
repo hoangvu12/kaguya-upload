@@ -438,8 +438,6 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
             <MediaDetails media={anime} className="!bg-background-900 !p-0" />
           </DetailsSection>
 
-          <Banner refresh mobile="320x100" type="middle" />
-
           <DetailsSection
             title={t("comments_section", { defaultValue: "Comments" })}
           >

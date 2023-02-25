@@ -26,12 +26,6 @@ import React, { useMemo } from "react";
 import { AiFillHeart } from "react-icons/ai";
 import { BiCake } from "react-icons/bi";
 
-import dynamic from "next/dynamic";
-
-const Banner = dynamic(() => import("@/components/features/ads/Banner"), {
-  ssr: false,
-});
-
 const KeyValue: React.FC<{ property: string; value: string }> = ({
   property,
   value,
@@ -166,8 +160,6 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ character }) => {
           </div>
         </Section>
 
-        <Banner desktop="970x250" mobile="300x250" type="middle" />
-
         <NativeBanner />
 
         <Section className="space-y-8">
@@ -188,8 +180,6 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ character }) => {
               <List data={manga}>{(manga) => <Card data={manga} />}</List>
             </DetailsSection>
           )}
-
-          <Banner desktop="300x250" mobile="320x100" type="btf" />
         </Section>
       </div>
     </>

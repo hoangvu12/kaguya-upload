@@ -16,11 +16,6 @@ import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { useTranslation } from "next-i18next";
 import { useMemo } from "react";
 import { AiFillHeart } from "react-icons/ai";
-import dynamic from "next/dynamic";
-
-const Banner = dynamic(() => import("@/components/features/ads/Banner"), {
-  ssr: false,
-});
 
 interface DetailsPageProps {
   studio: Studio;

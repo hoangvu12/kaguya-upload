@@ -12,11 +12,6 @@ import { useTranslation } from "react-i18next";
 import { CgArrowLongRight } from "react-icons/cg";
 import { MdOutlineRestartAlt } from "react-icons/md";
 import { ImageType } from "react-images-uploading";
-import dynamic from "next/dynamic";
-
-const Banner = dynamic(() => import("@/components/features/ads/Banner"), {
-  ssr: false,
-});
 
 const TracePage = () => {
   const [traceResult, setTraceResult] = useState<TraceImageResponse>(null);

@@ -65,9 +65,7 @@ const VerticalContainer: React.FC = () => {
 
   return (
     <div className="w-full h-full">
-      {!manga.isAdult && (
-        <Banner desktop="970x250" mobile="300x250" type="atf" />
-      )}
+      <Banner desktop="970x250" mobile="300x250" type="atf" />
 
       {images.map((image, index) => (
         <div className="image-container mx-auto" key={index}>
@@ -79,10 +77,6 @@ const VerticalContainer: React.FC = () => {
           />
         </div>
       ))}
-
-      {!manga.isAdult && (
-        <Banner desktop="300x250" mobile="320x100" type="btf" />
-      )}
 
       {currentChapterIndex < sourceChapters.length - 1 && (
         <div className="w-full h-60 p-8">

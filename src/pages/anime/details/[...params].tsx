@@ -123,11 +123,9 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
 
       <div className="pb-8">
         <DetailsBanner image={anime.bannerImage}>
-          {!anime.isAdult && (
-            <div className="absolute right-4 bottom-12 min-w-[300px] min-h-[250px] z-10">
-              <Banner desktop="300x250" type="atf" />
-            </div>
-          )}
+          <div className="absolute right-4 bottom-12 min-w-[300px] min-h-[250px] z-10">
+            <Banner desktop="300x250" type="atf" />
+          </div>
         </DetailsBanner>
 
         <Section className="relative pb-4 bg-background-900">
@@ -259,11 +257,9 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
             </div>
           </div>
 
-          {!anime.isAdult && (
-            <ClientOnly>
-              <Banner mobile="300x250" type="atf" />
-            </ClientOnly>
-          )}
+          <ClientOnly>
+            <Banner mobile="300x250" type="atf" />
+          </ClientOnly>
 
           <MediaDescription
             description={description}
@@ -455,10 +451,6 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
 
           <div className="space-y-12 md:col-span-8">
             <NativeBanner />
-
-            {!anime.isAdult && (
-              <Banner desktop="970x250" mobile="320x100" type="middle" />
-            )}
 
             <DetailsSection
               title={t("episodes_section")}

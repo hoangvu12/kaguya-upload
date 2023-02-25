@@ -18,12 +18,6 @@ import { GetServerSideProps, NextPage } from "next";
 import { useTranslation } from "next-i18next";
 import React, { useMemo, useState } from "react";
 
-import dynamic from "next/dynamic";
-
-const Banner = dynamic(() => import("@/components/features/ads/Banner"), {
-  ssr: false,
-});
-
 interface UserPageProps {
   user: AdditionalUser;
 }

@@ -1,5 +1,6 @@
 import NativeBanner from "@/components/features/ads/NativeBanner";
 import AnimeSchedule from "@/components/features/anime/AiringSchedule";
+import RecommendedAnimeSection from "@/components/features/anime/RecommendedAnimeSection";
 import WatchedSection from "@/components/features/anime/WatchedSection";
 import CardSwiper from "@/components/shared/CardSwiper";
 import GenreSwiper from "@/components/shared/GenreSwiper";
@@ -19,12 +20,6 @@ import { NextPage } from "next";
 import { useTranslation } from "next-i18next";
 import React, { useMemo } from "react";
 import { getSelectorsByUserAgent } from "react-device-detect";
-import RecommendedAnimeSection from "@/components/features/anime/RecommendedAnimeSection";
-import dynamic from "next/dynamic";
-
-const Banner = dynamic(() => import("@/components/features/ads/Banner"), {
-  ssr: false,
-});
 
 interface HomeProps {
   selectors: DeviceSelectors;
@@ -70,8 +65,6 @@ const Home: NextPage<HomeProps> = ({ selectors }) => {
           data={trendingAnime}
           isLoading={trendingLoading}
         />
-
-        <Banner desktop="970x250" mobile="300x250" type="atf" />
 
         <div className="space-y-8">
           <WatchedSection />
@@ -127,8 +120,6 @@ const Home: NextPage<HomeProps> = ({ selectors }) => {
           <Section>
             <NativeBanner />
           </Section>
-
-          <Banner desktop="300x250" mobile="320x100" type="btf" />
 
           <Section title={t("anime_home:airing_schedule")}>
             <AnimeSchedule />

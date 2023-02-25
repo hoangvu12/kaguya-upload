@@ -87,11 +87,9 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
 
       <div className="pb-8">
         <DetailsBanner image={manga.bannerImage}>
-          {!manga.isAdult && (
-            <div className="absolute right-4 bottom-12 min-w-[300px] min-h-[250px] z-10">
-              <Banner desktop="300x250" type="atf" />
-            </div>
-          )}
+          <div className="absolute right-4 bottom-12 min-w-[300px] min-h-[250px] z-10">
+            <Banner desktop="300x250" type="atf" />
+          </div>
         </DetailsBanner>
 
         <Section className="relative z-10 bg-background-900 pb-4">
@@ -193,11 +191,9 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
             </div>
           </div>
 
-          {!manga.isAdult && (
-            <ClientOnly>
-              <Banner mobile="300x250" type="atf" />
-            </ClientOnly>
-          )}
+          <ClientOnly>
+            <Banner mobile="300x250" type="atf" />
+          </ClientOnly>
 
           <MediaDescription
             description={description}
@@ -331,10 +327,6 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
 
           <div className="md:col-span-8 space-y-12">
             <NativeBanner />
-
-            {!manga.isAdult && (
-              <Banner desktop="970x250" mobile="320x100" type="middle" />
-            )}
 
             <DetailsSection title={t("chapters_section")} className="relative">
               <div ref={chapterSelectorRef}>

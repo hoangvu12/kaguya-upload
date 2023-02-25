@@ -22,11 +22,6 @@ import { useTranslation } from "next-i18next";
 import React, { useMemo } from "react";
 import { AiFillHeart } from "react-icons/ai";
 import { BiCake } from "react-icons/bi";
-import dynamic from "next/dynamic";
-
-const Banner = dynamic(() => import("@/components/features/ads/Banner"), {
-  ssr: false,
-});
 
 const KeyValue: React.FC<{ property: string; value: string }> = ({
   property,

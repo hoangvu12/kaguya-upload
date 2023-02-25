@@ -9,11 +9,6 @@ import RoomListSkeleton from "@/components/skeletons/RoomListSkeleton";
 import useRooms from "@/hooks/useRooms";
 import { useTranslation } from "next-i18next";
 import { AiOutlinePlus } from "react-icons/ai";
-import dynamic from "next/dynamic";
-
-const Banner = dynamic(() => import("@/components/features/ads/Banner"), {
-  ssr: false,
-});
 
 const WatchWithFriendPage = () => {
   const { data, isLoading } = useRooms();
