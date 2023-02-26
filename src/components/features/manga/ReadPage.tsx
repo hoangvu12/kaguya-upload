@@ -17,6 +17,7 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
+import React from "react";
 
 const ReadPanel = dynamic(
   () => import("@/components/features/manga/Reader/ReadPanel"),
@@ -172,102 +173,104 @@ const ReadPage: NextPage<ReadPageProps> = ({ chapters, media: manga }) => {
   }, [currentChapter, mangaId]);
 
   return (
-    <ReadContextProvider
-      value={{
-        manga: manga,
-        currentChapter,
-        currentChapterIndex,
-        chapters,
-        setChapter: handleChapterNavigate,
-        sourceId,
-        images: data?.images,
-      }}
-    >
-      <ReadSettingsContextProvider>
-        <div className="fixed inset-0 flex items-center justify-center w-full min-h-screen">
-          <Head
-            title={`${title} (${currentChapter.name}) - Kaguya`}
-            description={`${description} - ${t("head_description", {
-              title,
-              chapterName: currentChapter.name,
-            })}`}
-            image={manga.bannerImage || manga.coverImage.extraLarge}
-          />
+    <React.Fragment>
+      <ReadContextProvider
+        value={{
+          manga: manga,
+          currentChapter,
+          currentChapterIndex,
+          chapters,
+          setChapter: handleChapterNavigate,
+          sourceId,
+          images: data?.images,
+        }}
+      />
 
-          <ReadPanel>
-            {isError ? (
-              <div className="w-full h-full flex flex-col items-center justify-center space-y-8">
-                <div className="space-y-4 text-center">
-                  <p className="text-4xl font-semibold">｡゜(｀Д´)゜｡</p>
-                  <p className="text-xl">
-                    {t("error_message", {
-                      error: error?.response?.data?.error || error.message,
-                    })}
-                  </p>
+      <ReadSettingsContextProvider />
 
-                  <p className="text-lg">{t("error_fallback_suggest")}</p>
-                </div>
-              </div>
-            ) : !isLoading ? (
-              <ReadContainer />
-            ) : (
-              <Loading />
-            )}
-          </ReadPanel>
+      <div className="fixed inset-0 flex items-center justify-center w-full min-h-screen">
+        <Head
+          title={`${title} (${currentChapter.name}) - Kaguya`}
+          description={`${description} - ${t("head_description", {
+            title,
+            chapterName: currentChapter.name,
+          })}`}
+          image={manga.bannerImage || manga.coverImage.extraLarge}
+        />
 
-          {showReadOverlay && !declinedReread && (
-            <Portal>
-              <div
-                className="fixed inset-0 z-40 bg-black/70"
-                onClick={() => {
-                  setShowReadOverlay(false);
-                  setDeclinedReread(true);
-                }}
-              />
-
-              <div className="fixed left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 z-50 w-11/12 lg:w-2/3 p-8 rounded-md bg-background-900">
-                <h1 className="text-4xl font-bold mb-4">
-                  {t("reread_heading", { chapterName: readChapter.name })}
-                </h1>
-                <p>
-                  {t("reread_description", { chapterName: readChapter.name })}
+        <ReadPanel>
+          {isError ? (
+            <div className="w-full h-full flex flex-col items-center justify-center space-y-8">
+              <div className="space-y-4 text-center">
+                <p className="text-4xl font-semibold">｡゜(｀Д´)゜｡</p>
+                <p className="text-xl">
+                  {t("error_message", {
+                    error: error?.response?.data?.error || error.message,
+                  })}
                 </p>
-                <p className="mb-4">
-                  {t("reread_question", { chapterName: readChapter.name })}
-                </p>
-                <div className="flex items-center justify-end space-x-4">
-                  <Button
-                    onClick={() => {
-                      setShowReadOverlay(false), setDeclinedReread(true);
-                    }}
-                    className="!bg-transparent hover:!bg-white/20 transition duration-300"
-                  >
-                    <p>{t("reread_no")}</p>
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      if (!readChapter || isSavedDataLoading) return;
 
-                      const chapter = chapters.find(
-                        (chapter) =>
-                          chapter.sourceChapterId ===
-                            readChapter.sourceChapterId &&
-                          chapter.sourceId === readChapter.sourceId
-                      );
-
-                      handleChapterNavigate(chapter);
-                    }}
-                    primary
-                  >
-                    <p>{t("reread_yes")}</p>
-                  </Button>
-                </div>
+                <p className="text-lg">{t("error_fallback_suggest")}</p>
               </div>
-            </Portal>
+            </div>
+          ) : !isLoading ? (
+            <ReadContainer />
+          ) : (
+            <Loading />
           )}
-        </div>
-      </ReadSettingsContextProvider>
-    </ReadContextProvider>
+        </ReadPanel>
+
+        {showReadOverlay && !declinedReread && (
+          <Portal>
+            <div
+              className="fixed inset-0 z-40 bg-black/70"
+              onClick={() => {
+                setShowReadOverlay(false);
+                setDeclinedReread(true);
+              }}
+            />
+
+            <div className="fixed left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 z-50 w-11/12 lg:w-2/3 p-8 rounded-md bg-background-900">
+              <h1 className="text-4xl font-bold mb-4">
+                {t("reread_heading", { chapterName: readChapter.name })}
+              </h1>
+              <p>
+                {t("reread_description", { chapterName: readChapter.name })}
+              </p>
+              <p className="mb-4">
+                {t("reread_question", { chapterName: readChapter.name })}
+              </p>
+              <div className="flex items-center justify-end space-x-4">
+                <Button
+                  onClick={() => {
+                    setShowReadOverlay(false), setDeclinedReread(true);
+                  }}
+                  className="!bg-transparent hover:!bg-white/20 transition duration-300"
+                >
+                  <p>{t("reread_no")}</p>
+                </Button>
+                <Button
+                  onClick={() => {
+                    if (!readChapter || isSavedDataLoading) return;
+
+                    const chapter = chapters.find(
+                      (chapter) =>
+                        chapter.sourceChapterId ===
+                          readChapter.sourceChapterId &&
+                        chapter.sourceId === readChapter.sourceId
+                    );
+
+                    handleChapterNavigate(chapter);
+                  }}
+                  primary
+                >
+                  <p>{t("reread_yes")}</p>
+                </Button>
+              </div>
+            </div>
+          </Portal>
+        )}
+      </div>
+    </React.Fragment>
   );
 };
 

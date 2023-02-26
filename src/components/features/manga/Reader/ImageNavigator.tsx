@@ -1,17 +1,21 @@
-import { useReadInfo } from "@/contexts/ReadContext";
-import { useReadPanel } from "@/contexts/ReadPanelContext";
+import { imagesAtom } from "@/contexts/ReadContext";
+import {
+  activeImageIndexAtom,
+  readPanelStateAtom,
+} from "@/contexts/ReadPanelContext";
 import { useReadSettings } from "@/contexts/ReadSettingsContext";
 import useDevice from "@/hooks/useDevice";
+import { useAtomValue, useSetAtom } from "jotai";
 import React, { useCallback, useEffect } from "react";
 import ButtonNavigator from "./ButtonNavigator";
 
 const ImageNavigator = () => {
-  const {
-    state: { activeImageIndex },
-    setState,
-  } = useReadPanel();
+  const activeImageIndex = useAtomValue(activeImageIndexAtom);
+  const setState = useSetAtom(readPanelStateAtom);
+
   const { direction } = useReadSettings();
-  const { images } = useReadInfo();
+  const images = useAtomValue(imagesAtom);
+
   const { isMobile } = useDevice();
 
   const nextImage = useCallback(() => {

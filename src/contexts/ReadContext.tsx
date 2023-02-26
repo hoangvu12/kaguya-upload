@@ -1,8 +1,10 @@
 import { Chapter, ImageSource } from "@/types";
 import { Media } from "@/types/anilist";
-import React from "react";
+import { atom, useAtomValue, useSetAtom } from "jotai";
+import { selectAtom } from "jotai/utils";
+import { useEffect } from "react";
 
-interface ContextProps {
+interface State {
   manga: Media;
   chapters: Chapter[];
   currentChapter: Chapter;
@@ -12,19 +14,41 @@ interface ContextProps {
   images: ImageSource[];
 }
 
-interface ReactContextProviderProps {
-  value: ContextProps;
-}
+export const readStateAtom = atom(null as State);
 
-const ReadContext = React.createContext<ContextProps>(null);
+export const mangaAtom = selectAtom(readStateAtom, (data) => data?.manga);
+export const imagesAtom = selectAtom(
+  readStateAtom,
+  (data) => data?.images || []
+);
+export const chaptersAtom = selectAtom(
+  readStateAtom,
+  (data) => data?.chapters || []
+);
+export const currentChapterAtom = selectAtom(
+  readStateAtom,
+  (data) => data?.currentChapter
+);
+export const currentChapterIndexAtom = selectAtom(
+  readStateAtom,
+  (data) => data?.currentChapterIndex
+);
+export const setChapterAtom = selectAtom(
+  readStateAtom,
+  (data) => data?.setChapter
+);
+export const sourceIdAtom = selectAtom(readStateAtom, (data) => data?.sourceId);
 
-export const ReadContextProvider: React.FC<ReactContextProviderProps> = ({
-  children,
-  value,
-}) => {
-  return <ReadContext.Provider value={value}>{children}</ReadContext.Provider>;
+export const ReadContextProvider = ({ value }) => {
+  const setReadState = useSetAtom(readStateAtom);
+
+  useEffect(() => {
+    setReadState(value);
+  }, [setReadState, value]);
+
+  return null;
 };
 
 export const useReadInfo = () => {
-  return React.useContext(ReadContext);
+  return useAtomValue(readStateAtom);
 };

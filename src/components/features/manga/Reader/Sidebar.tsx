@@ -3,18 +3,28 @@ import CircleButton from "@/components/shared/CircleButton";
 import Input from "@/components/shared/Input";
 import Kbd from "@/components/shared/Kbd";
 import Select from "@/components/shared/Select";
-import useHistory from "@/hooks/useHistory";
-import { useReadInfo } from "@/contexts/ReadContext";
-import { useReadPanel } from "@/contexts/ReadPanelContext";
+import {
+  chaptersAtom,
+  currentChapterAtom,
+  currentChapterIndexAtom,
+  mangaAtom,
+  setChapterAtom,
+} from "@/contexts/ReadContext";
+import {
+  isSidebarOpenAtom,
+  readPanelStateAtom,
+} from "@/contexts/ReadPanelContext";
 import {
   directions,
   fitModes,
   useReadSettings,
 } from "@/contexts/ReadSettingsContext";
+import useHistory from "@/hooks/useHistory";
 import { groupBy, sortObjectByValue } from "@/utils";
 import { getTitle } from "@/utils/data";
 import classNames from "classnames";
 import { motion, Variants } from "framer-motion";
+import { useAtomValue, useSetAtom } from "jotai";
 import { useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
@@ -53,13 +63,18 @@ const transition = [0.33, 1, 0.68, 1];
 
 const Sidebar = () => {
   const { back } = useHistory();
-  const {
-    state: { isSidebarOpen },
-    setState,
-  } = useReadPanel();
+
+  const isSidebarOpen = useAtomValue(isSidebarOpenAtom);
+  const setState = useSetAtom(readPanelStateAtom);
+
   const router = useRouter();
-  const { manga, currentChapter, chapters, currentChapterIndex, setChapter } =
-    useReadInfo();
+
+  const manga = useAtomValue(mangaAtom);
+  const currentChapter = useAtomValue(currentChapterAtom);
+  const chapters = useAtomValue(chaptersAtom);
+  const currentChapterIndex = useAtomValue(currentChapterIndexAtom);
+  const setChapter = useAtomValue(setChapterAtom);
+
   const { fitMode, setSetting, direction } = useReadSettings();
   const { t } = useTranslation("manga_read");
 

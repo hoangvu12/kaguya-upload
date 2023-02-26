@@ -1,16 +1,20 @@
 import HeadlessSwiper, {
   SwiperSlide,
 } from "@/components/shared/HeadlessSwiper";
-import { useReadInfo } from "@/contexts/ReadContext";
-import { useReadPanel } from "@/contexts/ReadPanelContext";
+import { imagesAtom } from "@/contexts/ReadContext";
+import {
+  activeImageIndexAtom,
+  readPanelStateAtom,
+} from "@/contexts/ReadPanelContext";
 import { useReadSettings } from "@/contexts/ReadSettingsContext";
 import classNames from "classnames";
+import { useAtomValue, useSetAtom } from "jotai";
 import React, { useCallback, useEffect, useRef } from "react";
 import { BrowserView, isMobile, MobileView } from "react-device-detect";
 import { SwiperOptions } from "swiper";
 import "swiper/swiper.min.css";
-import ReadImage from "./ReadImage";
 import type SwiperClass from "swiper/types/swiper-class";
+import ReadImage from "./ReadImage";
 
 const swiperOptions: SwiperOptions = {
   direction: "horizontal",
@@ -20,9 +24,11 @@ const swiperOptions: SwiperOptions = {
 };
 
 const HorizontalContainer: React.FC = () => {
-  const { state, setState } = useReadPanel();
+  const activeImageIndex = useAtomValue(activeImageIndexAtom);
+  const setState = useSetAtom(readPanelStateAtom);
+
   const { direction } = useReadSettings();
-  const { images } = useReadInfo();
+  const images = useAtomValue(imagesAtom);
   const containerRef = useRef<HTMLDivElement>(null);
   const swiperRef = useRef<SwiperClass>();
 
@@ -32,7 +38,7 @@ const HorizontalContainer: React.FC = () => {
     const container = containerRef.current;
 
     const activeImage: HTMLImageElement = document.querySelector(
-      `img[data-index="${state.activeImageIndex}"]`
+      `img[data-index="${activeImageIndex}"]`
     );
 
     if (!activeImage) {
@@ -52,13 +58,13 @@ const HorizontalContainer: React.FC = () => {
       left: x,
       behavior: "smooth",
     });
-  }, [state.activeImageIndex]);
+  }, [activeImageIndex]);
 
   const updateSwiperPosition = useCallback(() => {
     if (!swiperRef.current) return;
 
-    swiperRef.current.slideTo(state.activeImageIndex);
-  }, [state.activeImageIndex]);
+    swiperRef.current.slideTo(activeImageIndex);
+  }, [activeImageIndex]);
 
   const handleSlideChange = useCallback(
     (swiper: SwiperClass) => {
@@ -77,7 +83,7 @@ const HorizontalContainer: React.FC = () => {
   useEffect(() => {
     updatePosition();
     setTimeout(updatePosition, 0);
-  }, [updatePosition, state.activeImageIndex]);
+  }, [updatePosition, activeImageIndex]);
 
   useEffect(() => {
     if (isMobile) {
@@ -101,7 +107,7 @@ const HorizontalContainer: React.FC = () => {
             <ReadImage
               containerClassName={"shrink-0 snap-center"}
               className={classNames(
-                state.activeImageIndex === index ? "opacity-100" : "opacity-10",
+                activeImageIndex === index ? "opacity-100" : "opacity-10",
                 "transform duration-300"
               )}
               image={image}

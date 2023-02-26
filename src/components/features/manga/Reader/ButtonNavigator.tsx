@@ -1,16 +1,17 @@
 import Button from "@/components/shared/Button";
-import { useReadInfo } from "@/contexts/ReadContext";
+import { imagesAtom } from "@/contexts/ReadContext";
 import { useReadPanel } from "@/contexts/ReadPanelContext";
 import { useReadSettings } from "@/contexts/ReadSettingsContext";
 import useDevice from "@/hooks/useDevice";
 import classNames from "classnames";
 import { AnimatePresence, motion } from "framer-motion";
+import { useAtomValue } from "jotai";
+import { useTranslation } from "next-i18next";
 import React from "react";
 import {
   HiOutlineArrowNarrowLeft,
   HiOutlineArrowNarrowRight,
 } from "react-icons/hi";
-import { useTranslation } from "next-i18next";
 
 interface ButtonNavigatorProps {
   onLeft: () => void;
@@ -22,7 +23,7 @@ const ButtonNavigator: React.FC<ButtonNavigatorProps> = ({
   onRight,
 }) => {
   const { isMobile } = useDevice();
-  const { images } = useReadInfo();
+  const images = useAtomValue(imagesAtom);
   const {
     state: { isSidebarOpen, activeImageIndex },
   } = useReadPanel();

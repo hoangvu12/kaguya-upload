@@ -1,32 +1,32 @@
-import React, { useState } from "react";
+import { atom, useAtom } from "jotai";
+import { selectAtom } from "jotai/utils";
 
 interface State {
   isSidebarOpen: boolean;
   activeImageIndex: number;
 }
 
-interface ContextProviderValue {
-  state: State;
-  setState: React.Dispatch<React.SetStateAction<State>>;
-}
-
-const ReadPanelContext = React.createContext<ContextProviderValue>(null);
-
 const defaultState: State = {
   isSidebarOpen: true,
   activeImageIndex: 0,
 };
 
-export const ReadPanelContextProvider: React.FC = ({ children }) => {
-  const [state, setState] = useState<State>(defaultState);
+export const readPanelStateAtom = atom(defaultState);
 
-  return (
-    <ReadPanelContext.Provider value={{ state, setState }}>
-      {children}
-    </ReadPanelContext.Provider>
-  );
-};
+export const isSidebarOpenAtom = selectAtom(
+  readPanelStateAtom,
+  (data) => data.isSidebarOpen
+);
+export const activeImageIndexAtom = selectAtom(
+  readPanelStateAtom,
+  (data) => data.activeImageIndex
+);
 
 export const useReadPanel = () => {
-  return React.useContext(ReadPanelContext);
+  const [state, setState] = useAtom(readPanelStateAtom);
+
+  return {
+    state,
+    setState,
+  };
 };

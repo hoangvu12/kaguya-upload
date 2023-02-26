@@ -1,12 +1,15 @@
 import Button from "@/components/shared/Button";
 import CircleButton from "@/components/shared/CircleButton";
-import { useReadInfo } from "@/contexts/ReadContext";
-import { useReadPanel } from "@/contexts/ReadPanelContext";
+import { currentChapterAtom, imagesAtom } from "@/contexts/ReadContext";
+import {
+  isSidebarOpenAtom,
+  readPanelStateAtom,
+} from "@/contexts/ReadPanelContext";
 import { useReadSettings } from "@/contexts/ReadSettingsContext";
-import useRead from "@/hooks/useRead";
 import classNames from "classnames";
 import { motion } from "framer-motion";
-import React, { useEffect, useRef, useState } from "react";
+import { useAtomValue, useSetAtom } from "jotai";
+import React, { useEffect, useRef } from "react";
 import { BrowserView, isMobile, MobileView } from "react-device-detect";
 import { AiOutlineZoomIn, AiOutlineZoomOut } from "react-icons/ai";
 import { BiChevronRight } from "react-icons/bi";
@@ -17,12 +20,14 @@ const noop = () => {};
 const transition = [0.33, 1, 0.68, 1];
 
 const ViewPanel: React.FC = ({ children }) => {
-  const {
-    state: { isSidebarOpen },
-    setState,
-  } = useReadPanel();
+  const isSidebarOpen = useAtomValue(isSidebarOpenAtom);
+  const setState = useSetAtom(readPanelStateAtom);
+
   const { fitMode, setSetting, zoom } = useReadSettings();
-  const { currentChapter, images } = useReadInfo();
+
+  const currentChapter = useAtomValue(currentChapterAtom);
+  const images = useAtomValue(imagesAtom);
+
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleSidebarState = (isOpen: boolean) => () => {

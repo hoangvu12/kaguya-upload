@@ -1,24 +1,34 @@
-import { useReadInfo } from "@/contexts/ReadContext";
-import { useReadPanel } from "@/contexts/ReadPanelContext";
+import {
+  chaptersAtom,
+  currentChapterAtom,
+  currentChapterIndexAtom,
+  imagesAtom,
+  setChapterAtom,
+} from "@/contexts/ReadContext";
+import {
+  activeImageIndexAtom,
+  readPanelStateAtom,
+} from "@/contexts/ReadPanelContext";
 import { useReadSettings } from "@/contexts/ReadSettingsContext";
+import { useAtomValue, useSetAtom } from "jotai";
+import dynamic from "next/dynamic";
 import React, { useEffect, useMemo } from "react";
 import ReadImage from "./ReadImage";
-import dynamic from "next/dynamic";
 
 const Banner = dynamic(() => import("@/components/features/ads/Banner"), {
   ssr: false,
 });
 
 const VerticalContainer: React.FC = () => {
-  const {
-    currentChapterIndex,
-    chapters,
-    setChapter,
-    images,
-    currentChapter,
-    manga,
-  } = useReadInfo();
-  const { state, setState } = useReadPanel();
+  const currentChapter = useAtomValue(currentChapterAtom);
+  const chapters = useAtomValue(chaptersAtom);
+  const currentChapterIndex = useAtomValue(currentChapterIndexAtom);
+  const setChapter = useAtomValue(setChapterAtom);
+  const images = useAtomValue(imagesAtom);
+
+  const activeImageIndex = useAtomValue(activeImageIndexAtom);
+  const setState = useSetAtom(readPanelStateAtom);
+
   const { direction } = useReadSettings();
 
   const sourceChapters = useMemo(
@@ -43,12 +53,12 @@ const VerticalContainer: React.FC = () => {
 
   useEffect(() => {
     // Don't need tp scroll to image if it's the first image
-    if (state.activeImageIndex < 1) {
+    if (activeImageIndex < 1) {
       return;
     }
 
     const currentImageElement: HTMLImageElement = document.querySelector(
-      `[data-index="${state.activeImageIndex}"]`
+      `[data-index="${activeImageIndex}"]`
     );
 
     if (!currentImageElement) return;
