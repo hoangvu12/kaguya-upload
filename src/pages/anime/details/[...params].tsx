@@ -452,6 +452,8 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
           <div className="space-y-12 md:col-span-8">
             <NativeBanner />
 
+            <Banner desktop="970x250" mobile="320x100" type="middle" />
+
             <DetailsSection
               title={t("episodes_section")}
               className="overflow-hidden"

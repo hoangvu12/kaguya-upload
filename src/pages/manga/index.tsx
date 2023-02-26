@@ -18,6 +18,11 @@ import { useTranslation } from "next-i18next";
 import { NextPage } from "next/types";
 import React, { useMemo } from "react";
 import { getSelectorsByUserAgent } from "react-device-detect";
+import dynamic from "next/dynamic";
+
+const Banner = dynamic(() => import("@/components/features/ads/Banner"), {
+  ssr: false,
+});
 
 interface HomeProps {
   selectors: DeviceSelectors;
@@ -67,6 +72,8 @@ const Home: NextPage<HomeProps> = ({ selectors }) => {
           data={trendingManga}
           isLoading={trendingLoading}
         />
+
+        <Banner desktop="970x250" mobile="320x100" type="atf" />
 
         <div className="space-y-8">
           <ReadSection />

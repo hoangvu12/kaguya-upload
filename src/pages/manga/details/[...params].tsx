@@ -328,6 +328,8 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
           <div className="md:col-span-8 space-y-12">
             <NativeBanner />
 
+            <Banner desktop="970x250" mobile="320x100" type="middle" />
+
             <DetailsSection title={t("chapters_section")} className="relative">
               <div ref={chapterSelectorRef}>
                 {isLoading || readLoading ? (

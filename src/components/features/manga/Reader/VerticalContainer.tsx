@@ -88,6 +88,8 @@ const VerticalContainer: React.FC = () => {
         </div>
       ))}
 
+      <Banner desktop="300x250" mobile="320x100" type="btf" />
+
       {currentChapterIndex < sourceChapters.length - 1 && (
         <div className="w-full h-60 p-8">
           <button
