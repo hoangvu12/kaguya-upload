@@ -11,7 +11,7 @@ import {
   MotionStyle,
   useMotionValue,
 } from "framer-motion";
-import { atom, useAtom, useSetAtom } from "jotai";
+import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import React, { useEffect, useMemo, useRef } from "react";
@@ -20,7 +20,18 @@ import { AiOutlineClose, AiOutlineExpandAlt } from "react-icons/ai";
 import { BsArrowLeft } from "react-icons/bs";
 import { toast } from "react-toastify";
 import useHistory from "@/hooks/useHistory";
-import { WatchPlayerContextProps } from "./WatchContext";
+import { Episode, VideoSource } from "@/types";
+import { Media } from "@/types/anilist";
+
+export interface WatchPlayerContextProps {
+  anime: Media;
+  episodes: Episode[];
+  currentEpisode: Episode;
+  currentEpisodeIndex: number;
+  setEpisode: (episode: Episode) => void;
+  sourceId: string;
+  sources: VideoSource[];
+}
 
 const WatchPlayer = dynamic(
   () => import("@/components/features/anime/WatchPlayer"),
@@ -54,7 +65,7 @@ const GlobalPlayerContextProvider: React.FC = ({ children }) => {
   const constraintsRef = useRef<HTMLDivElement>(null);
 
   const [playerState, setPlayerState] = useAtom(playerStateAtom);
-  const [playerProps, setPlayerProps] = useAtom(playerPropsAtom);
+  const playerProps = useAtomValue(playerPropsAtom);
   const setIsBackground = useSetAtom(isBackgroundAtom);
   const alertRef = useRef<Boolean>(false);
   const { locale } = useRouter();
