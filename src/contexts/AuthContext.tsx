@@ -1,5 +1,6 @@
 import { default as supabase, default as supabaseClient } from "@/lib/supabase";
 import { AdditionalUser } from "@/types";
+import { getWithExpiry, setWithExpiry } from "@/utils";
 import { atom, useAtom, useAtomValue } from "jotai";
 import nookies from "nookies";
 import { useEffect } from "react";
@@ -28,6 +29,12 @@ export const AuthContextProvider = () => {
 
   useEffect(() => {
     const getData = async () => {
+      const savedUser = getWithExpiry<AdditionalUser>("user");
+
+      if (savedUser) {
+        return setUser(savedUser);
+      }
+
       const user = supabase.auth.user();
 
       if (!user) return;
@@ -43,6 +50,20 @@ export const AuthContextProvider = () => {
 
     getData();
   }, [setUser]);
+
+  useEffect(() => {
+    const savedUserInfo = getWithExpiry("user");
+
+    if (user) {
+      if (savedUserInfo) return;
+
+      setWithExpiry("user", user, 86_400_000); // a day
+
+      return;
+    }
+
+    localStorage.removeItem("user");
+  }, [user]);
 
   // Set cookies on auth state change
   useEffect(() => {
