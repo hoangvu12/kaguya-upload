@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
-import { ThemeSettingsContextProvider } from "@/contexts/ThemeSettingsContext";
 import { fetchRandomTheme, useAnimeTheme } from "@/hooks/useAnimeTheme";
-import { ThemePlayerContextProvider } from "@/contexts/ThemePlayerContext";
 import Head from "@/components/shared/Head";
 import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
+import { useSetAtom } from "jotai";
+import { themePlayerStateAtom } from "@/contexts/ThemePlayerContext";
+import { ThemeSettingsContextProvider } from "@/contexts/ThemeSettingsContext";
 
 const ThemePlayer = dynamic(
   () => import("@/components/features/themes/ThemePlayer"),
@@ -27,6 +28,7 @@ const ThemesPage = ({ slug, type }: ThemesPageProps) => {
   const router = useRouter();
   const { data, isLoading } = useAnimeTheme({ slug, type });
   const [isFetchingRandomTheme, setIsFetchingRandomTheme] = useState(false);
+  const setThemeState = useSetAtom(themePlayerStateAtom);
 
   const handleNewTheme = useCallback(async () => {
     setIsFetchingRandomTheme(true);
@@ -74,6 +76,14 @@ const ThemesPage = ({ slug, type }: ThemesPageProps) => {
     handleNewTheme();
   }, [handleNewTheme, slug, type]);
 
+  useEffect(() => {
+    setThemeState({
+      isLoading: isLoading || isFetchingRandomTheme,
+      refresh: handleNewTheme,
+      theme: data,
+    });
+  }, [data, handleNewTheme, isFetchingRandomTheme, isLoading, setThemeState]);
+
   return (
     <React.Fragment>
       <Head
@@ -83,17 +93,8 @@ const ThemesPage = ({ slug, type }: ThemesPageProps) => {
         description="Immerse yourself in the world of anime music with our Anime Openings and Endings page. Here, you can watch and listen to your favorite anime songs, including opening and ending themes from popular anime shows. Our page features a vast collection of anime music, from the latest releases to classic favorites. You can easily search and sort by anime name, song title, and artist to find the perfect tune. Whether you're looking for an upbeat opening theme or a moving ending theme, our Anime Openings and Endings page has something for every anime fan. Visit us now and start enjoying the music of your favorite anime shows!"
       />
 
-      <ThemePlayerContextProvider
-        value={{
-          theme: data,
-          refresh: handleNewTheme,
-          isLoading: isLoading || isFetchingRandomTheme,
-        }}
-      >
-        <ThemeSettingsContextProvider>
-          <ThemePlayer sources={sources} className="w-full h-screen" />
-        </ThemeSettingsContextProvider>
-      </ThemePlayerContextProvider>
+      <ThemeSettingsContextProvider />
+      <ThemePlayer sources={sources} className="w-full h-screen" />
     </React.Fragment>
   );
 };

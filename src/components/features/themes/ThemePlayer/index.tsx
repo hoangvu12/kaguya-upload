@@ -1,4 +1,3 @@
-import { CustomVideoStateContextProvider } from "@/contexts/CustomVideoStateContext";
 import { useThemePlayer } from "@/contexts/ThemePlayerContext";
 import { useThemeSettings } from "@/contexts/ThemeSettingsContext";
 import NetPlayer, { NetPlayerProps } from "netplayer";
@@ -60,24 +59,22 @@ const ThemePlayer: React.FC<ThemePlayerProps> = (props) => {
   );
 
   return (
-    <CustomVideoStateContextProvider>
-      <NetPlayer
-        autoPlay
-        components={{
-          Controls,
-          Overlay,
-          MobileControls: Controls,
-          MobileOverlay: Overlay,
-        }}
-        hotkeys={hotkeys}
-        ref={videoRef}
-        // @ts-ignore
-        crossOrigin={null}
-        {...props}
-      >
-        {props.children}
-      </NetPlayer>
-    </CustomVideoStateContextProvider>
+    <NetPlayer
+      autoPlay
+      components={{
+        Controls,
+        Overlay,
+        MobileControls: Controls,
+        MobileOverlay: Overlay,
+      }}
+      hotkeys={hotkeys}
+      ref={videoRef}
+      // @ts-ignore
+      crossOrigin={null}
+      {...props}
+    >
+      {props.children}
+    </NetPlayer>
   );
 };
 

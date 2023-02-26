@@ -1,4 +1,4 @@
-import React from "react";
+import { atom, useAtom } from "jotai";
 
 export interface Timestamp {
   startTime: number;
@@ -10,27 +10,17 @@ interface State {
   timestamps: Timestamp[];
 }
 
-interface ContextProps {
-  state: State;
-  setState: React.Dispatch<React.SetStateAction<State>>;
-}
-
-const CustomVideoStateContext = React.createContext<ContextProps>(null);
-
 const defaultState: State = {
   timestamps: [],
 };
 
-export const CustomVideoStateContextProvider: React.FC = ({ children }) => {
-  const [state, setState] = React.useState<State>(defaultState);
-
-  return (
-    <CustomVideoStateContext.Provider value={{ state, setState }}>
-      {children}
-    </CustomVideoStateContext.Provider>
-  );
-};
+const videoStateAtom = atom<State>(defaultState);
 
 export const useCustomVideoState = () => {
-  return React.useContext(CustomVideoStateContext);
+  const [state, setState] = useAtom(videoStateAtom);
+
+  return {
+    state,
+    setState,
+  };
 };

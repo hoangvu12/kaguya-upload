@@ -1,6 +1,5 @@
 import config from "@/config";
 import { SKIP_TIME } from "@/constants";
-import { CustomVideoStateContextProvider } from "@/contexts/CustomVideoStateContext";
 import useConstantTranslation from "@/hooks/useConstantTranslation";
 import { Font, VideoSource } from "@/types";
 import { createProxyUrl } from "@/utils";
@@ -197,30 +196,26 @@ const Player = React.forwardRef<HTMLVideoElement, PlayerProps>(
     );
 
     return (
-      <CustomVideoStateContextProvider>
-        <NetPlayer
-          ref={ref}
-          i18n={PLAYER_TRANSLATIONS}
-          hotkeys={playerHotkeys}
-          onHlsInit={handleHlsInit}
-          components={playerComponents}
-          subtitles={notAssSubtitles}
-          onInit={handleVideoInit}
-          changeSourceUrl={proxyBuilder}
-          preferQuality={(qualities) => {
-            const priority = ["1080p", "720p", "480p", "360p", "240p"];
+      <NetPlayer
+        ref={ref}
+        i18n={PLAYER_TRANSLATIONS}
+        hotkeys={playerHotkeys}
+        onHlsInit={handleHlsInit}
+        components={playerComponents}
+        subtitles={notAssSubtitles}
+        onInit={handleVideoInit}
+        changeSourceUrl={proxyBuilder}
+        preferQuality={(qualities) => {
+          const priority = ["1080p", "720p", "480p", "360p", "240p"];
 
-            return (
-              findHighestPriorityString(qualities, priority) || qualities[0]
-            );
-          }}
-          // @ts-ignore
-          crossOrigin={null}
-          {...props}
-        >
-          {props.children}
-        </NetPlayer>
-      </CustomVideoStateContextProvider>
+          return findHighestPriorityString(qualities, priority) || qualities[0];
+        }}
+        // @ts-ignore
+        crossOrigin={null}
+        {...props}
+      >
+        {props.children}
+      </NetPlayer>
     );
   }
 );

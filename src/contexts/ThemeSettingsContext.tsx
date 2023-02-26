@@ -1,9 +1,10 @@
+import { atom, useAtom, useAtomValue } from "jotai";
 import React, { useCallback, useEffect } from "react";
 
 export const endModes = ["repeat", "refresh"] as const;
 
 interface Settings {
-  endMode: typeof endModes[number];
+  endMode: (typeof endModes)[number];
 }
 
 type Setter = <T extends keyof Settings>(
@@ -11,46 +12,50 @@ type Setter = <T extends keyof Settings>(
   value: Settings[T]
 ) => void;
 
-interface ContextProps extends Settings {
+interface State extends Settings {
   setSetting: Setter;
 }
-
-const ThemeSettings = React.createContext<ContextProps>(null);
 
 const defaultSettings: Settings = {
   endMode: "repeat",
 };
 
+const themeSettingsAtom = atom<State>({
+  ...defaultSettings,
+  setSetting: () => {},
+});
+
 const LOCAL_STORAGE_KEY = "kaguya_theme_settings";
 
-export const ThemeSettingsContextProvider: React.FC = ({ children }) => {
-  const [settings, setSettings] = React.useState<Settings>(defaultSettings);
+export const ThemeSettingsContextProvider: React.FC = () => {
+  const [settings, setSettings] = useAtom(themeSettingsAtom);
 
   useEffect(() => {
     const settings =
       JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || defaultSettings;
 
     setSettings(settings);
-  }, []);
+  }, [setSettings]);
 
   useEffect(() => {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(settings));
   }, [settings]);
 
+  return null;
+};
+
+export const useThemeSettings = () => {
+  const [settings, setSettings] = useAtom(themeSettingsAtom);
+
   const setSetting: Setter = useCallback(
     (key, value) => {
       setSettings({ ...settings, [key]: value });
     },
-    [settings]
+    [setSettings, settings]
   );
 
-  return (
-    <ThemeSettings.Provider value={{ ...settings, setSetting }}>
-      {children}
-    </ThemeSettings.Provider>
-  );
-};
-
-export const useThemeSettings = () => {
-  return React.useContext(ThemeSettings);
+  return {
+    ...settings,
+    setSetting,
+  };
 };

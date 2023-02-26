@@ -1,27 +1,14 @@
 import { AnimeTheme } from "@/types";
-import React from "react";
+import { atom, useAtomValue } from "jotai";
 
-interface ContextProps {
+interface State {
   theme: AnimeTheme;
   refresh: () => void;
   isLoading: boolean;
 }
 
-interface ThemePlayerContextProviderProps {
-  value: ContextProps;
-}
-
-const ThemePlayerContext = React.createContext<ContextProps>(null);
-
-export const ThemePlayerContextProvider: React.FC<ThemePlayerContextProviderProps> =
-  ({ children, value }) => {
-    return (
-      <ThemePlayerContext.Provider value={value}>
-        {children}
-      </ThemePlayerContext.Provider>
-    );
-  };
+export const themePlayerStateAtom = atom<State>(null as State);
 
 export const useThemePlayer = () => {
-  return React.useContext(ThemePlayerContext);
+  return useAtomValue(themePlayerStateAtom);
 };
