@@ -8,6 +8,7 @@ import useHistory from "@/hooks/useHistory";
 import { parseNumberFromString } from "@/utils";
 import classNames from "classnames";
 import { useAtomValue, useSetAtom } from "jotai";
+import { selectAtom } from "jotai/utils";
 import { ControlButton, TimeIndicator, useInteract } from "netplayer";
 import { useRouter } from "next/router";
 import React, { useMemo } from "react";
@@ -30,16 +31,27 @@ export interface WatchPlayerProps extends PlayerProps {
   videoRef?: React.ForwardedRef<HTMLVideoElement>;
 }
 
+const setEpisodeAtom = selectAtom(playerPropsAtom, (data) => data?.setEpisode);
+const episodesAtom = selectAtom(playerPropsAtom, (data) => data?.episodes);
+const currentEpisodeIndexAtom = selectAtom(
+  playerPropsAtom,
+  (data) => data?.currentEpisodeIndex
+);
+const sourceIdAtom = selectAtom(playerPropsAtom, (data) => data?.sourceId);
+const animeAtom = selectAtom(playerPropsAtom, (data) => data?.anime);
+const currentEpisodeAtom = selectAtom(
+  playerPropsAtom,
+  (data) => data?.currentEpisode
+);
+
 const PlayerControls = React.memo(() => {
   const isBackground = useAtomValue(isBackgroundAtom);
-  const {
-    setEpisode,
-    episodes,
-    currentEpisodeIndex,
-    sourceId,
-    anime,
-    currentEpisode,
-  } = useAtomValue(playerPropsAtom);
+  const setEpisode = useAtomValue(setEpisodeAtom);
+  const episodes = useAtomValue(episodesAtom);
+  const currentEpisodeIndex = useAtomValue(currentEpisodeIndexAtom);
+  const sourceId = useAtomValue(sourceIdAtom);
+  const anime = useAtomValue(animeAtom);
+  const currentEpisode = useAtomValue(currentEpisodeAtom);
 
   const { isInteracting } = useInteract();
 
@@ -117,14 +129,13 @@ PlayerControls.displayName = "PlayerControls";
 
 const PlayerMobileControls = React.memo(() => {
   const isBackground = useAtomValue(isBackgroundAtom);
-  const {
-    setEpisode,
-    episodes,
-    currentEpisodeIndex,
-    sourceId,
-    anime,
-    currentEpisode,
-  } = useAtomValue(playerPropsAtom);
+
+  const setEpisode = useAtomValue(setEpisodeAtom);
+  const episodes = useAtomValue(episodesAtom);
+  const currentEpisodeIndex = useAtomValue(currentEpisodeIndexAtom);
+  const sourceId = useAtomValue(sourceIdAtom);
+  const anime = useAtomValue(animeAtom);
+  const currentEpisode = useAtomValue(currentEpisodeAtom);
 
   const sourceEpisodes = React.useMemo(
     () => episodes.filter((episode) => episode.sourceId === sourceId),
@@ -210,8 +221,9 @@ const PlayerOverlay = React.memo(() => {
   const { isInteracting } = useInteract();
 
   const isBackground = useAtomValue(isBackgroundAtom);
-  const { anime, currentEpisode } = useAtomValue(playerPropsAtom);
   const setPlayerState = useSetAtom(playerStateAtom);
+  const anime = useAtomValue(animeAtom);
+  const currentEpisode = useAtomValue(currentEpisodeAtom);
 
   return (
     <Overlay>
@@ -277,8 +289,9 @@ const PlayerMobileOverlay = React.memo(() => {
   const { isInteracting } = useInteract();
 
   const isBackground = useAtomValue(isBackgroundAtom);
-  const { anime, currentEpisode } = useAtomValue(playerPropsAtom);
   const setPlayerState = useSetAtom(playerStateAtom);
+  const anime = useAtomValue(animeAtom);
+  const currentEpisode = useAtomValue(currentEpisodeAtom);
 
   return (
     <React.Fragment>
@@ -340,13 +353,11 @@ const PlayerMobileOverlay = React.memo(() => {
 PlayerMobileOverlay.displayName = "PlayerMobileOverlay";
 
 const WatchPlayer: React.FC<WatchPlayerProps> = ({ videoRef, ...props }) => {
-  const {
-    episodes,
-    currentEpisodeIndex,
-    setEpisode,
-    sourceId,
-    currentEpisode,
-  } = useAtomValue(playerPropsAtom);
+  const setEpisode = useAtomValue(setEpisodeAtom);
+  const episodes = useAtomValue(episodesAtom);
+  const currentEpisodeIndex = useAtomValue(currentEpisodeIndexAtom);
+  const sourceId = useAtomValue(sourceIdAtom);
+  const currentEpisode = useAtomValue(currentEpisodeAtom);
 
   const sourceEpisodes = React.useMemo(
     () => episodes.filter((episode) => episode.sourceId === sourceId),
