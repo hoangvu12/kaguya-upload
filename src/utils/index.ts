@@ -363,6 +363,12 @@ export const createFileFromUrl = async (url: string, filename: string) => {
   return file;
 };
 
+const composeHeaders = (
+  headers: Record<string, string>
+): [string, string][] => {
+  return Object.entries(headers).map(([key, value]) => [key, value]);
+};
+
 export const createProxyUrl = (
   url: string,
   proxy: Proxy,
@@ -378,7 +384,15 @@ export const createProxyUrl = (
     return Object.entries(headers).map(([key, value]) => [key, value]);
   };
 
-  const { appendReqHeaders = {}, appendResHeaders = {}, ...rest } = proxy;
+  const {
+    appendReqHeaders = {},
+    appendResHeaders = {},
+    deleteReqHeaders = [],
+    deleteResHeaders = [],
+    ...rest
+  } = proxy;
+
+  console.log(rest);
 
   const modifiedAppendReqHeaders = JSON.stringify(
     composeHeaders(appendReqHeaders)
@@ -387,11 +401,18 @@ export const createProxyUrl = (
     composeHeaders(appendResHeaders)
   );
 
+  const modifiedDeleteReqHeaders = JSON.stringify(deleteReqHeaders);
+  const modifiedDeleteResHeaders = JSON.stringify(deleteResHeaders);
+
   const params = stringify({
     appendReqHeaders: modifiedAppendReqHeaders,
     appendResHeaders: modifiedAppendResHeaders,
+    deleteReqHeaders: modifiedDeleteReqHeaders,
+    deleteResHeaders: modifiedDeleteResHeaders,
     ...rest,
   });
+
+  console.log(params);
 
   const proxyUrl = (() => {
     if (isEdgeProxy) return config.proxyServer.edge;
