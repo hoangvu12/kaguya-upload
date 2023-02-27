@@ -42,7 +42,7 @@ const MobileControls: React.FC<MobileControlsProps> = ({ controlsSlot }) => {
       <div className="px-4 flex w-full items-center justify-between">
         <TimeIndicator />
 
-        <div className="w-4 h-4">
+        <div className="w-6 h-6">
           <FullscreenButton />
         </div>
       </div>
