@@ -98,6 +98,8 @@ const LocaleEpisodeSelector: React.FC<LocaleEpisodeSelectorProps> = ({
                     <SourceEpisodeSelector
                       key={locale}
                       episodes={localeEpisodes}
+                      activeEpisode={activeEpisode}
+                      watchedData={watchedData}
                       {...props}
                     />
                   )}
