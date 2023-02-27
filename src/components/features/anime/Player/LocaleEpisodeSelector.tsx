@@ -15,14 +15,39 @@ interface LocaleEpisodeSelectorProps extends SourceEpisodeSelectorProps {
 const LocaleEpisodeSelector: React.FC<LocaleEpisodeSelectorProps> = ({
   episodes,
   className,
+  activeEpisode,
+  watchedData,
   ...props
 }) => {
   const router = useRouter();
   const { t } = useTranslation("common");
-  const defaultTabIndex = useMemo(
-    () => locales.findIndex(({ locale }) => locale === router.locale),
-    [router.locale]
-  );
+  const defaultTabIndex = useMemo(() => {
+    let activeLocale = router.locale;
+
+    const chooseLocale = (locales: string[]) => {
+      // Locales doesn't contains current locale => choose the first locale.
+      if (!locales?.includes(router.locale)) {
+        return locales[0];
+      }
+
+      return router.locale;
+    };
+
+    const activeEpisodeLocales = activeEpisode?.source?.locales;
+    const watchedEpisodeLocales = watchedData?.episode?.source?.locales;
+
+    if (activeEpisodeLocales?.length) {
+      activeLocale = chooseLocale(activeEpisodeLocales);
+    } else if (watchedEpisodeLocales?.length) {
+      activeLocale = chooseLocale(watchedEpisodeLocales);
+    }
+
+    return locales.findIndex(({ locale }) => locale === activeLocale);
+  }, [
+    activeEpisode?.source?.locales,
+    router.locale,
+    watchedData?.episode?.source?.locales,
+  ]);
 
   const localesHasEpisodes = useMemo(() => {
     return locales.filter((locale) =>
