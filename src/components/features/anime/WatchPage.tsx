@@ -315,10 +315,19 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
     if (!nextEpisode) return;
 
     let isPrefetched = false;
+    let shouldNotPrefetch = false;
 
     const videoEl = videoRef.current;
 
+    const MINIMUM_VIDEO_TIME = 600; // 10 minutes
+
     const handleVideoTimeUpdate = () => {
+      if (shouldNotPrefetch) return;
+
+      if (videoEl.duration < MINIMUM_VIDEO_TIME) {
+        shouldNotPrefetch = true;
+      }
+
       // check if 80% of the video has been watched
       if (videoEl.currentTime / videoEl.duration < 0.8) return;
       if (isPrefetched) return;
