@@ -82,7 +82,11 @@ const LocaleChapterSelector: React.FC<LocaleChapterSelectorProps> = ({
                   {!localeChapters?.length ? (
                     <p className="text-center text-2xl">{t("no_chapters")}</p>
                   ) : (
-                    <ChapterSelector chapters={localeChapters} {...props} />
+                    <ChapterSelector
+                      readData={readData}
+                      chapters={localeChapters}
+                      {...props}
+                    />
                   )}
                 </TabPanel>
               );
