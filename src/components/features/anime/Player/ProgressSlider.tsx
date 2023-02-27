@@ -119,7 +119,7 @@ const ProgressSlider: React.FC<ProgressSliderProps> = ({
     <Slider
       className={classNames(
         "w-full h-1.5 cursor-pointer flex flex-col justify-end",
-        isDesktop ? "h-1.5" : "h-6",
+        isDesktop ? "h-1.5" : "!h-4",
         className
       )}
       onPercentIntent={handlePercentIntent}
