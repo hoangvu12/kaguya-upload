@@ -6,6 +6,7 @@ import {
 } from "@/contexts/GlobalPlayerContext";
 import useHistory from "@/hooks/useHistory";
 import { parseNumberFromString } from "@/utils";
+import { getTitle } from "@/utils/data";
 import classNames from "classnames";
 import { useAtomValue, useSetAtom } from "jotai";
 import { selectAtom } from "jotai/utils";
@@ -293,17 +294,30 @@ const PlayerMobileOverlay = React.memo(() => {
   const anime = useAtomValue(animeAtom);
   const currentEpisode = useAtomValue(currentEpisodeAtom);
 
+  const title = getTitle(anime, router.locale);
+
   return (
     <React.Fragment>
       <MobileOverlay>
         {!isBackground && (
-          <BsArrowLeft
-            className={classNames(
-              "absolute top-4 left-4 h-8 w-8 cursor-pointer transition-all duration-300 hover:text-gray-200",
-              isInteracting ? "visible opacity-100" : "invisible opacity-0"
-            )}
-            onClick={back}
-          />
+          <React.Fragment>
+            <BsArrowLeft
+              className={classNames(
+                "absolute top-4 left-4 h-8 w-8 cursor-pointer transition-all duration-300 hover:text-gray-200",
+                isInteracting ? "visible opacity-100" : "invisible opacity-0"
+              )}
+              onClick={back}
+            />
+
+            <div className="absolute top-4 left-16 space-y-1">
+              <p className="font-semibold text-base">
+                {currentEpisode.name}{" "}
+                {currentEpisode.title && `- ${currentEpisode.title}`}
+              </p>
+
+              <p className="text-gray-300 text-sm">{title}</p>
+            </div>
+          </React.Fragment>
         )}
 
         {isBackground && (
