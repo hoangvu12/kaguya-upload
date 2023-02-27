@@ -10,14 +10,32 @@ interface LocaleChapterSelectorProps extends ChapterSelectorProps {}
 
 const LocaleChapterSelector: React.FC<LocaleChapterSelectorProps> = ({
   chapters,
+  readData,
   ...props
 }) => {
   const router = useRouter();
   const { t } = useTranslation("common");
-  const defaultTabIndex = useMemo(
-    () => locales.findIndex(({ locale }) => locale === router.locale),
-    [router.locale]
-  );
+
+  const defaultTabIndex = useMemo(() => {
+    let activeLocale = router.locale;
+
+    const chooseLocale = (locales: string[]) => {
+      // Locales doesn't contains current locale => choose the first locale.
+      if (!locales?.includes(router.locale)) {
+        return locales[0];
+      }
+
+      return router.locale;
+    };
+
+    const readChapterLocales = readData?.chapter?.source?.locales;
+
+    if (readChapterLocales?.length) {
+      activeLocale = chooseLocale(readChapterLocales);
+    }
+
+    return locales.findIndex(({ locale }) => locale === activeLocale);
+  }, [router.locale, readData?.chapter?.source?.locales]);
 
   const localesHasChapters = useMemo(() => {
     return locales.filter((locale) =>
