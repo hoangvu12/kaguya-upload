@@ -7,7 +7,7 @@ import {
 import useHistory from "@/hooks/useHistory";
 import useWindowSize from "@/hooks/useWindowSize";
 import { parseNumberFromString } from "@/utils";
-import { getTitle } from "@/utils/data";
+import { getEpisodeTitle, getTitle } from "@/utils/data";
 import classNames from "classnames";
 import { useAtomValue, useSetAtom } from "jotai";
 import { selectAtom } from "jotai/utils";
@@ -299,6 +299,7 @@ const PlayerMobileOverlay = React.memo(() => {
   const currentEpisode = useAtomValue(currentEpisodeAtom);
 
   const title = getTitle(anime, router.locale);
+  const episodeTitle = getEpisodeTitle(currentEpisode.title, router.locale);
 
   React.useEffect(() => {
     if (!videoEl) return;
@@ -334,8 +335,7 @@ const PlayerMobileOverlay = React.memo(() => {
               <React.Fragment>
                 <div className="absolute top-4 left-16 space-y-1">
                   <p className="font-semibold text-base">
-                    {currentEpisode.name}{" "}
-                    {currentEpisode.title && `- ${currentEpisode.title}`}
+                    {currentEpisode.name} {episodeTitle && `- ${episodeTitle}`}
                   </p>
 
                   <p className="text-gray-300 text-sm">{title}</p>
