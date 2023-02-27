@@ -5,6 +5,7 @@ import {
   playerStateAtom,
 } from "@/contexts/GlobalPlayerContext";
 import useHistory from "@/hooks/useHistory";
+import useWindowSize from "@/hooks/useWindowSize";
 import { parseNumberFromString } from "@/utils";
 import { getTitle } from "@/utils/data";
 import classNames from "classnames";
@@ -290,6 +291,7 @@ const PlayerMobileOverlay = React.memo(() => {
   const { isInteracting } = useInteract();
 
   const [videoSize, setVideoSize] = useState({ width: 0, height: 0 });
+  const { width: windowWidth } = useWindowSize();
 
   const isBackground = useAtomValue(isBackgroundAtom);
   const setPlayerState = useSetAtom(playerStateAtom);
@@ -328,26 +330,30 @@ const PlayerMobileOverlay = React.memo(() => {
               onClick={back}
             />
 
-            <div className="absolute top-4 left-16 space-y-1">
-              <p className="font-semibold text-base">
-                {currentEpisode.name}{" "}
-                {currentEpisode.title && `- ${currentEpisode.title}`}
-              </p>
+            {windowWidth >= 640 && (
+              <React.Fragment>
+                <div className="absolute top-4 left-16 space-y-1">
+                  <p className="font-semibold text-base">
+                    {currentEpisode.name}{" "}
+                    {currentEpisode.title && `- ${currentEpisode.title}`}
+                  </p>
 
-              <p className="text-gray-300 text-sm">{title}</p>
-            </div>
+                  <p className="text-gray-300 text-sm">{title}</p>
+                </div>
 
-            <div className="text-right absolute top-16 right-4">
-              <p className="font-semibold text-base">
-                {currentEpisode.source.name}
-              </p>
+                <div className="text-right absolute top-16 right-4">
+                  <p className="font-semibold text-base">
+                    {currentEpisode.source.name}
+                  </p>
 
-              {videoSize.width !== 0 && videoSize.height !== 0 && (
-                <p className="text-gray-300 text-sm">
-                  {videoSize.width} x {videoSize.height}
-                </p>
-              )}
-            </div>
+                  {videoSize.width !== 0 && videoSize.height !== 0 && (
+                    <p className="text-gray-300 text-sm">
+                      {videoSize.width} x {videoSize.height}
+                    </p>
+                  )}
+                </div>
+              </React.Fragment>
+            )}
           </React.Fragment>
         )}
 

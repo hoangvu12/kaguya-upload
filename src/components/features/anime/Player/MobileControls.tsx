@@ -1,3 +1,4 @@
+import useWindowSize from "@/hooks/useWindowSize";
 import classNames from "classnames";
 import {
   FullscreenButton,
@@ -16,21 +17,8 @@ interface MobileControlsProps {
 const MobileControls: React.FC<MobileControlsProps> = ({ controlsSlot }) => {
   const { isInteracting, isShowingIndicator } = useInteract();
   const { videoState } = useVideo();
-  const [screenWidth, setScreenWidth] = useState(0);
 
-  useEffect(() => {
-    setScreenWidth(window.innerWidth);
-
-    const handleResize = () => {
-      setScreenWidth(window.innerWidth);
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
+  const { width: screenWidth } = useWindowSize();
 
   const shouldInactive = useMemo(() => {
     return (
