@@ -10,9 +10,9 @@ import { getTitle } from "@/utils/data";
 import classNames from "classnames";
 import { useAtomValue, useSetAtom } from "jotai";
 import { selectAtom } from "jotai/utils";
-import { ControlButton, TimeIndicator, useInteract } from "netplayer";
+import { ControlButton, TimeIndicator, useInteract, useVideo } from "netplayer";
 import { useRouter } from "next/router";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { AiOutlineClose, AiOutlineExpandAlt } from "react-icons/ai";
 import { BsArrowLeft } from "react-icons/bs";
 import Player, { PlayerProps } from "./Player";
@@ -286,8 +286,10 @@ PlayerOverlay.displayName = "PlayerOverlay";
 const PlayerMobileOverlay = React.memo(() => {
   const router = useRouter();
   const { back } = useHistory();
-
+  const { videoEl } = useVideo();
   const { isInteracting } = useInteract();
+
+  const [videoSize, setVideoSize] = useState({ width: 0, height: 0 });
 
   const isBackground = useAtomValue(isBackgroundAtom);
   const setPlayerState = useSetAtom(playerStateAtom);
@@ -295,6 +297,23 @@ const PlayerMobileOverlay = React.memo(() => {
   const currentEpisode = useAtomValue(currentEpisodeAtom);
 
   const title = getTitle(anime, router.locale);
+
+  React.useEffect(() => {
+    if (!videoEl) return;
+
+    const handleLoaded = () => {
+      setVideoSize({
+        width: videoEl.videoWidth,
+        height: videoEl.videoHeight,
+      });
+    };
+
+    videoEl.addEventListener("resize", handleLoaded);
+
+    return () => {
+      videoEl.removeEventListener("resize", handleLoaded);
+    };
+  }, [videoEl]);
 
   return (
     <React.Fragment>
@@ -316,6 +335,18 @@ const PlayerMobileOverlay = React.memo(() => {
               </p>
 
               <p className="text-gray-300 text-sm">{title}</p>
+            </div>
+
+            <div className="text-right absolute top-16 right-4">
+              <p className="font-semibold text-base">
+                {currentEpisode.source.name}
+              </p>
+
+              {videoSize.width !== 0 && videoSize.height !== 0 && (
+                <p className="text-gray-300 text-sm">
+                  {videoSize.width} x {videoSize.height}
+                </p>
+              )}
             </div>
           </React.Fragment>
         )}
