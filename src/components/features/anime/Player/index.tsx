@@ -26,6 +26,7 @@ export interface PlayerProps extends NetPlayerProps {
 const corsServers = [
   config.proxyServer.global,
   config.proxyServer.vn,
+  config.proxyServer.edge,
   "https://corsproxy.io",
 ];
 
@@ -72,30 +73,29 @@ const Player = React.forwardRef<HTMLVideoElement, PlayerProps>(
                 return `https://corsproxy.io/?${encodeURIComponent(finalUrl)}`;
               } else if (
                 url.includes(config.proxyServer.global) ||
-                url.includes(config.proxyServer.vn)
+                url.includes(config.proxyServer.vn) ||
+                url.includes(config.proxyServer.edge)
               ) {
                 const proxyUrl = (() => {
+                  if (source.useEdgeProxy) return config.proxyServer.edge;
                   if (locale === "vi") return config.proxyServer.vn;
 
                   return config.proxyServer.global;
-                })();
+                })(); // https://deno-proxy.kaguya.app
 
                 const targetUrl = decodeURIComponent(
                   url.replace(proxyUrl + "/", "")
-                );
+                ); // ep.1.1673285640.1080.m3u8
 
-                const href = new URL(source.file);
-                const baseUrl = href.searchParams.get("url");
-
-                const finalUrl = buildAbsoluteURL(baseUrl, targetUrl, {
+                const finalUrl = buildAbsoluteURL(source.file, targetUrl, {
                   alwaysNormalize: true,
                 });
 
                 return createProxyUrl(
                   finalUrl,
                   source.proxy,
-                  false,
-                  false,
+                  source.usePublicProxy,
+                  source.useEdgeProxy,
                   locale
                 );
               }

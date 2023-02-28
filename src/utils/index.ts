@@ -412,8 +412,6 @@ export const createProxyUrl = (
     ...rest,
   });
 
-  console.log(params);
-
   const proxyUrl = (() => {
     if (isEdgeProxy) return config.proxyServer.edge;
 
