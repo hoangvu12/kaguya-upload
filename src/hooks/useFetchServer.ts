@@ -35,6 +35,7 @@ export const fetchServer = async (episode: Episode, locale: string) => {
         source_media_id: episode.sourceMediaId,
         source_id: episode.sourceId,
       },
+      validateStatus: () => true,
     }
   );
 
