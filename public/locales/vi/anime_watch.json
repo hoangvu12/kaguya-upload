@@ -5,7 +5,7 @@
   "rewatch_question": "Bạn có muốn xem {{episodeName}} không?",
   "rewatch_yes": "Xem",
   "error_message": "Đã có lỗi xảy ra ({{error}})",
-  "error_fallback_suggest": "Hãy thử tải lại trang hoặc chọn source khác.",
+  "error_fallback_suggest": "Hãy thử tải lại trang hoặc chọn server và source khác.",
   "no_episodes_message": "Không có tập nào",
   "error_goback": "Quay lại trang chủ",
   "episodes_section": "Tập phim",

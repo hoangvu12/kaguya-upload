@@ -5,7 +5,7 @@
   "rewatch_question": "Do you want to rewatch {{episodeName}}?",
   "rewatch_yes": "Yes",
   "error_message": "An error has occured ({{error}})",
-  "error_fallback_suggest": "Try to refresh the page or choose another source.",
+  "error_fallback_suggest": "Try to refresh the page or choose another server and source.",
   "no_episodes_message": "There are no episodes",
   "error_goback": "Go back",
   "episodes_section": "Episodes",

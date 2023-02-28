@@ -38,6 +38,15 @@ export const fetchServer = async (episode: Episode, locale: string) => {
     }
   );
 
+  if (!data?.servers?.length) {
+    data.servers = [
+      {
+        id: "default",
+        name: "Default",
+      },
+    ];
+  }
+
   return data;
 };
 

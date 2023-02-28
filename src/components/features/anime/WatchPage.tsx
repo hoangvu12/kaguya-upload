@@ -534,6 +534,7 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
         />
       ) : (
         !isLoading &&
+        !isServerLoading &&
         !data?.sources?.length && (
           <ErrorMessage errorMessage={"Failed to extract streams"} />
         )
