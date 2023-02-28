@@ -1,11 +1,6 @@
 import MarkIcon from "@/components/icons/MarkIcon";
-import Button from "@/components/shared/Button";
-import {
-  Timestamp,
-  useCustomVideoState,
-} from "@/contexts/CustomVideoStateContext";
-import { convertTime } from "@/utils";
-import { Popover, ControlButton, useVideoProps, useVideo } from "netplayer";
+import { useCustomVideoState } from "@/contexts/CustomVideoStateContext";
+import { ControlButton, Popover, useVideoProps } from "netplayer";
 import React from "react";
 import ControlsIcon from "./ControlsIcon";
 import TimestampsPanel from "./TimestampsPanel";
