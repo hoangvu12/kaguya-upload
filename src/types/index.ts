@@ -201,6 +201,11 @@ export type VideoSource = {
   useEdgeProxy?: boolean;
 };
 
+export type AnimeServer = {
+  id: string;
+  name: string;
+};
+
 export type ImageSource = {
   image: string;
   useProxy?: boolean;

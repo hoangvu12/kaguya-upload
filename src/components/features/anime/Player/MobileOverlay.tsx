@@ -13,9 +13,14 @@ import {
 import * as React from "react";
 import MobileTimestampsButton from "./MobileTimestampsButton";
 
-interface MobileOverlayProps {}
+interface MobileOverlayProps {
+  topRightSlot?: React.ReactNode;
+}
 
-const MobileOverlay: React.FC<MobileOverlayProps> = ({ children }) => {
+const MobileOverlay: React.FC<MobileOverlayProps> = ({
+  children,
+  topRightSlot,
+}) => {
   const { isInteracting, isShowingIndicator } = useInteract();
   const { i18n } = useVideoProps();
   const { videoState } = useVideo();
@@ -89,6 +94,8 @@ const MobileOverlay: React.FC<MobileOverlayProps> = ({ children }) => {
         </div>
 
         <div className="absolute top-4 right-4 flex items-center space-x-2">
+          {topRightSlot}
+
           <div className="w-8 h-8">
             <MobileTimestampsButton />
           </div>
@@ -103,4 +110,4 @@ const MobileOverlay: React.FC<MobileOverlayProps> = ({ children }) => {
   );
 };
 
-export default React.memo(MobileOverlay);
+export default React.memo(MobileOverlay) as typeof MobileOverlay;

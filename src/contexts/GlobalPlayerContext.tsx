@@ -1,8 +1,8 @@
-import LocaleEpisodeSelector from "@/components/features/anime/Player/LocaleEpisodeSelector";
 import { WatchPlayerProps } from "@/components/features/anime/WatchPlayer";
-import EpisodesIcon from "@/components/icons/EpisodesIcon";
 import CircleButton from "@/components/shared/CircleButton";
-import Popup from "@/components/shared/Popup";
+import useHistory from "@/hooks/useHistory";
+import { AnimeServer, Episode, VideoSource } from "@/types";
+import { Media } from "@/types/anilist";
 import { createProxyUrl } from "@/utils";
 import classNames from "classnames";
 import {
@@ -19,9 +19,6 @@ import { isMobile, isMobileOnly } from "react-device-detect";
 import { AiOutlineClose, AiOutlineExpandAlt } from "react-icons/ai";
 import { BsArrowLeft } from "react-icons/bs";
 import { toast } from "react-toastify";
-import useHistory from "@/hooks/useHistory";
-import { Episode, VideoSource } from "@/types";
-import { Media } from "@/types/anilist";
 
 export interface WatchPlayerContextProps {
   anime: Media;
@@ -31,6 +28,7 @@ export interface WatchPlayerContextProps {
   setEpisode: (episode: Episode) => void;
   sourceId: string;
   sources: VideoSource[];
+  servers: AnimeServer[];
 }
 
 const WatchPlayer = dynamic(
@@ -38,6 +36,15 @@ const WatchPlayer = dynamic(
   {
     ssr: false,
   }
+);
+
+const MobileServerSelector = dynamic(
+  () => import("@/components/features/anime/Player/MobileServerSelector"),
+  { ssr: false }
+);
+const DesktopServerSelector = dynamic(
+  () => import("@/components/features/anime/Player/DesktopServerSelector"),
+  { ssr: false }
 );
 
 interface PlayerProps extends WatchPlayerProps {
@@ -60,6 +67,7 @@ export const playerPropsAtom = atom<WatchPlayerContextProps>(
   null as WatchPlayerContextProps
 );
 export const isBackgroundAtom = atom(false);
+export const currentServerAtom = atom<AnimeServer>(null as AnimeServer);
 
 const GlobalPlayerContextProvider: React.FC = ({ children }) => {
   const constraintsRef = useRef<HTMLDivElement>(null);
@@ -68,6 +76,8 @@ const GlobalPlayerContextProvider: React.FC = ({ children }) => {
   const playerProps = useAtomValue(playerPropsAtom);
   const setIsBackground = useSetAtom(isBackgroundAtom);
   const alertRef = useRef<Boolean>(false);
+  const [currentServer, setCurrentServer] = useAtom(currentServerAtom);
+
   const { locale } = useRouter();
   const { back } = useHistory();
 
@@ -188,7 +198,7 @@ const GlobalPlayerContextProvider: React.FC = ({ children }) => {
               {!isEmbed ? (
                 <ForwardRefPlayer {...playerState} />
               ) : (
-                <React.Fragment>
+                <div className="w-full h-full netplayer-container">
                   {!shouldPlayInBackground && (
                     <BsArrowLeft
                       className={classNames(
@@ -199,33 +209,29 @@ const GlobalPlayerContextProvider: React.FC = ({ children }) => {
                   )}
 
                   {!shouldPlayInBackground && playerProps?.anime?.id && (
-                    // I have no idea why Tailwind doesn't work, have to use inline styles instead.
-                    <div
-                      className="absolute"
-                      style={{ top: "2.5rem", right: "2.5rem" }}
-                    >
-                      <Popup
-                        reference={
-                          <EpisodesIcon
-                            className={classNames(
-                              "transition-al h-10 w-10 cursor-pointer duration-300 hover:text-gray-200"
-                            )}
-                          />
-                        }
-                        placement="top"
-                        type="click"
+                    <React.Fragment>
+                      {/* I have no idea why Tailwind doesn't work, have to use inline styles instead. */}
+                      <div
+                        className="flex items-center gap-6 absolute"
+                        style={{ top: "2.5rem", right: "2.5rem" }}
                       >
-                        <div className="w-[70vw] overflow-hidden bg-background-900 p-4">
-                          <LocaleEpisodeSelector
-                            media={playerProps.anime}
-                            mediaId={playerProps.anime.id}
-                            episodes={playerProps.episodes}
-                            activeEpisode={playerProps.currentEpisode}
-                            episodeLinkProps={{ shallow: true, replace: true }}
-                          />
+                        <div className="w-8 h-8">
+                          {isMobileOnly ? (
+                            <MobileServerSelector
+                              activeServer={currentServer}
+                              onServerChange={setCurrentServer}
+                              servers={playerProps.servers}
+                            />
+                          ) : (
+                            <DesktopServerSelector
+                              activeServer={currentServer}
+                              onServerChange={setCurrentServer}
+                              servers={playerProps.servers}
+                            />
+                          )}
                         </div>
-                      </Popup>
-                    </div>
+                      </div>
+                    </React.Fragment>
                   )}
 
                   {shouldPlayInBackground && (
@@ -268,7 +274,7 @@ const GlobalPlayerContextProvider: React.FC = ({ children }) => {
                     }
                     src={playerSrc}
                   />
-                </React.Fragment>
+                </div>
               )}
             </motion.div>
           </div>

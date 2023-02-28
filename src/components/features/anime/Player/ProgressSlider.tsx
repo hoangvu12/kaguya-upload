@@ -133,8 +133,11 @@ const ProgressSlider: React.FC<ProgressSliderProps> = ({
         <Slider.Bar className="bg-white/40" percent={bufferPercent} />
 
         {state?.timestamps?.map((ts, index) => {
-          const startPercent = (ts.startTime / videoEl.duration) * 100;
-          const endPercent = (ts.endTime / videoEl.duration) * 100;
+          let startPercent = (ts.startTime / videoEl?.duration || 0) * 100;
+          let endPercent = (ts.endTime / videoEl?.duration || 0) * 100;
+
+          if (startPercent > 100) startPercent = 100;
+          if (endPercent > 100) endPercent = 100;
 
           return (
             <Slider.Bar

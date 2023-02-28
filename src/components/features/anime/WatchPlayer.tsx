@@ -1,5 +1,6 @@
 import Portal from "@/components/shared/Portal";
 import {
+  currentServerAtom,
   isBackgroundAtom,
   playerPropsAtom,
   playerStateAtom,
@@ -9,7 +10,7 @@ import useWindowSize from "@/hooks/useWindowSize";
 import { parseNumberFromString } from "@/utils";
 import { getEpisodeTitle, getTitle } from "@/utils/data";
 import classNames from "classnames";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { selectAtom } from "jotai/utils";
 import { ControlButton, TimeIndicator, useInteract, useVideo } from "netplayer";
 import { useRouter } from "next/router";
@@ -18,12 +19,14 @@ import { AiOutlineClose, AiOutlineExpandAlt } from "react-icons/ai";
 import { BsArrowLeft } from "react-icons/bs";
 import Player, { PlayerProps } from "./Player";
 import Controls from "./Player/Controls";
+import DesktopServerSelector from "./Player/DesktopServerSelector";
 import EpisodesButton from "./Player/EpisodesButton";
 import LocaleEpisodeSelector from "./Player/LocaleEpisodeSelector";
 import MobileControls from "./Player/MobileControls";
 import MobileEpisodesButton from "./Player/MobileEpisodesButton";
 import MobileNextEpisode from "./Player/MobileNextEpisode";
 import MobileOverlay from "./Player/MobileOverlay";
+import MobileServerSelector from "./Player/MobileServerSelector";
 import NextEpisodeButton from "./Player/NextEpisodeButton";
 import Overlay from "./Player/Overlay";
 import ProgressSlider from "./Player/ProgressSlider";
@@ -45,6 +48,7 @@ const currentEpisodeAtom = selectAtom(
   playerPropsAtom,
   (data) => data?.currentEpisode
 );
+const serversAtom = selectAtom(playerPropsAtom, (data) => data?.servers);
 
 const PlayerControls = React.memo(() => {
   const isBackground = useAtomValue(isBackgroundAtom);
@@ -54,6 +58,8 @@ const PlayerControls = React.memo(() => {
   const sourceId = useAtomValue(sourceIdAtom);
   const anime = useAtomValue(animeAtom);
   const currentEpisode = useAtomValue(currentEpisodeAtom);
+  const servers = useAtomValue(serversAtom);
+  const [currentServer, setCurrentServer] = useAtom(currentServerAtom);
 
   const { isInteracting } = useInteract();
 
@@ -110,6 +116,14 @@ const PlayerControls = React.memo(() => {
                 />
               </div>
             </EpisodesButton>
+          )}
+
+          {servers?.length > 1 && (
+            <DesktopServerSelector
+              onServerChange={setCurrentServer}
+              activeServer={currentServer}
+              servers={servers}
+            />
           )}
         </React.Fragment>
       }
@@ -294,12 +308,14 @@ const PlayerMobileOverlay = React.memo(() => {
   const { width: windowWidth } = useWindowSize();
 
   const isBackground = useAtomValue(isBackgroundAtom);
-  const setPlayerState = useSetAtom(playerStateAtom);
   const anime = useAtomValue(animeAtom);
   const currentEpisode = useAtomValue(currentEpisodeAtom);
 
   const title = getTitle(anime, router.locale);
   const episodeTitle = getEpisodeTitle(currentEpisode.title, router.locale);
+
+  const servers = useAtomValue(serversAtom);
+  const [currentServer, setCurrentServer] = useAtom(currentServerAtom);
 
   React.useEffect(() => {
     if (!videoEl) return;
@@ -320,7 +336,19 @@ const PlayerMobileOverlay = React.memo(() => {
 
   return (
     <React.Fragment>
-      <MobileOverlay>
+      <MobileOverlay
+        topRightSlot={
+          <div className="w-6 h-6">
+            {servers?.length > 1 && (
+              <MobileServerSelector
+                onServerChange={setCurrentServer}
+                activeServer={currentServer}
+                servers={servers}
+              />
+            )}
+          </div>
+        }
+      >
         {!isBackground && (
           <React.Fragment>
             <BsArrowLeft
@@ -355,37 +383,6 @@ const PlayerMobileOverlay = React.memo(() => {
               </React.Fragment>
             )}
           </React.Fragment>
-        )}
-
-        {isBackground && (
-          <div className="flex items-center gap-2 absolute top-4 left-4">
-            <div className="w-8 h-8">
-              <ControlButton
-                className={classNames(
-                  isInteracting ? "visible opacity-100" : "invisible opacity-0"
-                )}
-                onClick={() =>
-                  router.push(
-                    `/anime/watch/${anime?.id}/${currentEpisode?.sourceId}/${currentEpisode.sourceEpisodeId}`
-                  )
-                }
-                tooltip="Expand"
-              >
-                <AiOutlineExpandAlt />
-              </ControlButton>
-            </div>
-            <div className="w-8 h-8">
-              <ControlButton
-                className={classNames(
-                  isInteracting ? "visible opacity-100" : "invisible opacity-0"
-                )}
-                onClick={() => setPlayerState(null)}
-                tooltip="Exit"
-              >
-                <AiOutlineClose />
-              </ControlButton>
-            </div>
-          </div>
         )}
       </MobileOverlay>
 

@@ -1,25 +1,29 @@
-import useHistory from "@/hooks/useHistory";
 import { useRoomInfo } from "@/contexts/RoomContext";
 import {
   RoomPlayerContextProvider,
   useRoomPlayer,
 } from "@/contexts/RoomPlayerContext";
+import { useFetchServer } from "@/hooks/useFetchServer";
 import { useFetchSource } from "@/hooks/useFetchSource";
+import useHistory from "@/hooks/useHistory";
 import useVideoSync from "@/hooks/useVideoSync";
-import { Episode } from "@/types";
+import { AnimeServer, Episode } from "@/types";
 import { parseNumberFromString } from "@/utils";
 import { sortMediaUnit } from "@/utils/data";
 import classNames from "classnames";
+import { atom, useAtom, useAtomValue } from "jotai";
 import { useInteract } from "netplayer";
-import React, { useCallback, useMemo } from "react";
-import { isDesktop } from "react-device-detect";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { BsArrowLeft } from "react-icons/bs";
 import Player from "../../anime/Player";
 import MobileOverlay from "../../anime/Player/MobileOverlay";
+import MobileServerSelector from "../../anime/Player/MobileServerSelector";
 import Overlay from "../../anime/Player/Overlay";
 import TimestampSkipButton from "../../anime/Player/TimestampSkipButton";
 import RoomPlayerControls from "./RoomPlayerControls";
 import RoomPlayerMobileControls from "./RoomPlayerMobileControls";
+
+export const currentServerAtom = atom(null as AnimeServer);
 
 const blankVideo = [
   {
@@ -54,12 +58,26 @@ const PlayerOverlay = () => {
 
 const PlayerMobileOverlay = () => {
   const { isInteracting } = useInteract();
-  const { currentEpisode, anime } = useRoomPlayer();
+  const { currentEpisode, anime, servers } = useRoomPlayer();
   const { back } = useHistory();
+
+  const [currentServer, setCurrentServer] = useAtom(currentServerAtom);
 
   return (
     <React.Fragment>
-      <MobileOverlay>
+      <MobileOverlay
+        topRightSlot={
+          <div className="w-6 h-6">
+            {servers?.length > 1 && (
+              <MobileServerSelector
+                onServerChange={setCurrentServer}
+                activeServer={currentServer}
+                servers={servers}
+              />
+            )}
+          </div>
+        }
+      >
         <BsArrowLeft
           className={classNames(
             "absolute w-8 h-8 transition-all duration-300 cursor-pointer top-4 left-4 hover:text-gray-200",
@@ -82,33 +100,25 @@ const PlayerMobileOverlay = () => {
 const RoomPlayer = () => {
   const playerRef = useVideoSync();
   const { room, socket, basicRoomUser } = useRoomInfo();
-  const { data, isLoading } = useFetchSource(room.episode);
+  const { data: serverData, isLoading: serverLoading } = useFetchServer(
+    room.episode
+  );
+
+  const [currentServer, setCurrentServer] = useAtom(currentServerAtom);
+
+  const { data, isLoading } = useFetchSource(
+    room.episode,
+    currentServer?.id || serverData?.servers?.[0]?.id
+  );
 
   const isHost = useMemo(
     () => basicRoomUser?.userId === room?.hostUserId,
     [basicRoomUser?.userId, room?.hostUserId]
   );
 
-  // const sourceEpisodes = useMemo(
-  //   () =>
-  //     room.episodes.filter(
-  //       (episode) => episode.sourceId === room.episode.sourceId
-  //     ),
-  //   [room.episodes, room.episode.sourceId]
-  // );
-
-  // const currentEpisodeIndex = useMemo(
-  //   () =>
-  //     sourceEpisodes.findIndex(
-  //       (episode) => episode.sourceEpisodeId === room.episode.sourceEpisodeId
-  //     ),
-  //   [sourceEpisodes, room.episode.sourceEpisodeId]
-  // );
-
-  // const nextEpisode = useMemo(
-  //   () => sourceEpisodes[currentEpisodeIndex + 1],
-  //   [currentEpisodeIndex, sourceEpisodes]
-  // );
+  useEffect(() => {
+    setCurrentServer(serverData?.servers?.[0]);
+  }, [serverData?.servers, setCurrentServer]);
 
   const sourceEpisodes = React.useMemo(
     () =>
@@ -209,13 +219,14 @@ const RoomPlayer = () => {
         sources: data?.sources,
         setEpisode: handleNavigateEpisode,
         isHost,
+        servers: serverData?.servers,
       }}
     >
       <div className="relative aspect-w-16 aspect-h-9">
         <div>
           <Player
             ref={playerRef}
-            sources={isLoading ? blankVideo : data.sources}
+            sources={isLoading || serverLoading ? blankVideo : data.sources}
             subtitles={data?.subtitles || []}
             fonts={data?.fonts || []}
             className="object-contain w-full h-full"

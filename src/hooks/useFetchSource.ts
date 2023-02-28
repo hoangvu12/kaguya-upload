@@ -20,7 +20,11 @@ interface ReturnFailType {
   errorMessage: string;
 }
 
-export const fetchSource = async (episode: Episode, locale: string) => {
+export const fetchSource = async (
+  episode: Episode,
+  serverId: string,
+  locale: string
+) => {
   const hasViLocale = episode?.source?.locales?.includes("vi");
 
   const nodeServerUrl = (() => {
@@ -53,6 +57,7 @@ export const fetchSource = async (episode: Episode, locale: string) => {
         episode_id: episode.sourceEpisodeId,
         source_media_id: episode.sourceMediaId,
         source_id: episode.sourceId,
+        server_id: serverId,
       },
     }
   );
@@ -60,19 +65,20 @@ export const fetchSource = async (episode: Episode, locale: string) => {
   return data;
 };
 
-export const getQueryKey = (episode: Episode) =>
-  `source-${episode.sourceId}-${episode.sourceEpisodeId}`;
+export const getQueryKey = (episode: Episode, serverId: string) =>
+  `source-${episode.sourceId}-${episode.sourceEpisodeId}-${serverId}`;
 
-export const useFetchSource = (currentEpisode: Episode) => {
+export const useFetchSource = (currentEpisode: Episode, serverId: string) => {
   const { locale } = useRouter();
 
   return useQuery<ReturnSuccessType, AxiosError<ReturnFailType>>(
-    getQueryKey(currentEpisode),
-    () => fetchSource(currentEpisode, locale),
+    getQueryKey(currentEpisode, serverId),
+    () => fetchSource(currentEpisode, serverId, locale),
     {
       onError: (error) => {
         toast.error(error.message);
       },
+      enabled: !!serverId,
     }
   );
 };

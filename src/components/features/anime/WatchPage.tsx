@@ -6,7 +6,11 @@ import HorizontalCard from "@/components/shared/HorizontalCard";
 import Loading from "@/components/shared/Loading";
 import Portal from "@/components/shared/Portal";
 import Section from "@/components/shared/Section";
-import { useGlobalPlayer } from "@/contexts/GlobalPlayerContext";
+import {
+  currentServerAtom,
+  useGlobalPlayer,
+} from "@/contexts/GlobalPlayerContext";
+import { useFetchServer } from "@/hooks/useFetchServer";
 import {
   fetchSource,
   getQueryKey,
@@ -14,10 +18,11 @@ import {
 } from "@/hooks/useFetchSource";
 import useSavedWatched from "@/hooks/useSavedWatched";
 import useSaveWatched from "@/hooks/useSaveWatched";
-import { Episode } from "@/types";
+import { AnimeServer, Episode } from "@/types";
 import { Media } from "@/types/anilist";
 import { parseNumberFromString } from "@/utils";
 import { getDescription, getTitle, sortMediaUnit } from "@/utils/data";
+import { atom, useAtomValue, useSetAtom } from "jotai";
 import { NextPage } from "next";
 import { useTranslation } from "next-i18next";
 import dynamic from "next/dynamic";
@@ -73,6 +78,7 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
   const [showWatchedOverlay, setShowWatchedOverlay] = useState(false);
   const [declinedRewatch, setDeclinedRewatch] = useState(false);
   const [videoLoadError, setVideoLoadError] = useState("");
+  const setCurrentServer = useSetAtom(currentServerAtom);
 
   const saveWatchedInterval = useRef<NodeJS.Timer>(null);
   const saveWatchedMutation = useSaveWatched();
@@ -187,7 +193,19 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
     [animeId, router]
   );
 
-  const { data, isLoading, isError, error } = useFetchSource(currentEpisode);
+  const { data: serverData, isLoading: isServerLoading } =
+    useFetchServer(currentEpisode);
+
+  const currentServer = useAtomValue(currentServerAtom);
+
+  const { data, isLoading, isError, error } = useFetchSource(
+    currentEpisode,
+    currentServer?.id || serverData?.servers[0]?.id
+  );
+
+  useEffect(() => {
+    setCurrentServer(serverData?.servers[0]);
+  }, [serverData?.servers, setCurrentServer]);
 
   // Show watched overlay
   useEffect(() => {
@@ -285,6 +303,8 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
 
     if (!watchedEpisodeData?.watchedTime) return;
 
+    if (!watchedEpisode?.episodeNumber) return;
+
     if (currentEpisode?.episodeNumber === null) return;
 
     if (currentEpisode.episodeNumber !== watchedEpisode.episodeNumber) return;
@@ -310,42 +330,42 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watchedEpisodeData, currentEpisode?.slug, videoRef.current]);
 
-  useEffect(() => {
-    if (!videoRef.current) return;
-    if (!nextEpisode) return;
+  // useEffect(() => {
+  //   if (!videoRef.current) return;
+  //   if (!nextEpisode) return;
 
-    let isPrefetched = false;
-    let shouldNotPrefetch = false;
+  //   let isPrefetched = false;
+  //   let shouldNotPrefetch = false;
 
-    const videoEl = videoRef.current;
+  //   const videoEl = videoRef.current;
 
-    const MINIMUM_VIDEO_TIME = 600; // 10 minutes
+  //   const MINIMUM_VIDEO_TIME = 600; // 10 minutes
 
-    const handleVideoTimeUpdate = () => {
-      if (shouldNotPrefetch) return;
+  //   const handleVideoTimeUpdate = () => {
+  //     if (shouldNotPrefetch) return;
 
-      if (videoEl.duration < MINIMUM_VIDEO_TIME) {
-        shouldNotPrefetch = true;
-      }
+  //     if (videoEl.duration < MINIMUM_VIDEO_TIME) {
+  //       shouldNotPrefetch = true;
+  //     }
 
-      // check if 80% of the video has been watched
-      if (videoEl.currentTime / videoEl.duration < 0.8) return;
-      if (isPrefetched) return;
+  //     // check if 80% of the video has been watched
+  //     if (videoEl.currentTime / videoEl.duration < 0.8) return;
+  //     if (isPrefetched) return;
 
-      isPrefetched = true;
+  //     isPrefetched = true;
 
-      queryClient.prefetchQuery(getQueryKey(nextEpisode), () =>
-        fetchSource(nextEpisode, router.locale)
-      );
-    };
+  //     queryClient.prefetchQuery(getQueryKey(nextEpisode), () =>
+  //       fetchSource(nextEpisode, router.locale)
+  //     );
+  //   };
 
-    videoEl.addEventListener("timeupdate", handleVideoTimeUpdate);
+  //   videoEl.addEventListener("timeupdate", handleVideoTimeUpdate);
 
-    return () => {
-      videoEl.removeEventListener("timeupdate", handleVideoTimeUpdate);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nextEpisode, queryClient, router.locale, videoRef.current]);
+  //   return () => {
+  //     videoEl.removeEventListener("timeupdate", handleVideoTimeUpdate);
+  //   };
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [nextEpisode, queryClient, router.locale, videoRef.current]);
 
   // Refetch watched data when episode changes
   useEffect(() => {
@@ -393,6 +413,7 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
       setEpisode: handleNavigateEpisode,
       sourceId,
       sources,
+      servers: serverData?.servers || [],
     },
   });
 
@@ -501,7 +522,7 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
         </div>
       </Section>
 
-      {isLoading && (
+      {(isLoading || isServerLoading) && (
         <Portal retryInterval={1000} selector=".netplayer-container">
           <Loading />
         </Portal>

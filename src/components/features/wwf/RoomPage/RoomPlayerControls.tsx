@@ -1,5 +1,6 @@
 import { useRoomPlayer } from "@/contexts/RoomPlayerContext";
 import classNames from "classnames";
+import { useAtom } from "jotai";
 import {
   BackwardButton,
   ForwardButton,
@@ -13,12 +14,14 @@ import {
   VolumeButton,
 } from "netplayer";
 import * as React from "react";
+import DesktopServerSelector from "../../anime/Player/DesktopServerSelector";
 import EpisodesButton from "../../anime/Player/EpisodesButton";
 import LocaleEpisodeSelector from "../../anime/Player/LocaleEpisodeSelector";
 import NextEpisodeButton from "../../anime/Player/NextEpisodeButton";
 import ProgressSlider from "../../anime/Player/ProgressSlider";
 import SkipButton from "../../anime/Player/SkipButton";
 import TimestampsButton from "../../anime/Player/TimestampsButton";
+import { currentServerAtom } from "./RoomPlayer";
 
 interface RoomPlayerControlsProps {
   rightControlsSlot?: React.ReactNode;
@@ -27,7 +30,6 @@ interface RoomPlayerControlsProps {
 
 const RoomPlayerControls: React.FC<RoomPlayerControlsProps> = ({
   leftControlsSlot,
-  rightControlsSlot,
 }) => {
   const {
     setEpisode,
@@ -37,7 +39,10 @@ const RoomPlayerControls: React.FC<RoomPlayerControlsProps> = ({
     anime,
     currentEpisode,
     isHost,
+    servers,
   } = useRoomPlayer();
+
+  const [currentServer, setCurrentServer] = useAtom(currentServerAtom);
 
   const sourceEpisodes = React.useMemo(
     () => episodes.filter((episode) => episode.sourceId === sourceId),
@@ -143,6 +148,14 @@ const RoomPlayerControls: React.FC<RoomPlayerControlsProps> = ({
 
           {isHost && (
             <React.Fragment>
+              {servers?.length > 1 && (
+                <DesktopServerSelector
+                  onServerChange={setCurrentServer}
+                  activeServer={currentServer}
+                  servers={servers}
+                />
+              )}
+
               <TimestampsButton />
               <SkipButton />
             </React.Fragment>
