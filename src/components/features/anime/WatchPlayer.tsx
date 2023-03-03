@@ -361,18 +361,24 @@ const PlayerMobileOverlay = React.memo(() => {
 
             {windowWidth >= 640 && (
               <React.Fragment>
-                <div className="absolute top-4 left-16 space-y-1">
-                  <p className="font-semibold text-base">
+                <div className="absolute top-4 left-16 space-y-1 w-96 max-w-[70vw]">
+                  <p className="font-semibold text-bas line-clamp-1">
                     {currentEpisode.name} {episodeTitle && `- ${episodeTitle}`}
                   </p>
 
-                  <p className="text-gray-300 text-sm">{title}</p>
+                  <p className="text-gray-300 text-sm line-clamp-1">{title}</p>
                 </div>
 
                 <div className="text-right absolute top-16 right-4">
                   <p className="font-semibold text-base">
                     {currentEpisode.source.name}
                   </p>
+
+                  {currentServer && (
+                    <p className="text-sm text-gray-100">
+                      {currentServer.name}
+                    </p>
+                  )}
 
                   {videoSize.width !== 0 && videoSize.height !== 0 && (
                     <p className="text-gray-300 text-sm">
