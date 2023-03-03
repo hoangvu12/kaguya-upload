@@ -53,57 +53,6 @@ const Player = React.forwardRef<HTMLVideoElement, PlayerProps>(
     const handleHlsInit = useCallback(
       (hls: Hls, source: VideoSource) => {
         // @ts-ignore
-        hls.on("hlsManifestParsed", (_, info) => {
-          info.levels.forEach((level) => {
-            if (!level?.url?.length) return;
-
-            level.url = level.url.map((url) => {
-              if (!corsServers.some((server) => url.includes(server)))
-                return url;
-
-              if (url.includes("corsproxy")) {
-                const targetUrl = decodeURIComponent(
-                  url.replace("https://corsproxy.io/", "")
-                );
-
-                const finalUrl = buildAbsoluteURL(source.file, targetUrl, {
-                  alwaysNormalize: true,
-                });
-
-                return `https://corsproxy.io/?${encodeURIComponent(finalUrl)}`;
-              } else if (
-                url.includes(config.proxyServer.global) ||
-                url.includes(config.proxyServer.vn) ||
-                url.includes(config.proxyServer.edge)
-              ) {
-                const proxyUrl = (() => {
-                  if (source.useEdgeProxy) return config.proxyServer.edge;
-                  if (locale === "vi") return config.proxyServer.vn;
-
-                  return config.proxyServer.global;
-                })(); // https://deno-proxy.kaguya.app
-
-                const targetUrl = decodeURIComponent(
-                  url.replace(proxyUrl + "/", "")
-                ); // ep.1.1673285640.1080.m3u8
-
-                const finalUrl = buildAbsoluteURL(source.file, targetUrl, {
-                  alwaysNormalize: true,
-                });
-
-                return createProxyUrl(
-                  finalUrl,
-                  source.proxy,
-                  source.usePublicProxy,
-                  source.useEdgeProxy,
-                  locale
-                );
-              }
-            });
-          });
-        });
-
-        // @ts-ignore
         hls.on("hlsFragLoading", (_, { frag }) => {
           if (
             !corsServers.some((server) => frag.url.includes(server)) ||
@@ -139,6 +88,65 @@ const Player = React.forwardRef<HTMLVideoElement, PlayerProps>(
 
             frag.url = `https://corsproxy.io/?${encodeURIComponent(url)}`;
           }
+        });
+
+        // @ts-ignore
+        hls.on("hlsManifestParsed", (_, info) => {
+          info.levels.forEach((level) => {
+            if (!level?.url?.length) return;
+
+            level.url = level.url.map((url) => {
+              if (!corsServers.some((server) => url.includes(server)))
+                return url;
+
+              if (url.includes("corsproxy")) {
+                const targetUrl = decodeURIComponent(
+                  url.replace("https://corsproxy.io/", "")
+                );
+
+                const finalUrl = buildAbsoluteURL(source.file, targetUrl, {
+                  alwaysNormalize: true,
+                });
+
+                return `https://corsproxy.io/?${encodeURIComponent(finalUrl)}`;
+              } else if (
+                url.includes(config.proxyServer.global) ||
+                url.includes(config.proxyServer.vn) ||
+                url.includes(config.proxyServer.edge)
+              ) {
+                const proxyUrl = (() => {
+                  if (source.useEdgeProxy) return config.proxyServer.edge;
+                  if (locale === "vi") return config.proxyServer.vn;
+
+                  return config.proxyServer.global;
+                })(); // https://deno-proxy.kaguya.app
+
+                const targetUrl = decodeURIComponent(
+                  url.replace(proxyUrl + "/", "")
+                ); // ep.1.1673285640.1080.m3u8
+
+                let baseUrl = source.file;
+
+                if (baseUrl.includes(proxyUrl)) {
+                  const { searchParams } = new URL(baseUrl);
+
+                  baseUrl = decodeURIComponent(searchParams.get("url"));
+                }
+
+                const finalUrl = buildAbsoluteURL(baseUrl, targetUrl, {
+                  alwaysNormalize: true,
+                });
+
+                return createProxyUrl(
+                  finalUrl,
+                  source.proxy,
+                  source.usePublicProxy,
+                  source.useEdgeProxy,
+                  locale
+                );
+              }
+            });
+          });
         });
       },
       [locale]
