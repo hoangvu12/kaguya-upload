@@ -38,7 +38,7 @@ const IosAlert = () => {
       ></div>
 
       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
-        <div className="text-lg space-y-4 w-[90vw] md:w-[60rem] max-h-[90vh] overflow-y-auto md:min-h-[20rem] rounded-xl bg-background-700 p-4 md:p-8">
+        <div className="text-lg space-y-4 w-[80vw] max-w-[90vw] md:w-[60rem] max-h-[70vh] overflow-y-auto md:min-h-[20rem] rounded-xl bg-background-700 p-4 md:p-8">
           <h1 className="text-2xl font-semibold">Alert for iOS users</h1>
 
           <p>
