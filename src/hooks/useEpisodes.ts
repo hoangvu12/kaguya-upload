@@ -40,7 +40,10 @@ const useEpisodes = (mediaId: number, includeEpisodeInfo?: boolean) => {
       })();
 
       const { data } = await axios.get<EpisodeInfo[]>(
-        `${nodeServerUrl}/episode-info/${mediaId}`
+        `${nodeServerUrl}/episode-info/${mediaId}`,
+        {
+          timeout: 2000,
+        }
       );
 
       return data;
