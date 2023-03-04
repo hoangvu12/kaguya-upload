@@ -57,7 +57,7 @@ export const AuthContextProvider = () => {
     if (user) {
       if (savedUserInfo) return;
 
-      setWithExpiry("user", user, 86_400_000); // a day
+      setWithExpiry("user", user, 43_200_000); // 12 hours
 
       return;
     }
