@@ -1,3 +1,4 @@
+import AdBlockPopup from "@/components/features/ads/AdBlockPopup";
 import { debounce, removeDup } from "@/utils";
 import { atom, useAtom, useAtomValue } from "jotai";
 import { useRouter } from "next/router";
@@ -103,6 +104,8 @@ export const AdsProvider: React.FC = ({ children }) => {
 
   return (
     <React.Fragment>
+      <AdBlockPopup />
+
       {/* <!--Google GPT/ADM code --> */}
       <Script
         type="text/javascript"
