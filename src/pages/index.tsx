@@ -19,8 +19,15 @@ import classNames from "classnames";
 import { NextPage } from "next";
 import { useTranslation } from "next-i18next";
 import React, { useMemo } from "react";
-import { getSelectorsByUserAgent } from "react-device-detect";
+import {
+  BrowserView,
+  getSelectorsByUserAgent,
+  MobileOnlyView,
+} from "react-device-detect";
 import dynamic from "next/dynamic";
+import ListSkeleton from "@/components/skeletons/ListSkeleton";
+import Card from "@/components/shared/Card";
+import List from "@/components/shared/List";
 
 const Banner = dynamic(() => import("@/components/features/ads/Banner"), {
   ssr: false,
@@ -38,7 +45,7 @@ const Home: NextPage<HomeProps> = ({ selectors }) => {
   const { data: trendingAnime, isLoading: trendingLoading } = useMedia({
     type: MediaType.Anime,
     sort: [MediaSort.Trending_desc, MediaSort.Popularity_desc],
-    perPage: isMobileOnly ? 5 : 10,
+    perPage: 10,
   });
 
   const { data: recentlyUpdated, isLoading: recentlyUpdatedLoading } =
@@ -55,6 +62,8 @@ const Home: NextPage<HomeProps> = ({ selectors }) => {
       enabled: !isMobileOnly,
     }
   );
+
+  console.log(upcoming);
 
   const randomTrendingAnime = useMemo(() => {
     return randomElement(trendingAnime || []);
@@ -78,21 +87,35 @@ const Home: NextPage<HomeProps> = ({ selectors }) => {
 
           {!isMobileOnly && <RecommendedAnimeSection />}
 
-          {recentlyUpdatedLoading ? (
-            <ListSwiperSkeleton />
-          ) : recentlyUpdated?.length ? (
-            <Section title={t("common:newly_added")}>
-              <CardSwiper data={recentlyUpdated} />
-            </Section>
-          ) : null}
+          <BrowserView renderWithFragment>
+            {recentlyUpdatedLoading ? (
+              <ListSwiperSkeleton />
+            ) : recentlyUpdated?.length ? (
+              <Section title={t("common:newly_added")}>
+                <CardSwiper data={recentlyUpdated} />
+              </Section>
+            ) : null}
 
-          {upcomingLoading ? (
-            <ListSwiperSkeleton />
-          ) : upcoming?.length ? (
-            <Section title={t("anime_home:upcoming")}>
-              <CardSwiper data={upcoming} />
+            {upcomingLoading ? (
+              <ListSwiperSkeleton />
+            ) : upcoming?.length ? (
+              <Section title={t("anime_home:upcoming")}>
+                <CardSwiper data={upcoming} />
+              </Section>
+            ) : null}
+          </BrowserView>
+
+          <MobileOnlyView renderWithFragment>
+            <Section title={t("common:newly_added")}>
+              {recentlyUpdatedLoading ? (
+                <ListSkeleton numOfItems={10} />
+              ) : recentlyUpdated?.length ? (
+                <List data={recentlyUpdated}>
+                  {(node) => <Card data={node} />}
+                </List>
+              ) : null}
             </Section>
-          ) : null}
+          </MobileOnlyView>
 
           {!isMobileOnly && <NewestComments type={MediaType.Anime} />}
 

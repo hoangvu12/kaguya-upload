@@ -11,7 +11,7 @@ const useRecentlyUpdated = () => {
   const { data, isLoading, ...rest } = useAiringSchedules({
     airingAt_greater: 0,
     airingAt_lesser,
-    perPage: isMobile ? 5 : 15,
+    perPage: isMobile ? 10 : 15,
     sort: [AiringSort.Time_desc],
   });
 

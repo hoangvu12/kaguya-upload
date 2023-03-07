@@ -6,6 +6,7 @@ import React, { useMemo } from "react";
 interface ListSkeletonProps {
   className?: string;
   children?: () => React.ReactNode;
+  numOfItems?: number;
 }
 
 const defaultClassName =
@@ -14,6 +15,7 @@ const defaultClassName =
 const ListSkeleton: React.FC<ListSkeletonProps> = ({
   className = "",
   children,
+  numOfItems = 15,
 }) => {
   const validClassName = useMemo(
     () => (className.includes("grid-cols") ? className : defaultClassName),
@@ -22,7 +24,7 @@ const ListSkeleton: React.FC<ListSkeletonProps> = ({
 
   return (
     <Skeleton className={classNames("grid gap-4", validClassName)}>
-      {new Array(15).fill(null).map((_, index) => (
+      {new Array(numOfItems).fill(null).map((_, index) => (
         <SkeletonItem container className="col-span-1" key={index}>
           {children ? children() : <CardSkeleton />}
         </SkeletonItem>

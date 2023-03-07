@@ -1,5 +1,7 @@
+import Card from "@/components/shared/Card";
 import CardSwiper from "@/components/shared/CardSwiper";
 import DotList from "@/components/shared/DotList";
+import List from "@/components/shared/List";
 import Loading from "@/components/shared/Loading";
 import SwiperCard from "@/components/shared/SwiperCard";
 import useAiringSchedules from "@/hooks/useAiringSchedules";
@@ -39,13 +41,22 @@ const AnimeSchedule = () => {
   const { data: schedules, isLoading: schedulesLoading } = useAiringSchedules({
     airingAt_greater,
     airingAt_lesser,
-    perPage: isMobileOnly ? 5 : 15,
+    perPage: isMobileOnly ? 10 : 15,
     sort: [AiringSort.Time_desc],
   });
 
   const handleTabSelect = (index: number) => {
     setSelectedTab(index);
   };
+
+  const list = useMemo(
+    () =>
+      removeArrayOfObjectDup(
+        schedules?.map((schedule: AiringSchedule) => schedule.media) || [],
+        "id"
+      ),
+    [schedules]
+  );
 
   return (
     <Tabs
@@ -82,42 +93,46 @@ const AnimeSchedule = () => {
               ) : !schedules?.length ? (
                 <p className="text-2xl text-center">Không có...</p>
               ) : (
-                <CardSwiper
-                  data={removeArrayOfObjectDup(
-                    schedules.map((schedule: AiringSchedule) => schedule.media),
-                    "id"
+                <React.Fragment>
+                  {!isMobileOnly ? (
+                    <CardSwiper
+                      data={list}
+                      onEachCard={(card, isExpanded) => {
+                        const cardWithSchedule = schedules.find(
+                          (schedule) => schedule.media.id === card.id
+                        );
+
+                        const isReleased = dayjs
+                          .unix(cardWithSchedule.airingAt)
+                          .isBefore(dayjs());
+
+                        return (
+                          <SwiperCard
+                            isExpanded={isExpanded}
+                            data={card}
+                            containerEndSlot={
+                              <DotList>
+                                <span>
+                                  {t("common:episode")}{" "}
+                                  {cardWithSchedule.episode}
+                                </span>
+                                <span>
+                                  {!isReleased
+                                    ? dayjs
+                                        .unix(cardWithSchedule.airingAt)
+                                        .format("HH:mm")
+                                    : t("airing_schedule_passed")}
+                                </span>
+                              </DotList>
+                            }
+                          />
+                        );
+                      }}
+                    />
+                  ) : (
+                    <List data={list}>{(node) => <Card data={node} />}</List>
                   )}
-                  onEachCard={(card, isExpanded) => {
-                    const cardWithSchedule = schedules.find(
-                      (schedule) => schedule.media.id === card.id
-                    );
-
-                    const isReleased = dayjs
-                      .unix(cardWithSchedule.airingAt)
-                      .isBefore(dayjs());
-
-                    return (
-                      <SwiperCard
-                        isExpanded={isExpanded}
-                        data={card}
-                        containerEndSlot={
-                          <DotList>
-                            <span>
-                              {t("common:episode")} {cardWithSchedule.episode}
-                            </span>
-                            <span>
-                              {!isReleased
-                                ? dayjs
-                                    .unix(cardWithSchedule.airingAt)
-                                    .format("HH:mm")
-                                : t("airing_schedule_passed")}
-                            </span>
-                          </DotList>
-                        }
-                      />
-                    );
-                  }}
-                />
+                </React.Fragment>
               )}
             </TabPanel>
           );
