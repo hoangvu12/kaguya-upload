@@ -1,8 +1,3 @@
-import Interstitial from "@/components/features/ads/Interstitial";
-import NativeFloater from "@/components/features/ads/NativeFloater";
-import Popunder from "@/components/features/ads/Popunder";
-import Preload from "@/components/features/ads/Preload";
-import StickyBanner from "@/components/features/ads/StickyBanner";
 import IosAlert from "@/components/features/others/IosAlert";
 import BaseLayout from "@/components/layouts/BaseLayout";
 import { AppErrorFallback } from "@/components/shared/AppErrorFallback";
@@ -126,29 +121,15 @@ interface WorkaroundAppProps extends AppProps {
   err: any;
 }
 
-const noAdsRoutes = ["/anime/watch", "/manga/read", "/upload"];
-
 function App({ Component, pageProps, router, err }: WorkaroundAppProps) {
   const [errorInfo, setErrorInfo] = useState<React.ErrorInfo>(null);
-  const [showAds, setShowAds] = useState(true);
 
   useEffect(() => {
-    const handleAdShowing = (url: string) => {
-      if (noAdsRoutes.some((route) => url.includes(route))) {
-        setShowAds(false);
-      } else {
-        setShowAds(true);
-      }
-    };
-
     const handleRouteChange = (url: string) => {
       pageview(url);
-      handleAdShowing(url);
     };
 
     router.events.on("routeChangeComplete", handleRouteChange);
-
-    handleAdShowing(router.asPath);
 
     return () => {
       router.events.off("routeChangeComplete", handleRouteChange);
@@ -164,27 +145,6 @@ function App({ Component, pageProps, router, err }: WorkaroundAppProps) {
       {/* A placeholder to integrate MAL-Sync (https://github.com/MALSync/MALSync)*/}
       <script id="syncData" type="application/json"></script>
 
-      {/* <Script
-        // strategy="worker"
-        id="google-analytics"
-        src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
-      />
-
-      <Script
-        id="google-analytics-init"
-        // strategy="worker"
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.dataLayer = window.dataLayer || [];
-            window.gtag = function gtag(){window.dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${GA_TRACKING_ID}', {
-              page_path: window.location.pathname,
-            });
-          `,
-        }}
-      /> */}
-
       <ToastContainer
         position="bottom-left"
         autoClose={5000}
@@ -198,17 +158,6 @@ function App({ Component, pageProps, router, err }: WorkaroundAppProps) {
       />
 
       <IosAlert />
-
-      {showAds && (
-        <React.Fragment>
-          <Preload />
-          <Interstitial />
-          <Popunder />
-          <NativeFloater />
-          {/* <InvitePopup /> */}
-          <StickyBanner />
-        </React.Fragment>
-      )}
 
       <Provider>
         <QueryClientProvider client={queryClient}>
