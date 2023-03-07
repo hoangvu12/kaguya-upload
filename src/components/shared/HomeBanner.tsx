@@ -68,14 +68,8 @@ const MobileHomeBanner: React.FC<HomeBannerProps> = ({ data }) => {
   const { locale } = useRouter();
 
   return (
-    <Swiper
-      hideNavigation
-      spaceBetween={10}
-      breakpoints={{}}
-      slidesPerView={1}
-      loop
-    >
-      {data.map((slide: Media, index: number) => {
+    <div className="flex snap-x snap-mandatory overflow-x-auto no-scrollbar gap-2">
+      {data.map((slide: Media) => {
         const title = getTitle(slide, locale);
         const nextEpisodeAiringTime = !slide.nextAiringEpisode
           ? null
@@ -90,7 +84,7 @@ const MobileHomeBanner: React.FC<HomeBannerProps> = ({ data }) => {
         }
 
         return (
-          <SwiperSlide key={index}>
+          <div className="w-full flex-none snap-center" key={slide.id}>
             <Link href={createMediaDetailsUrl(slide)}>
               <a>
                 <div className="aspect-w-16 aspect-h-9 relative rounded-md">
@@ -145,11 +139,95 @@ const MobileHomeBanner: React.FC<HomeBannerProps> = ({ data }) => {
                 </div>
               </a>
             </Link>
-          </SwiperSlide>
+          </div>
         );
       })}
-    </Swiper>
+    </div>
   );
+
+  // return (
+  //   <Swiper
+  //     hideNavigation
+  //     spaceBetween={10}
+  //     breakpoints={{}}
+  //     slidesPerView={1}
+  //     loop
+  //   >
+  //     {data.map((slide: Media, index: number) => {
+  //       const title = getTitle(slide, locale);
+  //       const nextEpisodeAiringTime = !slide.nextAiringEpisode
+  //         ? null
+  //         : dayjs.unix(slide.nextAiringEpisode.airingAt);
+
+  //       let nextEpisodeAiringTimeDuration = "";
+
+  //       if (nextEpisodeAiringTime) {
+  //         nextEpisodeAiringTimeDuration = dayjs
+  //           .duration(nextEpisodeAiringTime.diff(dayjs()))
+  //           .format("D[d] H[h] m[m]");
+  //       }
+
+  //       return (
+  //         <SwiperSlide key={index}>
+  //           <Link href={createMediaDetailsUrl(slide)}>
+  //             <a>
+  //               <div className="aspect-w-16 aspect-h-9 relative rounded-md">
+  //                 {slide.bannerImage && (
+  //                   <Image
+  //                     src={slide.bannerImage}
+  //                     alt={title}
+  //                     layout="fill"
+  //                     objectFit="cover"
+  //                     className="rounded-md"
+  //                   />
+  //                 )}
+
+  //                 <div className="fixed-0 absolute flex items-end bg-gradient-to-b from-black/20 via-black/60 to-black/80">
+  //                   <div className="p-4">
+  //                     <h1 className="text-xl font-bold uppercase line-clamp-1">
+  //                       {title}
+  //                     </h1>
+
+  //                     {slide?.nextAiringEpisode && (
+  //                       <p className="mb-2 mt-2.5 text-base text-primary-200">
+  //                         Episode {slide.nextAiringEpisode.episode}:{" "}
+  //                         {nextEpisodeAiringTimeDuration}
+  //                       </p>
+  //                     )}
+
+  //                     <div className="flex flex-wrap items-center gap-x-8 text-lg">
+  //                       {slide.averageScore && (
+  //                         <TextIcon
+  //                           LeftIcon={MdTagFaces}
+  //                           iconClassName="text-green-300"
+  //                         >
+  //                           <p>{slide.averageScore}%</p>
+  //                         </TextIcon>
+  //                       )}
+  //                       <TextIcon
+  //                         LeftIcon={AiFillHeart}
+  //                         iconClassName="text-red-400"
+  //                       >
+  //                         <p>{numberWithCommas(slide.favourites)}</p>
+  //                       </TextIcon>
+  //                       <DotList>
+  //                         {slide.genres.map((genre) => (
+  //                           <span key={genre}>
+  //                             {convert(genre, "genre", { locale })}
+  //                           </span>
+  //                         ))}
+  //                       </DotList>
+  //                     </div>
+  //                   </div>
+  //                 </div>
+  //               </div>
+  //             </a>
+  //           </Link>
+  //         </SwiperSlide>
+  //       );
+  //     })}
+  //   </Swiper>
+  // );
 };
 
 const MobileHomeBannerSkeleton = () => (
