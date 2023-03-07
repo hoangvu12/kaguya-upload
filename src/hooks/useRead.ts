@@ -1,12 +1,10 @@
 import supabaseClient from "@/lib/supabase";
 
-import { Read } from "@/types";
-import { useSupabaseQuery } from "@/utils/supabase";
 import { useUser } from "@/contexts/AuthContext";
-import { useQuery } from "react-query";
 import { getMedia } from "@/services/anilist";
+import { Read } from "@/types";
 import { MediaType } from "@/types/anilist";
-import { isMobile } from "react-device-detect";
+import { useQuery } from "react-query";
 
 const useRead = () => {
   const user = useUser();
@@ -21,7 +19,7 @@ const useRead = () => {
         )
         .eq("userId", user.id)
         .order("updated_at", { ascending: false })
-        .limit(isMobile ? 5 : 10);
+        .limit(10);
 
       if (error) throw error;
 
