@@ -437,14 +437,10 @@ export const createMediaDetailsUrl = (media: Media) => {
   if (!media) return "";
 
   if (media.type === MediaType.Anime) {
-    return `/anime/details/${media.id}/${
-      media.id + "-" + slugify(media.title.userPreferred)
-    }`;
+    return `/anime/details/${media.id}/${slugify(media.title.userPreferred)}`;
   }
 
-  return `/manga/details/${media.id}/${
-    media.id + "-" + slugify(media.title.userPreferred)
-  }`;
+  return `/manga/details/${media.id}/${slugify(media.title.userPreferred)}`;
 };
 
 export const createCharacterDetailsUrl = (character: Character) => {

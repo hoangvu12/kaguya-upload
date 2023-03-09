@@ -438,7 +438,7 @@ export default withRedirect(DetailsPage, (router, props) => {
   if (slug) return null;
 
   return {
-    url: `/manga/details/${id}/${id + "-" + stringToSlug(title)}`,
+    url: `/manga/details/${id}/${stringToSlug(title)}`,
     options: {
       shallow: true,
     },
