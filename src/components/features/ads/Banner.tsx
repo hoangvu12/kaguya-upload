@@ -202,6 +202,6 @@ const defaultAdBlockerMessage =
 //   );
 // };
 
-const Banner = () => null;
+const Banner: React.FC<any> = () => null;
 
 export default Banner;
