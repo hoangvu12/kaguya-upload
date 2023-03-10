@@ -113,11 +113,11 @@ const privacy = () => {
           <p>
             <strong>Website</strong> refers to Kaguya, accessible from{" "}
             <a
-              href="https://kaguya.live"
+              href="https://kaguya.app"
               rel="external nofollow noopener noreferrer"
               target="_blank"
             >
-              https://kaguya.live
+              https://kaguya.app
             </a>
           </p>
         </li>
@@ -547,11 +547,11 @@ const privacy = () => {
           <p>
             By visiting this page on our website:{" "}
             <a
-              href="https://kaguya.live/contact"
+              href="https://kaguya.app/contact"
               rel="external nofollow noopener noreferrer"
               target="_blank"
             >
-              https://kaguya.live/contact
+              https://kaguya.app/contact
             </a>
           </p>
         </li>

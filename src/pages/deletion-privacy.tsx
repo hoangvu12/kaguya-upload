@@ -12,7 +12,7 @@ const DeletionPrivacy = () => {
       <h1>Privacy Policy for Kaguya</h1>
 
       <p>
-        At Kaguya, accessible from https://kaguya.live, one of our main
+        At Kaguya, accessible from https://kaguya.app, one of our main
         priorities is the privacy of our visitors. This Privacy Policy document
         contains types of information that is collected and recorded by Kaguya
         and how we use it.

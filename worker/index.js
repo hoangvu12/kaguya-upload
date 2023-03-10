@@ -6,8 +6,8 @@ self.addEventListener("push", function (event) {
   event.waitUntil(
     registration.showNotification(title, {
       ...options,
-      icon: "https://www.kaguya.live/_next/image?url=%2Flogo.png&w=1920&q=75",
-      badge: "https://www.kaguya.live/_next/image?url=%2Flogo.png&w=96&q=96",
+      icon: "https://www.kaguya.app/_next/image?url=%2Flogo.png&w=1920&q=75",
+      badge: "https://www.kaguya.app/_next/image?url=%2Flogo.png&w=96&q=96",
     })
   );
 });

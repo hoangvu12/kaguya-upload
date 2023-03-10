@@ -162,7 +162,7 @@ function App({ Component, pageProps, router, err }: WorkaroundAppProps) {
       <Provider>
         <QueryClientProvider client={queryClient}>
           <AuthContextProvider />
-          <AdsProvider />
+          {/* <AdsProvider /> */}
           <SubscriptionContextProvider />
           <GlobalPlayerContextProvider />
 

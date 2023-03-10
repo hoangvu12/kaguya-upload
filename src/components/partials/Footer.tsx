@@ -44,7 +44,7 @@ const Footer = () => {
 
       <p className="text-sm text-gray-300 text-center">{t("disclaimer")}</p>
 
-      <p className="text-sm text-gray-300 text-center">© Kaguya.live</p>
+      <p className="text-sm text-gray-300 text-center">© Kaguya.app</p>
     </div>
   );
 };
