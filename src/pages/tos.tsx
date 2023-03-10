@@ -5,8 +5,8 @@ const TosPage = () => {
   return (
     <div className="prose prose-invert !max-w-full pt-20 px-4 md:px-12 space-y-4">
       <Head
-        title="Điều khoản dịch vụ - Kaguya"
-        description="Điều khoản dịch vụ tại Kaguya"
+        title="Term of service - Kaguya"
+        description="Term of service of Kaguya"
       />
 
       <NativeBanner />

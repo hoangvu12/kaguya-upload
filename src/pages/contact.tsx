@@ -6,17 +6,18 @@ import React from "react";
 import { AiFillFacebook } from "react-icons/ai";
 import { FaDiscord } from "react-icons/fa";
 
-const contact = () => {
+const ContactPage = () => {
   return (
     <div className="px-4 md:px-12 pt-20 space-y-4">
-      <Head title="Liên hệ - Kaguya" description="Liên hệ với chúng tôi." />
+      <Head title="Contact us - Kaguya" description="Contact us" />
 
       <NativeBanner />
 
-      <h1 className="text-2xl font-bold">Liên hệ với chúng tôi</h1>
+      <h1 className="text-2xl font-bold">Contact us</h1>
 
       <p className="text-lg">
-        Bạn có thể liên hệ với chúng tôi qua những phương thức sau đây
+        We offer several ways to contact us. You can use any of the following
+        methods to get in touch with our team:
       </p>
 
       <div className="flex items-center space-x-4">
@@ -63,4 +64,4 @@ const ContactItem: React.FC<ContactItemProps> = ({
   );
 };
 
-export default contact;
+export default ContactPage;
