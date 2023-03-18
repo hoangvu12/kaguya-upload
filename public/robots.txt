@@ -6,4 +6,4 @@ Allow: /
 Host: https://kaguya.app
 
 # Sitemaps
-Sitemap: https://kaguya.app/sitemap/index.xml
+Sitemap: https://kaguya.app/sitemap.xml
