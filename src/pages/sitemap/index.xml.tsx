@@ -13,14 +13,16 @@ type Sitemap = {
 function generateSiteMap(sitemaps: Sitemap[]) {
   return `
   <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-    ${sitemaps.map(
-      (sitemap) => `
+    ${sitemaps
+      .map(
+        (sitemap) => `
         <sitemap>
             <loc>${sitemap.loc}</loc>
             <lastmod>${sitemap.lastmod}</lastmod>
         </sitemap>
     `
-    )}
+      )
+      .join("")}
   </sitemapindex>
    `;
 }

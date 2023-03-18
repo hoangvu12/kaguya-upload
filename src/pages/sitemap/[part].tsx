@@ -15,8 +15,9 @@ type Pagemap = {
 function generateSiteMap(pagemaps: Pagemap[]) {
   return `
   <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
-    ${pagemaps.map(
-      (pagemap) => `
+    ${pagemaps
+      .map(
+        (pagemap) => `
         <url>
             <loc>${pagemap.loc}</loc>
             <lastmod>${pagemap.lastmod}</lastmod>
@@ -24,7 +25,8 @@ function generateSiteMap(pagemaps: Pagemap[]) {
             <priority>${pagemap.priority}</priority>
         </url>
     `
-    )}
+      )
+      .join("")}
   </urlset>
    `;
 }
