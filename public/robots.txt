@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://kaguya.app
+
+# Sitemaps
+Sitemap: https://kaguya.app/sitemap/index.xml

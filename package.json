@@ -10,7 +10,6 @@
     "dev:ts": "yarn dev && yarn ts:watch",
     "ts": "tsc --noEmit --incremental",
     "ts:watch": "yarn ts --watch",
-    "postbuild": "next-sitemap",
     "partytown": "partytown copylib public/~partytown",
     "find:unused": "next-unused"
   },
@@ -43,7 +42,6 @@
     "next": "12.1.6",
     "next-i18next": "^11.0.0",
     "next-pwa": "^5.4.4",
-    "next-sitemap": "^3.1.16",
     "nookies": "^2.5.2",
     "nprogress": "^0.2.0",
     "react": "17.0.2",
@@ -64,7 +62,8 @@
     "socket.io-client": "^4.5.1",
     "swiper": "6",
     "traverse": "^0.6.6",
-    "url-toolkit": "^2.2.5"
+    "url-toolkit": "^2.2.5",
+    "xml2js": "^0.4.23"
   },
   "devDependencies": {
     "@babel/core": "^7.17.8",
@@ -80,6 +79,7 @@
     "@types/react-table": "^7.7.9",
     "@types/react-tabs": "^2.3.3",
     "@types/slug": "^5.0.3",
+    "@types/xml2js": "^0.4.11",
     "autoprefixer": "^10.4.4",
     "babel-loader": "^8.2.3",
     "eslint": "<8.0.0",

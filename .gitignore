@@ -48,5 +48,4 @@ yarn-error.log*
 **/public/worker-*.js.map
 **/public/fallback-*.js
 
-public/robots.txt
 public/sitemap*.xml
