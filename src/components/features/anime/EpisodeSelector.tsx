@@ -437,6 +437,7 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
             className="shrink-0"
             options={sectionOptions}
             isClearable={false}
+            isSearchable={false}
             defaultValue={activeSectionOption}
             value={activeSectionOption}
             onChange={onSectionChange}
