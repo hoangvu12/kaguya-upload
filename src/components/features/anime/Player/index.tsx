@@ -153,7 +153,7 @@ const Player = React.forwardRef<HTMLVideoElement, PlayerProps>(
     );
 
     const notAssSubtitles = useMemo(
-      () => subtitles.filter((subtitle) => !subtitle.file.endsWith(".ass")),
+      () => subtitles.filter((subtitle) => !subtitle.file.includes(".ass")),
       [subtitles]
     );
 
@@ -165,7 +165,7 @@ const Player = React.forwardRef<HTMLVideoElement, PlayerProps>(
           subtitlesOctopusRef.current = null;
         }
 
-        if (!subtitles?.[0]?.file.endsWith(".ass")) return;
+        if (!subtitles?.[0]?.file.includes(".ass")) return;
 
         const options = {
           video: videoEl,
