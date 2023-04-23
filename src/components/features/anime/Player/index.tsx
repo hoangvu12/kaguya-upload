@@ -3,11 +3,10 @@ import { SKIP_TIME } from "@/constants";
 import useConstantTranslation from "@/hooks/useConstantTranslation";
 import { Font, VideoSource } from "@/types";
 import { createProxyUrl } from "@/utils";
-import SubtitlesOctopus from "libass-wasm";
 import NetPlayer, { NetPlayerProps } from "netplayer";
 import Hls from "netplayer/dist/types/hls.js";
 import { useRouter } from "next/router";
-import React, { useCallback, useMemo, useRef } from "react";
+import React, { useCallback, useMemo } from "react";
 import { buildAbsoluteURL } from "url-toolkit";
 import Subtitle from "./Subtitle";
 
@@ -31,14 +30,10 @@ const corsServers = [
 ];
 
 const Player = React.forwardRef<HTMLVideoElement, PlayerProps>(
-  (
-    { hotkeys = [], components = [], subtitles = [], fonts = [], ...props },
-    ref
-  ) => {
+  ({ hotkeys = [], components = [], subtitles = [], ...props }, ref) => {
     const { locale } = useRouter();
 
     const { PLAYER_TRANSLATIONS } = useConstantTranslation();
-    const subtitlesOctopusRef = useRef(null);
 
     const playerComponents = useMemo(
       () => ({ ...components, Subtitle }),
@@ -152,36 +147,6 @@ const Player = React.forwardRef<HTMLVideoElement, PlayerProps>(
       [locale]
     );
 
-    const notAssSubtitles = useMemo(
-      () => subtitles.filter((subtitle) => !subtitle.file.includes(".ass")),
-      [subtitles]
-    );
-
-    const handleVideoInit = useCallback(
-      (videoEl: HTMLVideoElement) => {
-        if (subtitlesOctopusRef.current) {
-          subtitlesOctopusRef.current.dispose();
-
-          subtitlesOctopusRef.current = null;
-        }
-
-        if (!subtitles?.[0]?.file.includes(".ass")) return;
-
-        const options = {
-          video: videoEl,
-          subUrl: subtitles[0].file,
-          fonts: fonts.map((font) => font?.file),
-          workerUrl: "/subtitles-octopus-worker.js",
-          legacyWorkerUrl: "/subtitles-octopus-worker-legacy.js",
-        };
-
-        const instance = new SubtitlesOctopus(options);
-
-        subtitlesOctopusRef.current = instance;
-      },
-      [fonts, subtitles]
-    );
-
     const proxyBuilder = useCallback(
       (url: string, source: VideoSource) => {
         if (
@@ -210,8 +175,7 @@ const Player = React.forwardRef<HTMLVideoElement, PlayerProps>(
         hotkeys={playerHotkeys}
         onHlsInit={handleHlsInit}
         components={playerComponents}
-        subtitles={notAssSubtitles}
-        onInit={handleVideoInit}
+        subtitles={subtitles}
         changeSourceUrl={proxyBuilder}
         preferQuality={(qualities) => {
           const priority = ["1080p", "720p", "480p", "360p", "240p"];

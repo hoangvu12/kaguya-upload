@@ -1,22 +1,22 @@
-import {
-  isBackgroundAtom,
-  useGlobalPlayer,
-} from "@/contexts/GlobalPlayerContext";
+import { isBackgroundAtom } from "@/contexts/GlobalPlayerContext";
 import { isValidUrl } from "@/utils";
 import { parse } from "@plussub/srt-vtt-parser";
 import classNames from "classnames";
 import { useAtomValue } from "jotai";
+import SubtitlesOctopus from "libass-wasm";
 import {
   useInteract,
   useSubtitleSettings,
   useTextScaling,
   useVideo,
+  useVideoProps,
   useVideoState,
 } from "netplayer";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { isDesktop } from "react-device-detect";
 import { toast } from "react-toastify";
 import { buildAbsoluteURL } from "url-toolkit";
+import { PlayerProps } from ".";
 
 const textStyles = {
   none: "",
@@ -62,10 +62,13 @@ const Subtitle = () => {
   const { moderateScale, update } = useTextScaling();
   const isBackground = useAtomValue(isBackgroundAtom);
   const { videoEl } = useVideo();
+  const { fonts }: PlayerProps = useVideoProps();
   const { isInteracting } = useInteract();
   const [currentText, setCurrentText] = useState<string>("");
   const [subtitleText, setSubtitleText] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const subtitlesOctopusRef = useRef(null);
 
   const subtitle = useMemo(
     () => state.subtitles?.find((sub) => sub.lang === state.currentSubtitle),
@@ -74,6 +77,31 @@ const Subtitle = () => {
 
   useEffect(() => {
     if (!subtitle?.file) return;
+
+    if (subtitlesOctopusRef.current) {
+      subtitlesOctopusRef.current.dispose();
+
+      subtitlesOctopusRef.current = null;
+    }
+
+    if (subtitle.file.includes(".ass")) {
+      const options = {
+        video: videoEl,
+        subUrl: subtitle.file,
+        fonts: fonts?.map((font) => font?.file),
+        workerUrl: "/subtitles-octopus-worker.js",
+        legacyWorkerUrl: "/subtitles-octopus-worker-legacy.js",
+      };
+
+      const instance = new SubtitlesOctopus(options);
+
+      subtitlesOctopusRef.current = instance;
+
+      setCurrentText(null);
+      setSubtitleText(null);
+
+      return;
+    }
 
     const getSubtitle = async () => {
       setIsLoading(true);
@@ -88,7 +116,8 @@ const Subtitle = () => {
     };
 
     getSubtitle();
-  }, [subtitle]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [subtitle, videoEl]);
 
   useEffect(() => {
     // Video animation takes 300 milliseconds to complete
@@ -112,6 +141,12 @@ const Subtitle = () => {
 
         setCurrentText(currentEntry?.text || "");
       };
+
+      if (subtitle.file.includes(".ass")) {
+        videoEl.removeEventListener("timeupdate", handleSubtitle);
+
+        return;
+      }
 
       videoEl.addEventListener("timeupdate", handleSubtitle);
 
