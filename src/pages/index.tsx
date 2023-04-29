@@ -63,8 +63,6 @@ const Home: NextPage<HomeProps> = ({ selectors }) => {
     }
   );
 
-  console.log(upcoming);
-
   const randomTrendingAnime = useMemo(() => {
     return randomElement(trendingAnime || []);
   }, [trendingAnime]);
