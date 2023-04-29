@@ -52,6 +52,7 @@ const useBrowse = (options: UseBrowseOptions) => {
           .from<Translation>("kaguya_translations")
           .select("mediaId")
           .eq("mediaType", MediaType.Anime)
+
           .textSearch("title", keyword, {
             type: "plain",
           });

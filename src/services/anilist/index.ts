@@ -1,6 +1,6 @@
+import locales from "@/locales.json";
 import { Translation } from "@/types";
 import {
-  AiringSchedule,
   AiringScheduleArgs,
   CharacterArgs,
   MediaArgs,
@@ -14,25 +14,27 @@ import { removeArrayOfObjectDup } from "@/utils";
 import { supabaseClient } from "@supabase/auth-helpers-nextjs";
 import { getTranslations } from "../tmdb";
 import {
+  MediaDetailsQueryResponse,
+  PageQueryResponse,
+  StudioDetailsQueryResponse,
   airingSchedulesQuery,
   charactersDefaultFields,
   charactersQuery,
   mediaDefaultFields,
   mediaDetailsQuery,
-  MediaDetailsQueryResponse,
   mediaQuery,
-  PageQueryResponse,
   recommendationsQuery,
   staffDefaultFields,
   staffQuery,
   studioDetailsQuery,
-  StudioDetailsQueryResponse,
   studiosQuery,
 } from "./queries";
 
 import axios from "axios";
 
 const GRAPHQL_URL = "https://graphql.anilist.co";
+
+const LOCALES = locales.map(({ locale }) => locale);
 
 export const anilistFetcher = async <T>(query: string, variables: any) => {
   type Response = {
@@ -61,7 +63,8 @@ export const getPageMedia = async (
   const { data: mediaTranslations, error } = await supabaseClient
     .from<Translation>("kaguya_translations")
     .select("*")
-    .in("mediaId", mediaIdList);
+    .in("mediaId", mediaIdList)
+    .in("locale", LOCALES);
 
   if (error || !mediaTranslations?.length) return response?.Page;
 
@@ -97,7 +100,8 @@ export const getMedia = async (
   const { data: mediaTranslations, error } = await supabaseClient
     .from<Translation>("kaguya_translations")
     .select("*")
-    .in("mediaId", mediaIdList);
+    .in("mediaId", mediaIdList)
+    .in("locale", LOCALES);
 
   if (error || !mediaTranslations?.length) return mediaList;
 
@@ -129,7 +133,8 @@ export const getMediaDetails = async (
     .from<Translation>("kaguya_translations")
     .select("*")
     .eq("mediaId", media.id)
-    .eq("mediaType", args?.type || MediaType.Anime);
+    .eq("mediaType", args?.type || MediaType.Anime)
+    .in("locale", LOCALES);
 
   if (error) return media;
 
