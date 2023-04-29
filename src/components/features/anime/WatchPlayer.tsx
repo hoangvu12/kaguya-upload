@@ -233,13 +233,16 @@ PlayerMobileControls.displayName = "PlayerMobileControls";
 
 const PlayerOverlay = React.memo(() => {
   const { back } = useHistory();
-  const { push } = useRouter();
+  const { push, locale } = useRouter();
   const { isInteracting } = useInteract();
 
   const isBackground = useAtomValue(isBackgroundAtom);
   const setPlayerState = useSetAtom(playerStateAtom);
   const anime = useAtomValue(animeAtom);
   const currentEpisode = useAtomValue(currentEpisodeAtom);
+
+  const episodeTitle = getEpisodeTitle(currentEpisode.title, locale);
+  const title = getTitle(anime, locale);
 
   return (
     <Overlay>
@@ -276,20 +279,40 @@ const PlayerOverlay = React.memo(() => {
         </MobileOverlay>
       ) : (
         <React.Fragment>
-          <BsArrowLeft
-            className={classNames(
-              "transition-al absolute top-10 left-10 h-10 w-10 cursor-pointer duration-300 hover:text-gray-200",
-              isInteracting ? "visible opacity-100" : "invisible opacity-0"
-            )}
-            onClick={back}
-          />
-
           {anime?.idMal && (
             <TimestampSkipButton
               episode={parseNumberFromString(currentEpisode.name)}
               malId={anime.idMal}
             />
           )}
+
+          <div
+            className={classNames(
+              "transition duration-300 absolute left-0 top-0 h-24 w-full bg-gradient-to-b from-black/80 via-black/40   to-transparent",
+              isInteracting ? "visible opacity-100" : "invisible opacity-0"
+            )}
+          ></div>
+
+          <div
+            className={classNames(
+              "transition duration-300 absolute top-4 left-28 space-y-1 w-96 max-w-[70vw]",
+              isInteracting ? "visible opacity-100" : "invisible opacity-0"
+            )}
+          >
+            <p className="font-semibold text-xl line-clamp-1">
+              {currentEpisode.name} {episodeTitle && `- ${episodeTitle}`}
+            </p>
+
+            <p className="text-gray-100 text-lg line-clamp-1">{title}</p>
+          </div>
+
+          <BsArrowLeft
+            className={classNames(
+              "transition duration-300 absolute top-4 left-10 h-10 w-10 cursor-pointer hover:text-gray-200",
+              isInteracting ? "visible opacity-100" : "invisible opacity-0"
+            )}
+            onClick={back}
+          />
         </React.Fragment>
       )}
     </Overlay>
