@@ -38,6 +38,7 @@
     "is-hotkey": "^0.2.0",
     "jotai": "^2.0.2",
     "libass-wasm": "^4.0.0",
+    "markdown-it": "^13.0.1",
     "mime": "^3.0.0",
     "netplayer": "^1.6.1",
     "next": "12.1.6",

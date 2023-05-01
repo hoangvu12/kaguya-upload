@@ -152,11 +152,13 @@ export const parseNumberFromString = (text: string, fallbackNumber = null) => {
   return parseNumbersFromString(text, fallbackNumber)[0];
 };
 
-export const parseBetween = (str, start, end) => {
-  const startIndex = str.indexOf(start) + start.length;
-  const endIndex = str.indexOf(end);
+export const parseBetween = (str: string, start: string, end: string) => {
+  let strArr = [];
 
-  return str.substring(startIndex, endIndex);
+  strArr = str.split(start);
+  strArr = strArr[1].split(end);
+
+  return strArr[0];
 };
 
 export const isFalsy = (value: any) => {
