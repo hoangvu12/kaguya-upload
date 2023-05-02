@@ -13,6 +13,7 @@ import locales from "@/locales.json";
 export interface ChatMessage {
   role: "system" | "user" | "assistant";
   content: string;
+  isError?: boolean;
 }
 
 const parseData = (data: string) => {
@@ -91,6 +92,20 @@ Please write in ${currentLocale?.nameInEnglish || "English"}`,
       }
     );
 
+    if (!response.ok) {
+      const newMessages = [...messages];
+
+      newMessages.push({
+        content: "Please try again.",
+        role: "assistant",
+        isError: true,
+      });
+
+      setMessages(newMessages);
+
+      return;
+    }
+
     const reader = response.body.getReader();
 
     let currentResponse = "";
@@ -135,8 +150,10 @@ Please write in ${currentLocale?.nameInEnglish || "English"}`,
       return [
         ...oldMessages,
         {
-          content: currentResponse,
+          content:
+            currentResponse.length < 1 ? "Please try again" : currentResponse,
           role: "assistant",
+          isError: currentResponse.length < 1,
         },
       ];
     });

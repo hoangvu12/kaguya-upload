@@ -32,18 +32,19 @@ const AIChat: React.FC<AIChatProps> = ({ message }) => {
     >
       {!isUserMessage && <Avatar className="!w-8 !h-8" src={"/ai.png"} />}
 
-      <div className="space-y-1">
+      <div className="relative space-y-1">
         {!isUserMessage && (
           <p className={classNames("font-light text-sm")}>Maid-chan</p>
         )}
 
-        <p
+        <div
           className={classNames(
             "prose prose-base prose-primary !prose-invert p-2 rounded-md bg-background-600",
-            !isUserMessage && "max-w-[90%]"
+            message.isError && "ring-2 ring-red-500"
+            // !isUserMessage && "max-w-[90%]"
           )}
           dangerouslySetInnerHTML={{ __html: htmlMessage }}
-        ></p>
+        />
       </div>
     </div>
   );
