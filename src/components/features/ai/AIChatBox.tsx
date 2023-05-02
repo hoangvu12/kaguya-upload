@@ -1,16 +1,16 @@
+import Button from "@/components/shared/Button";
 import CircleButton from "@/components/shared/CircleButton";
 import Input from "@/components/shared/Input";
+import locales from "@/locales.json";
 import classNames from "classnames";
 import isHotKey from "is-hotkey";
+import { useTranslation } from "next-i18next";
+import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { isMobileOnly } from "react-device-detect";
 import { AiOutlineSend } from "react-icons/ai";
-import AIChat from "./AIChat";
-import { useTranslation } from "next-i18next";
-import { useRouter } from "next/router";
-import locales from "@/locales.json";
-import Button from "@/components/shared/Button";
 import { BiStopCircle } from "react-icons/bi";
+import AIChat from "./AIChat";
 
 export interface ChatMessage {
   role: "system" | "user" | "assistant";
@@ -165,6 +165,8 @@ Please write in ${currentLocale?.nameInEnglish || "English"}`,
         },
       ];
     });
+
+    messageBottomRef.current?.scrollIntoView();
   }, [isResponding, message, messages, t]);
 
   const abortMessage = useCallback(() => {
@@ -186,6 +188,8 @@ Please write in ${currentLocale?.nameInEnglish || "English"}`,
       ];
     });
 
+    messageBottomRef.current?.scrollIntoView();
+
     setIsResponding(false);
     setResponse("");
   }, [response, t]);
@@ -203,10 +207,6 @@ Please write in ${currentLocale?.nameInEnglish || "English"}`,
       window.removeEventListener("keydown", handleKeydown);
     };
   }, [submitMessage]);
-
-  useEffect(() => {
-    messageBottomRef.current?.scrollIntoView();
-  }, [messages]);
 
   return (
     <div
