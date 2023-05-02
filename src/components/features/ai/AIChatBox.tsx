@@ -261,16 +261,16 @@ Please write in ${currentLocale?.nameInEnglish || "English"}`,
           )}
         </div>
 
-        {/* {isResponding && ( */}
-        <Button
-          LeftIcon={BiStopCircle}
-          primary
-          onClick={abortMessage}
-          className="absolute right-0 bottom-16 shadow-lg"
-        >
-          {t("stop_button_label", { defaultValue: "Stop generating" })}
-        </Button>
-        {/* )} */}
+        {isResponding && (
+          <Button
+            LeftIcon={BiStopCircle}
+            primary
+            onClick={abortMessage}
+            className="absolute right-0 bottom-16 shadow-lg"
+          >
+            {t("stop_button_label", { defaultValue: "Stop generating" })}
+          </Button>
+        )}
       </div>
     </div>
   );
