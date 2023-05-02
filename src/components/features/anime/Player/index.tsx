@@ -184,6 +184,7 @@ const Player = React.forwardRef<HTMLVideoElement, PlayerProps>(
         }}
         // @ts-ignore
         crossOrigin={null}
+        disableVolumeSlider
         {...props}
       >
         {props.children}
