@@ -9,6 +9,8 @@ import AIChat from "./AIChat";
 import { useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
 import locales from "@/locales.json";
+import Button from "@/components/shared/Button";
+import { BiStopCircle } from "react-icons/bi";
 
 export interface ChatMessage {
   role: "system" | "user" | "assistant";
@@ -49,6 +51,7 @@ Please write in ${currentLocale?.nameInEnglish || "English"}`,
   const { t } = useTranslation("ai_chat");
 
   const messageBottomRef = useRef(null);
+  const abortControllerRef = useRef<AbortController>();
 
   const submitMessage = useCallback(async () => {
     if (!message) return;
@@ -71,6 +74,8 @@ Please write in ${currentLocale?.nameInEnglish || "English"}`,
 
     messageBottomRef.current?.scrollIntoView();
 
+    abortControllerRef.current = new AbortController();
+
     const response = await fetch(
       "https://free.churchless.tech/v1/chat/completions",
       {
@@ -80,7 +85,7 @@ Please write in ${currentLocale?.nameInEnglish || "English"}`,
           Accept: `text/event-stream`,
         },
         body: JSON.stringify({
-          messages: newMessages,
+          messages: newMessages.filter((message) => !message.isError),
           model: "gpt-3.5-turbo",
           max_tokens: null,
           temperature: 1,
@@ -89,6 +94,7 @@ Please write in ${currentLocale?.nameInEnglish || "English"}`,
           frequency_penalty: 0,
           stream: true,
         }),
+        signal: abortControllerRef.current.signal,
       }
     );
 
@@ -96,7 +102,7 @@ Please write in ${currentLocale?.nameInEnglish || "English"}`,
       const newMessages = [...messages];
 
       newMessages.push({
-        content: "Please try again.",
+        content: t("error_msg", { defaultValue: "Please try again" }),
         role: "assistant",
         isError: true,
       });
@@ -151,13 +157,38 @@ Please write in ${currentLocale?.nameInEnglish || "English"}`,
         ...oldMessages,
         {
           content:
-            currentResponse.length < 1 ? "Please try again" : currentResponse,
+            currentResponse.length < 1
+              ? t("error_msg", { defaultValue: "Please try again" })
+              : currentResponse,
           role: "assistant",
           isError: currentResponse.length < 1,
         },
       ];
     });
   }, [isResponding, message, messages, t]);
+
+  const abortMessage = useCallback(() => {
+    if (!abortControllerRef?.current) return;
+
+    abortControllerRef.current.abort();
+
+    setMessages((oldMessages) => {
+      return [
+        ...oldMessages,
+        {
+          content:
+            response.length < 1
+              ? t("error_msg", { defaultValue: "Please try again" })
+              : response,
+          role: "assistant",
+          isError: response.length < 1,
+        },
+      ];
+    });
+
+    setIsResponding(false);
+    setResponse("");
+  }, [response, t]);
 
   useEffect(() => {
     const handleKeydown = (e: KeyboardEvent) => {
@@ -229,6 +260,17 @@ Please write in ${currentLocale?.nameInEnglish || "English"}`,
             />
           )}
         </div>
+
+        {/* {isResponding && ( */}
+        <Button
+          LeftIcon={BiStopCircle}
+          primary
+          onClick={abortMessage}
+          className="absolute right-0 bottom-16 shadow-lg"
+        >
+          {t("stop_button_label", { defaultValue: "Stop generating" })}
+        </Button>
+        {/* )} */}
       </div>
     </div>
   );

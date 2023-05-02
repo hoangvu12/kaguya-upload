@@ -1,5 +1,7 @@
 {
     "greeting": "Xin chào, tôi có thể giúp gì cho ngài?",
     "loading_msg": "Maid-chan đang suy nghĩ...",
-    "input_placeholder": "Hãy hỏi Maid-chan về bất cứ thứ gì."
+    "input_placeholder": "Hãy hỏi Maid-chan về bất cứ thứ gì.",
+    "stop_button_label": "Dừng trả lời",
+    "error_msg": "Vui lòng thử lại"
 }
