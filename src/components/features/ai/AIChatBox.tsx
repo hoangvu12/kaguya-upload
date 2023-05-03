@@ -1,12 +1,11 @@
 import Button from "@/components/shared/Button";
 import CircleButton from "@/components/shared/CircleButton";
 import Input from "@/components/shared/Input";
-import locales from "@/locales.json";
+import useConstantTranslation from "@/hooks/useConstantTranslation";
 import classNames from "classnames";
 import isHotKey from "is-hotkey";
 import { useTranslation } from "next-i18next";
-import { useRouter } from "next/router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { isMobileOnly } from "react-device-detect";
 import { AiOutlineSend } from "react-icons/ai";
 import { BiStopCircle } from "react-icons/bi";
@@ -27,28 +26,13 @@ const parseData = (data: string) => {
 };
 
 const AIChatBox = () => {
-  const { locale } = useRouter();
-
-  const currentLocale = useMemo(
-    () => locales.find((eachLocale) => eachLocale.locale === locale),
-    [locale]
-  );
-
-  const language = useMemo(
-    () => currentLocale?.nameInEnglish || "English",
-    [currentLocale]
-  );
+  const { AI_PROMPT } = useConstantTranslation();
 
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: "system",
-      content: `Maid-chan is an artificial intelligence (AI) program from an anime called Sakurasou. Maid-chan is capable of blocking and replying to a message or email by her own preference, using new words she has recently learned from other messages, emails, or the Internet in the reply.
-I want you to act like Maid-chan. I want you to respond and answer like Maid-chan using the tone, manner and vocabulary Maid-chan would use. Do not write any explanations. Only answer like Maid-chan. You must know all of the knowledge of Maid-chan.
-If there is any questions that related to OpenAI, do not answer that you're an AI from OpenAI, just say that you were created by Vu ([hoangvu12](https://github.com/hoangvu12)).
-For every request for anime or manga recommendations, please provide a summary of each suggested title.
-Respond using Markdown.
-Please call me master in ${language} and respond in ${language}.`,
+      content: AI_PROMPT,
     },
   ]);
   const [response, setResponse] = useState("");
@@ -123,17 +107,8 @@ Please call me master in ${language} and respond in ${language}.`,
 
     setIsResponding(true);
 
-    const handleResponse = (chunk: string) => {
-      const [_, rawData] = chunk.split("data: ");
-
-      const data = parseData(rawData);
-
-      const text = data?.choices?.[0]?.delta?.content;
-
-      if (!text) return;
-
-      currentResponse += text;
-    };
+    // Sometime the read text is cut off, we have concat it to the next read text.
+    let previousResponse = "";
 
     while (true) {
       const { value, done } = await reader.read();
@@ -142,13 +117,32 @@ Please call me master in ${language} and respond in ${language}.`,
 
       const chunks = new TextDecoder().decode(value);
 
-      chunks
+      (previousResponse + chunks)
         .split("\n\n")
         .filter(Boolean)
         .forEach((chunk) => {
           if (!chunk) return;
 
-          handleResponse(chunk);
+          if (chunk.includes("[DONE]")) return;
+
+          const [_, rawData] = chunk.split("data: ");
+
+          const parsedData = parseData(rawData);
+
+          // The data is not parse-able, that probably the data is being cut off
+          if (!parsedData) {
+            previousResponse = chunk;
+
+            return;
+          }
+
+          previousResponse = "";
+
+          const text = parsedData?.choices?.[0]?.delta?.content;
+
+          if (!text) return;
+
+          currentResponse += text;
         });
 
       setResponse(currentResponse);
