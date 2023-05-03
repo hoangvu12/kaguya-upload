@@ -61,6 +61,8 @@ const AIChatBox = () => {
       `*${t("loading_msg", { defaultValue: "Maid-chan is thinking..." })}*`
     );
 
+    setIsResponding(true);
+
     messageBottomRef.current?.scrollIntoView();
 
     abortControllerRef.current = new AbortController();
@@ -97,6 +99,7 @@ const AIChatBox = () => {
       });
 
       setMessages(newMessages);
+      setIsResponding(false);
 
       return;
     }
@@ -104,8 +107,6 @@ const AIChatBox = () => {
     const reader = response.body.getReader();
 
     let currentResponse = "";
-
-    setIsResponding(true);
 
     // Sometime the read text is cut off, we have concat it to the next read text.
     let previousResponse = "";
