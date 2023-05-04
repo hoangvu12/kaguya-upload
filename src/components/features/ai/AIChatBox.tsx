@@ -17,14 +17,6 @@ export interface ChatMessage {
   isError?: boolean;
 }
 
-const parseData = (data: string) => {
-  try {
-    return JSON.parse(data);
-  } catch (err) {
-    return null;
-  }
-};
-
 const AIChatBox = () => {
   const { AI_PROMPT } = useConstantTranslation();
 
@@ -67,27 +59,16 @@ const AIChatBox = () => {
 
     abortControllerRef.current = new AbortController();
 
-    const response = await fetch(
-      "https://free.churchless.tech/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: `text/event-stream`,
-        },
-        body: JSON.stringify({
-          messages: newMessages.filter((message) => !message.isError),
-          model: "gpt-3.5-turbo",
-          max_tokens: null,
-          temperature: 1,
-          presence_penalty: 0,
-          top_p: 1,
-          frequency_penalty: 0,
-          stream: true,
-        }),
-        signal: abortControllerRef.current.signal,
-      }
-    );
+    const response = await fetch("https://gpt.kaguya.app", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        messages: newMessages.filter((message) => !message.isError),
+      }),
+      signal: abortControllerRef.current.signal,
+    });
 
     if (!response.ok) {
       const newMessages = [...messages];
@@ -108,43 +89,16 @@ const AIChatBox = () => {
 
     let currentResponse = "";
 
-    // Sometime the read text is cut off, we have concat it to the next read text.
-    let previousResponse = "";
-
     while (true) {
       const { value, done } = await reader.read();
 
       if (done) break;
 
-      const chunks = new TextDecoder().decode(value);
+      const chunk = new TextDecoder().decode(value);
 
-      (previousResponse + chunks)
-        .split("\n\n")
-        .filter(Boolean)
-        .forEach((chunk) => {
-          if (!chunk) return;
+      if (!chunk) return;
 
-          if (chunk.includes("[DONE]")) return;
-
-          const [_, rawData] = chunk.split("data: ");
-
-          const parsedData = parseData(rawData);
-
-          // The data is not parse-able, that probably the data is being cut off
-          if (!parsedData) {
-            previousResponse = chunk;
-
-            return;
-          }
-
-          previousResponse = "";
-
-          const text = parsedData?.choices?.[0]?.delta?.content;
-
-          if (!text) return;
-
-          currentResponse += text;
-        });
+      currentResponse += chunk;
 
       setResponse(currentResponse);
     }
@@ -161,7 +115,7 @@ const AIChatBox = () => {
               ? t("error_msg", { defaultValue: "Please try again" })
               : currentResponse,
           role: "assistant",
-          isError: currentResponse.length < 1,
+          ...(currentResponse.length < 1 && { isError: true }),
         },
       ];
     });
@@ -183,7 +137,7 @@ const AIChatBox = () => {
               ? t("error_msg", { defaultValue: "Please try again" })
               : response,
           role: "assistant",
-          isError: response.length < 1,
+          ...(response.length < 1 && { isError: true }),
         },
       ];
     });
