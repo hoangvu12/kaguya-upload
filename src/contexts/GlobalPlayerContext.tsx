@@ -154,7 +154,9 @@ const GlobalPlayerContextProvider: React.FC = ({ children }) => {
   }, []);
 
   const playerSrc = useMemo(() => {
-    return playerSource?.useProxy || playerSource?.usePublicProxy
+    return playerSource?.useProxy ||
+      playerSource?.usePublicProxy ||
+      playerSource?.useEdgeProxy
       ? createProxyUrl(
           playerSource?.file,
           playerSource?.proxy,

@@ -365,12 +365,6 @@ export const createFileFromUrl = async (url: string, filename: string) => {
   return file;
 };
 
-const composeHeaders = (
-  headers: Record<string, string>
-): [string, string][] => {
-  return Object.entries(headers).map(([key, value]) => [key, value]);
-};
-
 export const createProxyUrl = (
   url: string,
   proxy: Proxy,
@@ -378,6 +372,8 @@ export const createProxyUrl = (
   isEdgeProxy?: boolean,
   locale = "en"
 ) => {
+  console.log("creating proxy url");
+
   if (isPublicProxy) return `https://corsproxy.io/?${encodeURIComponent(url)}`;
 
   const composeHeaders = (
@@ -393,8 +389,6 @@ export const createProxyUrl = (
     deleteResHeaders = [],
     ...rest
   } = proxy;
-
-  console.log(rest);
 
   const modifiedAppendReqHeaders = JSON.stringify(
     composeHeaders(appendReqHeaders)
@@ -421,6 +415,8 @@ export const createProxyUrl = (
 
     return config.proxyServer.vn;
   })();
+
+  console.log(proxyUrl, config.proxyServer);
 
   return `${proxyUrl}/?url=${encodeURIComponent(url)}&${params}`;
 };
