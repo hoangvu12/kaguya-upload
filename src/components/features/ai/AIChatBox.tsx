@@ -67,27 +67,25 @@ const AIChatBox = () => {
 
     abortControllerRef.current = new AbortController();
 
-    const response = await fetch(
-      "https://free.churchless.tech/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: `text/event-stream`,
-        },
-        body: JSON.stringify({
-          messages: newMessages.filter((message) => !message.isError),
-          model: "gpt-3.5-turbo",
-          max_tokens: null,
-          temperature: 1,
-          presence_penalty: 0,
-          top_p: 1,
-          frequency_penalty: 0,
-          stream: true,
-        }),
-        signal: abortControllerRef.current.signal,
-      }
-    );
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: `text/event-stream`,
+        Authorization: "Bearer MyDiscord",
+      },
+      body: JSON.stringify({
+        messages: newMessages.filter((message) => !message.isError),
+        model: "gpt-3.5-turbo",
+        max_tokens: null,
+        temperature: 1,
+        presence_penalty: 0,
+        top_p: 1,
+        frequency_penalty: 0,
+        stream: true,
+      }),
+      signal: abortControllerRef.current.signal,
+    });
 
     if (!response.ok) {
       const newMessages = [...messages];
