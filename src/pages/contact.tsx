@@ -1,4 +1,3 @@
-import NativeBanner from "@/components/features/ads/NativeBanner";
 import Head from "@/components/shared/Head";
 import { DISCORD_URL, FACEBOOK_URL } from "@/constants";
 import classNames from "classnames";
@@ -10,8 +9,6 @@ const ContactPage = () => {
   return (
     <div className="px-4 md:px-12 pt-20 space-y-4">
       <Head title="Contact us - Kaguya" description="Contact us" />
-
-      <NativeBanner />
 
       <h1 className="text-2xl font-bold">Contact us</h1>
 

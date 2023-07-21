@@ -2,8 +2,8 @@ import AdvancedSettings from "@/components/shared/AdvancedSettings";
 import Card from "@/components/shared/Card";
 import FormSelect from "@/components/shared/FormSelect";
 import GenresFormSelect from "@/components/shared/GenresFormSelect";
-import Input from "@/components/shared/Input";
 import InView from "@/components/shared/InView";
+import Input from "@/components/shared/Input";
 import List from "@/components/shared/List";
 import SortSelector from "@/components/shared/SortSelector";
 import ListSkeleton from "@/components/skeletons/ListSkeleton";
@@ -16,11 +16,6 @@ import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { AiOutlineSearch } from "react-icons/ai";
-import dynamic from "next/dynamic";
-
-const Banner = dynamic(() => import("@/components/features/ads/Banner"), {
-  ssr: false,
-});
 
 const initialValues: UseBrowseOptions = {
   format: undefined,
@@ -211,8 +206,6 @@ const BrowseList: React.FC<BrowseListProps> = ({
           />
         </div>
       </form>
-
-      <Banner desktop="970x250" mobile="320x100" type="atf" />
 
       <div className="mt-8">
         {!isLoading && query ? (

@@ -1,4 +1,3 @@
-import NativeBanner from "@/components/features/ads/NativeBanner";
 import Head from "@/components/shared/Head";
 import Section from "@/components/shared/Section";
 
@@ -6,8 +5,6 @@ const DeletionPrivacy = () => {
   return (
     <Section className="space-y-8 pt-20">
       <Head title="Privacy - Kaguya" />
-
-      <NativeBanner />
 
       <h1>Privacy Policy for Kaguya</h1>
 

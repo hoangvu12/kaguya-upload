@@ -1,4 +1,3 @@
-import NativeBanner from "@/components/features/ads/NativeBanner";
 import Head from "@/components/shared/Head";
 import Section from "@/components/shared/Section";
 

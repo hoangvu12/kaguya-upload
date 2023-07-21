@@ -62,7 +62,6 @@ const Subtitle = () => {
   const { moderateScale, update } = useTextScaling();
   const isBackground = useAtomValue(isBackgroundAtom);
   const { videoEl } = useVideo();
-  const { fonts }: PlayerProps = useVideoProps();
   const { isInteracting } = useInteract();
   const [currentText, setCurrentText] = useState<string>("");
   const [subtitleText, setSubtitleText] = useState<string>("");
@@ -88,7 +87,7 @@ const Subtitle = () => {
       const options = {
         video: videoEl,
         subUrl: subtitle.file,
-        fonts: fonts?.map((font) => font?.file),
+        // fonts: fonts?.map((font) => font?.file),
         workerUrl: "/subtitles-octopus-worker.js",
         legacyWorkerUrl: "/subtitles-octopus-worker-legacy.js",
       };

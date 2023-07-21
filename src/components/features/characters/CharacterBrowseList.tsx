@@ -1,6 +1,6 @@
 import CharacterCard from "@/components/shared/CharacterCard";
-import Input from "@/components/shared/Input";
 import InView from "@/components/shared/InView";
+import Input from "@/components/shared/Input";
 import List from "@/components/shared/List";
 import ListSkeleton from "@/components/skeletons/ListSkeleton";
 import useBirthdayCharacters from "@/hooks/useBirthdayCharacters";
@@ -11,11 +11,6 @@ import { debounce } from "@/utils";
 import { useTranslation } from "next-i18next";
 import React, { useMemo, useState } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
-import dynamic from "next/dynamic";
-
-const Banner = dynamic(() => import("@/components/features/ads/Banner"), {
-  ssr: false,
-});
 
 interface BrowseListProps {
   defaultQuery?: UseBrowseOptions;
@@ -68,8 +63,6 @@ const BrowseList: React.FC<BrowseListProps> = ({ defaultQuery }) => {
           placeholder={t("character_name")}
         />
       </form>
-
-      <Banner desktop="970x250" mobile="320x100" type="atf" />
 
       <div className="mt-8">
         {keyword ? (

@@ -1,7 +1,6 @@
 import React from "react";
 import Footer from "@/components/partials/Footer";
 import Header from "@/components/partials/Header";
-import Announcement from "../partials/Announcement";
 
 interface BaseLayoutProps {
   showHeader?: boolean;
@@ -15,8 +14,6 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
 }) => {
   return (
     <main>
-      <Announcement />
-
       {showHeader && <Header />}
 
       <div className="app">{children}</div>

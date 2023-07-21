@@ -1,11 +1,9 @@
-import NativeBanner from "@/components/features/ads/NativeBanner";
 import Head from "@/components/shared/Head";
 
 const DMCAPage = () => {
   return (
     <div className="!max-w-full prose prose-lg prose-invert pt-20 px-4 md:px-12 space-y-4">
       <Head title="DMCA - Kaguya" description="DMCA Kaguya" />
-      <NativeBanner />
 
       <h1 className="text-2xl font-bold">DMCA Takedown Request</h1>
 

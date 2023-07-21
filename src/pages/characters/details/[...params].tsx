@@ -1,4 +1,3 @@
-import NativeBanner from "@/components/features/ads/NativeBanner";
 import VACard from "@/components/features/va/VACard";
 import Card from "@/components/shared/Card";
 import DetailsSection from "@/components/shared/DetailsSection";
@@ -159,8 +158,6 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ character }) => {
             </div>
           </div>
         </Section>
-
-        <NativeBanner />
 
         <Section className="space-y-8">
           {!!voiceActors?.length && (

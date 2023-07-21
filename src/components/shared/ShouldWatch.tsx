@@ -1,11 +1,11 @@
 import CircleButton from "@/components/shared/CircleButton";
 import DotList from "@/components/shared/DotList";
 import Image from "@/components/shared/Image";
+import Link from "@/components/shared/Link";
 import TextIcon from "@/components/shared/TextIcon";
-import { Media, MediaType } from "@/types/anilist";
+import { Media } from "@/types/anilist";
 import { createMediaDetailsUrl, numberWithCommas } from "@/utils";
 import { convert, getDescription, getTitle } from "@/utils/data";
-import Link from "@/components/shared/Link";
 import { useRouter } from "next/router";
 import React, { useMemo } from "react";
 import { AiFillHeart, AiFillPlayCircle } from "react-icons/ai";
@@ -21,11 +21,8 @@ interface ShouldWatchProps {
 const ShouldWatch: React.FC<ShouldWatchProps> = ({ data, isLoading }) => {
   const { locale } = useRouter();
 
-  const title = useMemo(() => getTitle(data, locale), [data, locale]);
-  const description = useMemo(
-    () => getDescription(data, locale),
-    [data, locale]
-  );
+  const title = useMemo(() => getTitle(data), [data]);
+  const description = useMemo(() => getDescription(data), [data]);
 
   const redirectUrl = useMemo(() => createMediaDetailsUrl(data), [data]);
 

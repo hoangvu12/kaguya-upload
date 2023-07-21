@@ -1,13 +1,13 @@
-import { Media, MediaType } from "@/types/anilist";
+import Link from "@/components/shared/Link";
+import { Media } from "@/types/anilist";
 import { createMediaDetailsUrl } from "@/utils";
 import { convert, getTitle } from "@/utils/data";
 import classNames from "classnames";
-import Link from "@/components/shared/Link";
+import { useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
 import React, { useMemo } from "react";
 import DotList from "./DotList";
 import PlainCard from "./PlainCard";
-import { useTranslation } from "next-i18next";
 
 interface HorizontalCardProps extends React.HTMLAttributes<HTMLDivElement> {
   data: Media;
@@ -29,7 +29,7 @@ const HorizontalCard = ({
   const { locale } = useRouter();
   const { t } = useTranslation("common");
 
-  const title = useMemo(() => getTitle(data, locale), [data, locale]);
+  const title = useMemo(() => getTitle(data), [data]);
 
   const sizeClassName = useMemo(() => {
     if (size === "sm") {

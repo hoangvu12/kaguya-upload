@@ -1,8 +1,6 @@
-import NativeBanner from "@/components/features/ads/NativeBanner";
 import AnimeBrowseList from "@/components/features/anime/AnimeBrowseList";
 import CharacterBrowseList from "@/components/features/characters/CharacterBrowseList";
 import MangaBrowseList from "@/components/features/manga/MangaBrowseList";
-import UserBrowseList from "@/components/features/users/UserBrowseList";
 import VABrowseList from "@/components/features/va/VABrowseList";
 import Head from "@/components/shared/Head";
 import Section from "@/components/shared/Section";
@@ -18,7 +16,6 @@ const components = {
   manga: MangaBrowseList,
   characters: CharacterBrowseList,
   voice_actors: VABrowseList,
-  users: UserBrowseList,
 };
 
 const convertQueryToArray = <T,>(query: T[]) => {
@@ -113,8 +110,6 @@ const BrowsePage = ({ query: baseQuery }) => {
         title={`Search ${chosenType.label} - Kaguya`}
         description={`Search ${chosenType.label} in Kaguya`}
       />
-
-      <NativeBanner />
 
       <div className="mb-8 flex items-center space-x-2">
         <h1 className="text-4xl font-semibold text-center md:text-left">

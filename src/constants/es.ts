@@ -1,4 +1,3 @@
-import { Notification, NotificationEntity } from "@/types";
 import {
   CharacterRole,
   MediaFormat,
@@ -265,40 +264,9 @@ export const READ_STATUS = [
   },
 ];
 
-export const VISIBILITY_MODES = [
-  {
-    value: "public",
-    label: "Público",
-  },
-  {
-    value: "private",
-    label: "Privado",
-  },
-];
-
-export const CHAT_EVENT_TYPES = {
-  join: "se ha unido a la sala",
-  leave: "ha abandonado la sala",
-  play: "ha reproducido al video",
-  pause: "ha pausado el video",
-  changeEpisode: "ha cambiado de episodio",
-};
-
 export const GENDERS = {
   male: "Masculino",
   female: "Femenino",
-};
-
-export const EMOJI_GROUP = {
-  smileys_people: "Caras Sonrientes y Personas",
-  animals_nature: "Animales y Naturaleza",
-  food_drink: "Comidas y Bebidas",
-  travel_places: "Viajes y Lugares",
-  activities: "Actividades",
-  objects: "Objetos",
-  symbols: "Símbolos",
-  flags: "Banderas",
-  recently_used: "Usados recientemente",
 };
 
 export const PLAYER_TRANSLATIONS: I18n = {
@@ -337,28 +305,6 @@ export const PLAYER_TRANSLATIONS: I18n = {
   },
 };
 
-export const NOTIFICATION_ENTITIES: Record<
-  string,
-  (notification: Notification) => NotificationEntity
-> = {
-  comment_mention: (notification) => {
-    const [mediaType, mediaId] = notification.parentEntityId.split("-");
-
-    return {
-      message: `${notification?.sender?.name} te mencionó en un comentario`,
-      redirectUrl: `/${mediaType}/details/${mediaId}?commentId=${notification.entityId}`,
-    };
-  },
-  comment_reaction: (notification) => {
-    const [mediaType, mediaId] = notification.parentEntityId.split("-");
-
-    return {
-      message: `${notification?.sender?.name} ha reaccionado a tu comentario`,
-      redirectUrl: `/${mediaType}/details/${mediaId}?commentId=${notification.entityId}`,
-    };
-  },
-};
-
 const DAYSOFWEEK = ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"];
 
 const USER_LIST = [
@@ -389,15 +335,11 @@ const translations = {
   MANGA_SORTS,
   TYPES,
   COUNTRIES,
-  VISIBILITY_MODES,
-  CHAT_EVENT_TYPES,
   WATCH_STATUS,
   READ_STATUS,
   GENDERS,
-  EMOJI_GROUP,
   PLAYER_TRANSLATIONS,
   DAYSOFWEEK,
-  NOTIFICATION_ENTITIES,
   USER_LIST,
   AI_PROMPT,
 };

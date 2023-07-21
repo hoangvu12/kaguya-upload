@@ -1,4 +1,3 @@
-import { Notification, NotificationEntity } from "@/types";
 import {
   CharacterRole,
   MediaFormat,
@@ -265,40 +264,9 @@ export const READ_STATUS = [
   },
 ];
 
-export const VISIBILITY_MODES = [
-  {
-    value: "public",
-    label: "Công khai",
-  },
-  {
-    value: "private",
-    label: "Riêng tư",
-  },
-];
-
-const CHAT_EVENT_TYPES = {
-  join: "đã tham gia phòng",
-  leave: "đã rời phòng",
-  play: "đã bắt đầu phát",
-  pause: "đã tạm dừng phát",
-  changeEpisode: "đã chuyển tập",
-};
-
 export const GENDERS = {
   male: "Nam",
   female: "Nữ",
-};
-
-export const EMOJI_GROUP = {
-  smileys_people: "Cảm xúc",
-  animals_nature: "Động vật và thiên nhiên",
-  food_drink: "Thức ăn",
-  travel_places: "Du lịch",
-  activities: "Hoạt động",
-  objects: "Vật thể",
-  symbols: "Biểu tượng",
-  flags: "Cờ",
-  recently_used: "Gần đây",
 };
 
 export const PLAYER_TRANSLATIONS: I18n = {
@@ -337,28 +305,6 @@ export const PLAYER_TRANSLATIONS: I18n = {
   },
 };
 
-export const NOTIFICATION_ENTITIES: Record<
-  string,
-  (notification: Notification) => NotificationEntity
-> = {
-  comment_mention: (notification) => {
-    const [mediaType, mediaId] = notification.parentEntityId.split("-");
-
-    return {
-      message: `${notification?.sender?.name} đã nhắc tới bạn trong một bình luận`,
-      redirectUrl: `/${mediaType}/details/${mediaId}?commentId=${notification.entityId}`,
-    };
-  },
-  comment_reaction: (notification) => {
-    const [mediaType, mediaId] = notification.parentEntityId.split("-");
-
-    return {
-      message: `${notification?.sender?.name} đã bảy tỏ cảm xúc về bình luận của bạn`,
-      redirectUrl: `/${mediaType}/details/${mediaId}?commentId=${notification.entityId}`,
-    };
-  },
-};
-
 const DAYSOFWEEK = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
 
 const USER_LIST = [
@@ -389,15 +335,11 @@ const translations = {
   MANGA_SORTS,
   TYPES,
   COUNTRIES,
-  VISIBILITY_MODES,
-  CHAT_EVENT_TYPES,
   WATCH_STATUS,
   READ_STATUS,
   GENDERS,
-  EMOJI_GROUP,
   PLAYER_TRANSLATIONS,
   DAYSOFWEEK,
-  NOTIFICATION_ENTITIES,
   USER_LIST,
   AI_PROMPT,
 };

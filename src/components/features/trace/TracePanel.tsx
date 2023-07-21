@@ -2,13 +2,13 @@ import Button from "@/components/shared/Button";
 import Description from "@/components/shared/Description";
 import DotList from "@/components/shared/DotList";
 import InfoItem from "@/components/shared/InfoItem";
+import Link from "@/components/shared/Link";
 import PlainCard from "@/components/shared/PlainCard";
 import TextIcon from "@/components/shared/TextIcon";
 import { TraceImageResponse } from "@/hooks/useTraceImage";
 import { createMediaDetailsUrl, numberWithCommas } from "@/utils";
 import { convert, getDescription, getTitle } from "@/utils/data";
 import { useTranslation } from "next-i18next";
-import Link from "@/components/shared/Link";
 import { useRouter } from "next/router";
 import React, { useCallback, useMemo, useState } from "react";
 import { AiFillHeart } from "react-icons/ai";
@@ -31,14 +31,8 @@ const TracePanel: React.FC<TracePanelProps> = ({ data, image }) => {
   }, []);
 
   const card = useMemo(() => data.result[cardIndex], [cardIndex, data.result]);
-  const title = useMemo(
-    () => getTitle(card.anime, locale),
-    [card.anime, locale]
-  );
-  const description = useMemo(
-    () => getDescription(card.anime, locale),
-    [card.anime, locale]
-  );
+  const title = useMemo(() => getTitle(card.anime), [card.anime]);
+  const description = useMemo(() => getDescription(card.anime), [card.anime]);
 
   return (
     <div className="flex w-full flex-col gap-8 md:flex-row">

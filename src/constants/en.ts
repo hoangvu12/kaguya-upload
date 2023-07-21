@@ -1,4 +1,3 @@
-import { Notification, NotificationEntity } from "@/types";
 import {
   CharacterRole,
   MediaFormat,
@@ -265,40 +264,9 @@ export const READ_STATUS = [
   },
 ];
 
-export const VISIBILITY_MODES = [
-  {
-    value: "public",
-    label: "Public",
-  },
-  {
-    value: "private",
-    label: "Private",
-  },
-];
-
-export const CHAT_EVENT_TYPES = {
-  join: "has joined the room",
-  leave: "has left the room",
-  play: "has started video",
-  pause: "has paused video",
-  changeEpisode: "has changed episode",
-};
-
 export const GENDERS = {
   male: "Male",
   female: "Female",
-};
-
-export const EMOJI_GROUP = {
-  smileys_people: "Smileys & People",
-  animals_nature: "Animals & Nature",
-  food_drink: "Food & Drink",
-  travel_places: "Travel & Places",
-  activities: "Activities",
-  objects: "Objects",
-  symbols: "Symbols",
-  flags: "Flags",
-  recently_used: "Recently used",
 };
 
 export const PLAYER_TRANSLATIONS: I18n = {
@@ -337,28 +305,6 @@ export const PLAYER_TRANSLATIONS: I18n = {
   },
 };
 
-export const NOTIFICATION_ENTITIES: Record<
-  string,
-  (notification: Notification) => NotificationEntity
-> = {
-  comment_mention: (notification) => {
-    const [mediaType, mediaId] = notification.parentEntityId.split("-");
-
-    return {
-      message: `${notification?.sender?.name} mentioned you in a comment`,
-      redirectUrl: `/${mediaType}/details/${mediaId}?commentId=${notification.entityId}`,
-    };
-  },
-  comment_reaction: (notification) => {
-    const [mediaType, mediaId] = notification.parentEntityId.split("-");
-
-    return {
-      message: `${notification?.sender?.name} reacted to your comment`,
-      redirectUrl: `/${mediaType}/details/${mediaId}?commentId=${notification.entityId}`,
-    };
-  },
-};
-
 const DAYSOFWEEK = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 const USER_LIST = [
@@ -389,15 +335,11 @@ const translations = {
   MANGA_SORTS,
   TYPES,
   COUNTRIES,
-  VISIBILITY_MODES,
-  CHAT_EVENT_TYPES,
   WATCH_STATUS,
   READ_STATUS,
   GENDERS,
-  EMOJI_GROUP,
   PLAYER_TRANSLATIONS,
   DAYSOFWEEK,
-  NOTIFICATION_ENTITIES,
   USER_LIST,
   AI_PROMPT,
 };

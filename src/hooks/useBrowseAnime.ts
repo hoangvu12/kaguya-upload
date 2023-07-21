@@ -6,8 +6,6 @@ import {
   MediaStatus,
   MediaType,
 } from "@/types/anilist";
-import { removeDup } from "@/utils";
-import { supabaseClient } from "@supabase/auth-helpers-nextjs";
 import { useInfiniteQuery } from "react-query";
 
 export interface UseBrowseOptions {

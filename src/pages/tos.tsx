@@ -1,4 +1,3 @@
-import NativeBanner from "@/components/features/ads/NativeBanner";
 import Head from "@/components/shared/Head";
 
 const TosPage = () => {
@@ -8,8 +7,6 @@ const TosPage = () => {
         title="Term of service - Kaguya"
         description="Term of service of Kaguya"
       />
-
-      <NativeBanner />
 
       <h1>Terms of Service</h1>
 

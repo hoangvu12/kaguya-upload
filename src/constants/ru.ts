@@ -1,4 +1,3 @@
-import { Notification, NotificationEntity } from "@/types";
 import {
   CharacterRole,
   MediaFormat,
@@ -265,41 +264,10 @@ export const READ_STATUS = [
   },
 ];
 
-export const VISIBILITY_MODES = [
-  {
-    value: "public",
-    label: "Публичная",
-  },
-  {
-    value: "private",
-    label: "Приватная",
-  },
-];
-
-export const CHAT_EVENT_TYPES = {
-  join: "присоединился",
-  leave: "покинул комнату",
-  play: "включил видео",
-  pause: "поставил на паузу видео",
-  changeEpisode: "поменял эпизод",
-};
-
 export const GENDERS = {
   male: "Мужской",
   female: "Женский",
 };
-
-export const EMOJI_GROUP = {
-  smileys_people: "Smileys & People",
-  animals_nature: "Animals & Nature",
-  food_drink: "Food & Drink",
-  travel_places: "Travel & Places",
-  activities: "Activities",
-  objects: "Objects",
-  symbols: "Symbols",
-  flags: "Flags",
-  recently_used: "Recently used",
-}; // laaaater
 
 export const PLAYER_TRANSLATIONS: I18n = {
   controls: {
@@ -337,29 +305,6 @@ export const PLAYER_TRANSLATIONS: I18n = {
   },
 };
 
-// TODO: translate to russian
-export const NOTIFICATION_ENTITIES: Record<
-  string,
-  (notification: Notification) => NotificationEntity
-> = {
-  comment_mention: (notification) => {
-    const [mediaType, mediaId] = notification.parentEntityId.split("-");
-
-    return {
-      message: `${notification?.sender?.name} mentioned you in a comment`,
-      redirectUrl: `/${mediaType}/details/${mediaId}?commentId=${notification.entityId}`,
-    };
-  },
-  comment_reaction: (notification) => {
-    const [mediaType, mediaId] = notification.parentEntityId.split("-");
-
-    return {
-      message: `${notification?.sender?.name} reacted to your comment`,
-      redirectUrl: `/${mediaType}/details/${mediaId}?commentId=${notification.entityId}`,
-    };
-  },
-};
-
 const DAYSOFWEEK = ["Вос", "Пон", "Вт", "Ср", "Чт", "Пт", "Сб"];
 
 const USER_LIST = [
@@ -390,15 +335,11 @@ const translations = {
   MANGA_SORTS,
   TYPES,
   COUNTRIES,
-  VISIBILITY_MODES,
-  CHAT_EVENT_TYPES,
   WATCH_STATUS,
   READ_STATUS,
   GENDERS,
-  EMOJI_GROUP,
   PLAYER_TRANSLATIONS,
   DAYSOFWEEK,
-  NOTIFICATION_ENTITIES,
   USER_LIST,
   AI_PROMPT,
 };
