@@ -1,19 +1,14 @@
-import Button from "@/components/shared/Button";
 import Drawer, { DrawerRef } from "@/components/shared/Drawer";
-import HeaderProfile from "@/components/shared/HeaderProfile";
 import Logo from "@/components/shared/Logo";
 import NavItem from "@/components/shared/NavItem";
 import { DISCORD_URL, FACEBOOK_URL } from "@/constants";
-import { useUser } from "@/contexts/AuthContext";
 import classNames from "classnames";
 import { useTranslation } from "next-i18next";
-import Link from "@/components/shared/Link";
 import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
 import { AiFillFacebook, AiOutlineSearch } from "react-icons/ai";
 import { FaDiscord } from "react-icons/fa";
 import { GiHamburgerMenu } from "react-icons/gi";
-import Notifications from "../features/notifications/Notifications";
 import PWAInstallPrompt from "../features/pwa/PWAInstallPrompt";
 import LanguageSwitcher from "../shared/LanguageSwitcher";
 import Section from "../shared/Section";
@@ -35,11 +30,6 @@ const routes = [
     defaultValue: "Anime Scene Search",
   },
   {
-    title: "watch_with_friends",
-    href: "/wwf",
-    defaultValue: "Watch With Friends",
-  },
-  {
     title: "Anime Themes",
     href: "/themes",
     defaultValue: "Anime Themes",
@@ -59,7 +49,6 @@ const routes = [
 const Header = () => {
   const [isTop, setIsTop] = useState(true);
   const drawerRef = useRef<DrawerRef>();
-  const user = useUser();
   const router = useRouter();
   const { t } = useTranslation("header");
 
@@ -147,7 +136,6 @@ const Header = () => {
       <div className="flex items-center space-x-4 ml-auto">
         <PWAInstallPrompt />
         <LanguageSwitcher />
-        <Notifications />
 
         <NavItem href={searchUrl}>
           {({ isActive }) => (
@@ -159,20 +147,6 @@ const Header = () => {
             />
           )}
         </NavItem>
-
-        {user ? (
-          <HeaderProfile />
-        ) : (
-          <div className="flex items-center space-x-2">
-            <Link href={`/login?redirectedFrom=${router.asPath}`}>
-              <a>
-                <Button primary>
-                  <p className="line-clamp-1">{t("login")}</p>
-                </Button>
-              </a>
-            </Link>
-          </div>
-        )}
       </div>
     </Section>
   );

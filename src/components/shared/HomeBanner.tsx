@@ -3,7 +3,7 @@ import CircleButton from "@/components/shared/CircleButton";
 import DotList from "@/components/shared/DotList";
 import Image from "@/components/shared/Image";
 import Link from "@/components/shared/Link";
-import Swiper, { SwiperProps, SwiperSlide } from "@/components/shared/Swiper";
+import { SwiperProps } from "@/components/shared/Swiper";
 import TextIcon from "@/components/shared/TextIcon";
 import { DeviceSelectors } from "@/types";
 import { Media } from "@/types/anilist";
@@ -70,7 +70,7 @@ const MobileHomeBanner: React.FC<HomeBannerProps> = ({ data }) => {
   return (
     <div className="flex snap-x snap-mandatory overflow-x-auto no-scrollbar gap-2">
       {data.map((slide: Media) => {
-        const title = getTitle(slide, locale);
+        const title = getTitle(slide);
         const nextEpisodeAiringTime = !slide.nextAiringEpisode
           ? null
           : dayjs.unix(slide.nextAiringEpisode.airingAt);
@@ -251,14 +251,8 @@ const DesktopHomeBanner: React.FC<HomeBannerProps> = ({ data }) => {
     []
   );
 
-  const title = useMemo(
-    () => getTitle(activeSlide, locale),
-    [activeSlide, locale]
-  );
-  const description = useMemo(
-    () => getDescription(activeSlide, locale),
-    [activeSlide, locale]
-  );
+  const title = useMemo(() => getTitle(activeSlide), [activeSlide]);
+  const description = useMemo(() => getDescription(activeSlide), [activeSlide]);
 
   const nextEpisodeAiringTimeDuration = useMemo(() => {
     const nextEpisodeAiringTime = !activeSlide.nextAiringEpisode

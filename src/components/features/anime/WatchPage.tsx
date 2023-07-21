@@ -4,25 +4,22 @@ import DetailsSection from "@/components/shared/DetailsSection";
 import Head from "@/components/shared/Head";
 import HorizontalCard from "@/components/shared/HorizontalCard";
 import Loading from "@/components/shared/Loading";
+import MediaDetails from "@/components/shared/MediaDetails";
 import Portal from "@/components/shared/Portal";
 import Section from "@/components/shared/Section";
 import {
   currentServerAtom,
   useGlobalPlayer,
 } from "@/contexts/GlobalPlayerContext";
-import { useFetchServer } from "@/hooks/useFetchServer";
-import {
-  fetchSource,
-  getQueryKey,
-  useFetchSource,
-} from "@/hooks/useFetchSource";
-import useSavedWatched from "@/hooks/useSavedWatched";
-import useSaveWatched from "@/hooks/useSaveWatched";
-import { AnimeServer, Episode } from "@/types";
+import useFetchServers from "@/hooks/useFetchServers";
+import { useFetchSource } from "@/hooks/useFetchSource";
+import useSaveWatchedData from "@/hooks/useSaveWatchedData";
+import useWatchedEpisode from "@/hooks/useWatchedEpisode";
 import { Media } from "@/types/anilist";
-import { parseNumberFromString } from "@/utils";
+import { Episode, Video, VideoServer } from "@/types/core";
+import { compareTwoObject, parseNumberFromString } from "@/utils";
 import { getDescription, getTitle, sortMediaUnit } from "@/utils/data";
-import { atom, useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { NextPage } from "next";
 import { useTranslation } from "next-i18next";
 import dynamic from "next/dynamic";
@@ -34,17 +31,10 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useQueryClient } from "react-query";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 import { toast } from "react-toastify";
-import Comments from "../comment/Comments";
-import MediaDetails from "../upload/MediaDetails";
+import EpisodeSelector from "./EpisodeSelector";
 import ErrorMessage from "./ErrorMessage";
-import LocaleEpisodeSelector from "./Player/LocaleEpisodeSelector";
-
-const Banner = dynamic(() => import("@/components/features/ads/Banner"), {
-  ssr: false,
-});
 
 const WatchPlayer = dynamic(
   () => import("@/components/features/anime/WatchPlayer"),
@@ -53,9 +43,11 @@ const WatchPlayer = dynamic(
   }
 );
 
-const blankVideo = [
+const blankVideo: Video[] = [
   {
-    file: "https://cdn.plyr.io/static/blank.mp4",
+    file: {
+      url: "https://cdn.plyr.io/static/blank.mp4",
+    },
   },
 ];
 
@@ -70,9 +62,14 @@ ForwardRefPlayer.displayName = "ForwardRefPlayer";
 interface WatchPageProps {
   episodes: Episode[];
   media: Media;
+  sourceId: string;
 }
 
-const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
+const WatchPage: NextPage<WatchPageProps> = ({
+  episodes,
+  media: anime,
+  sourceId,
+}) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const router = useRouter();
   const [showWatchedOverlay, setShowWatchedOverlay] = useState(false);
@@ -81,9 +78,10 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
   const setCurrentServer = useSetAtom(currentServerAtom);
 
   const saveWatchedInterval = useRef<NodeJS.Timer>(null);
-  const saveWatchedMutation = useSaveWatched();
+  const saveWatchedMutation = useSaveWatchedData();
+  const lastServer = useRef<VideoServer>(null);
+
   const { t } = useTranslation("anime_watch");
-  const queryClient = useQueryClient();
 
   const { params } = router.query;
 
@@ -92,90 +90,60 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
     [episodes]
   );
 
-  const [
-    animeId,
-    sourceId = sortedEpisodes[0].sourceId,
-    episodeId = sortedEpisodes[0].sourceEpisodeId,
-  ] = params as string[];
+  const [animeId, _, episodeId = sortedEpisodes[0].id] = params as string[];
 
   const {
     data: watchedEpisodeData,
     isLoading: isSavedDataLoading,
     isError: isSavedDataError,
     refetch: refetchWatchedData,
-  } = useSavedWatched(Number(animeId));
+  } = useWatchedEpisode(Number(animeId), sourceId);
 
   const watchedEpisode = useMemo(
     () =>
       isSavedDataError
         ? null
         : sortedEpisodes.find(
-            (episode) =>
-              episode.sourceEpisodeId ===
-              watchedEpisodeData?.episode?.sourceEpisodeId
+            (episode) => episode.id === watchedEpisodeData?.episode?.id
           ),
-    [
-      isSavedDataError,
-      sortedEpisodes,
-      watchedEpisodeData?.episode?.sourceEpisodeId,
-    ]
-  );
-
-  const sourceEpisodes = useMemo(
-    () => episodes.filter((episode) => episode.sourceId === sourceId),
-    [episodes, sourceId]
+    [isSavedDataError, sortedEpisodes, watchedEpisodeData?.episode?.id]
   );
 
   const currentEpisode = useMemo(() => {
-    const episode = sourceEpisodes.find(
-      (episode) => episode.sourceEpisodeId === episodeId
-    );
+    const episode = episodes.find((episode) => episode.id === episodeId);
 
     if (!episode) {
       toast.error(
         "The requested episode was not found. It's either deleted or doesn't exist."
       );
 
-      return sourceEpisodes[0] || episodes[0];
+      return episodes[0];
     }
 
     return episode;
-  }, [sourceEpisodes, episodeId, episodes]);
+  }, [episodeId, episodes]);
 
   const sectionEpisodes = useMemo(
     () =>
-      sourceEpisodes.filter(
-        (episode) => episode.section === currentEpisode?.section
-      ),
-    [currentEpisode?.section, sourceEpisodes]
+      episodes.filter((episode) => episode.section === currentEpisode?.section),
+    [currentEpisode?.section, episodes]
   );
 
   const currentSectionEpisodeIndex = useMemo(
-    () =>
-      sectionEpisodes.findIndex(
-        (episode) => episode.sourceEpisodeId === episodeId
-      ),
+    () => sectionEpisodes.findIndex((episode) => episode.id === episodeId),
     [episodeId, sectionEpisodes]
   );
 
   const currentEpisodeIndex = useMemo(
-    () =>
-      sourceEpisodes.findIndex(
-        (episode) => episode.sourceEpisodeId === episodeId
-      ),
-    [episodeId, sourceEpisodes]
+    () => episodes.findIndex((episode) => episode.id === episodeId),
+    [episodeId, episodes]
   );
 
   const nextEpisode = useMemo(
     () =>
       sectionEpisodes[currentSectionEpisodeIndex + 1] ||
-      sourceEpisodes[currentEpisodeIndex + 1],
-    [
-      currentEpisodeIndex,
-      currentSectionEpisodeIndex,
-      sectionEpisodes,
-      sourceEpisodes,
-    ]
+      episodes[currentEpisodeIndex + 1],
+    [currentEpisodeIndex, currentSectionEpisodeIndex, episodes, sectionEpisodes]
   );
 
   const handleNavigateEpisode = useCallback(
@@ -183,33 +151,67 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
       if (!episode) return;
 
       router.replace(
-        `/anime/watch/${animeId}/${episode.sourceId}/${episode.sourceEpisodeId}`,
+        `/anime/watch/${animeId}/${sourceId}/${episode.id}`,
         null,
         {
           shallow: true,
         }
       );
     },
-    [animeId, router]
+    [animeId, router, sourceId]
   );
 
-  const { data: serverData, isLoading: isServerLoading } =
-    useFetchServer(currentEpisode);
+  const { data: servers, isLoading: isServerLoading } = useFetchServers(
+    currentEpisode,
+    sourceId
+  );
 
   const currentServer = useAtomValue(currentServerAtom);
 
+  const shouldFetchSource = useMemo(() => {
+    if (isServerLoading) return false;
+
+    if (!currentServer) return false;
+
+    if (!lastServer.current) return true;
+
+    // When new servers are fetched, the current server will be updated using useEffect
+    // but useFetchSource run before useEffect run, that means useFetchSource will use
+    // old currentServer, therefore getting wrong sources. Compare current server with
+    // old one to see if they are the same
+    return compareTwoObject(lastServer.current, currentServer);
+  }, [currentServer, isServerLoading]);
+
   const { data, isLoading, isError, error } = useFetchSource(
     currentEpisode,
-    currentServer?.id || serverData?.servers[0]?.id
+    sourceId,
+    currentServer,
+    {
+      enabled: shouldFetchSource,
+    }
   );
 
+  // Set default server when servers are fetched
   useEffect(() => {
-    setCurrentServer(serverData?.servers[0]);
-  }, [serverData?.servers, setCurrentServer]);
+    if (isServerLoading) {
+      setCurrentServer(null);
+    } else if (servers?.[0]) {
+      setCurrentServer(servers[0]);
+    }
+  }, [servers, setCurrentServer, isServerLoading]);
 
-  // Show watched overlay
   useEffect(() => {
-    if (!currentEpisode.sourceEpisodeId) return;
+    lastServer.current = currentServer;
+  }, [currentServer]);
+
+  // Refetch watched data whenever load new episodes
+  useEffect(() => {
+    refetchWatchedData();
+  }, [refetchWatchedData]);
+
+  // // Show watched overlay
+  useEffect(() => {
+    if (!currentEpisode.id) return;
 
     if (
       !watchedEpisode ||
@@ -219,7 +221,10 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
     )
       return;
 
-    if (currentEpisode.episodeNumber >= watchedEpisode?.episodeNumber) {
+    if (
+      parseNumberFromString(currentEpisode.number) >=
+      parseNumberFromString(watchedEpisode?.number)
+    ) {
       setDeclinedRewatch(true);
 
       return;
@@ -227,9 +232,9 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
 
     setShowWatchedOverlay(true);
   }, [
-    currentEpisode?.episodeNumber,
-    currentEpisode?.sourceEpisodeId,
-    currentEpisode?.title,
+    currentEpisode.id,
+    currentEpisode.number,
+    currentEpisode.title,
     declinedRewatch,
     isSavedDataError,
     isSavedDataLoading,
@@ -245,11 +250,15 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
       if (saveWatchedInterval.current) {
         clearInterval(saveWatchedInterval.current);
       }
+
       saveWatchedInterval.current = setInterval(() => {
+        console.log("saved");
+
         saveWatchedMutation.mutate({
-          media_id: Number(animeId),
-          episode_id: `${currentEpisode.sourceId}-${currentEpisode.sourceEpisodeId}`,
-          watched_time: videoRef.current?.currentTime,
+          episode: currentEpisode,
+          mediaId: Number(animeId),
+          sourceId,
+          time: videoRef.current?.currentTime,
         });
       }, 30000);
     };
@@ -261,7 +270,7 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
       videoEl.removeEventListener("canplay", handleSaveTime);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [animeId, currentEpisode, videoRef.current]);
+  }, [animeId, sourceId, currentEpisode, videoRef.current]);
 
   useEffect(() => {
     const videoEl = videoRef.current;
@@ -301,18 +310,19 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
 
     if (!videoEl) return;
 
-    if (!watchedEpisodeData?.watchedTime) return;
+    if (!watchedEpisodeData?.time) return;
 
-    if (!watchedEpisode?.episodeNumber) return;
+    const watchedEpisodeNumber = parseNumberFromString(watchedEpisode?.number);
+    const currentEpisodeNumber = parseNumberFromString(currentEpisode?.number);
 
-    if (currentEpisode?.episodeNumber === null) return;
+    if (!watchedEpisodeNumber || !currentEpisodeNumber) return;
 
-    if (currentEpisode.episodeNumber !== watchedEpisode.episodeNumber) return;
+    if (currentEpisodeNumber !== watchedEpisodeNumber) return;
 
     const handleCanPlay = () => {
       const handleVideoPlay = () => {
         setTimeout(() => {
-          videoEl.currentTime = watchedEpisodeData.watchedTime;
+          videoEl.currentTime = watchedEpisodeData.time;
         }, 1000);
 
         videoEl.removeEventListener("timeupdate", handleVideoPlay);
@@ -328,7 +338,7 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
       videoEl.removeEventListener("loadedmetadata", handleCanPlay);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watchedEpisodeData, currentEpisode?.slug, videoRef.current]);
+  }, [watchedEpisodeData, currentEpisode, videoRef.current]);
 
   // useEffect(() => {
   //   if (!videoRef.current) return;
@@ -367,23 +377,17 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [nextEpisode, queryClient, router.locale, videoRef.current]);
 
-  // Refetch watched data when episode changes
-  useEffect(() => {
-    refetchWatchedData();
-  }, [currentEpisode.slug, refetchWatchedData]);
+  // // Refetch watched data when episode changes
+  // useEffect(() => {
+  //   refetchWatchedData();
+  // }, [currentEpisode.slug, refetchWatchedData]);
 
-  const title = useMemo(
-    () => getTitle(anime, router.locale),
-    [anime, router.locale]
-  );
-  const description = useMemo(
-    () => getDescription(anime, router.locale),
-    [anime, router.locale]
-  );
+  const title = useMemo(() => getTitle(anime), [anime]);
+  const description = useMemo(() => getDescription(anime), [anime]);
 
   const sources = useMemo(
-    () => (!data?.sources?.length ? blankVideo : data.sources),
-    [data?.sources]
+    () => (!data?.videos?.length ? blankVideo : data.videos),
+    [data?.videos]
   );
 
   const subtitles = useMemo(
@@ -391,18 +395,11 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
     [data?.subtitles]
   );
 
-  const fonts = useMemo(
-    () => (!data?.fonts?.length ? [] : data.fonts),
-    [data?.fonts]
-  );
-
   useGlobalPlayer({
     playerState: {
       ref: videoRef,
       sources,
       subtitles,
-      fonts,
-      thumbnail: data?.thumbnail,
       className: "object-contain w-full h-full",
     },
     playerProps: {
@@ -413,7 +410,7 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
       setEpisode: handleNavigateEpisode,
       sourceId,
       sources,
-      servers: serverData?.servers || [],
+      servers: servers || [],
     },
   });
 
@@ -425,40 +422,33 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
     syncDataScript.textContent = JSON.stringify({
       title: anime.title.userPreferred,
       aniId: Number(animeId),
-      episode: parseNumberFromString(currentEpisode.name),
+      episode: parseNumberFromString(currentEpisode.number),
       id: animeId,
       nextEpUrl: nextEpisode
-        ? `/anime/watch/${animeId}/${nextEpisode.sourceId}/${nextEpisode.sourceEpisodeId}`
+        ? `/anime/watch/${animeId}/${sourceId}/${nextEpisode.id}`
         : null,
     });
-  }, [anime, animeId, currentEpisode.name, nextEpisode]);
+  }, [anime, animeId, currentEpisode.number, nextEpisode, sourceId]);
 
   return (
     <React.Fragment>
       <Head
-        title={`${title} (${currentEpisode.name}) - Kaguya`}
+        title={`${title} (${currentEpisode.number}) - Kaguya`}
         description={`${description}. Watch ${title} online for free.`}
         image={anime.bannerImage}
       />
 
       <Section className="py-4 md:py-8 flex flex-col md:flex-row gap-8 w-full h-full bg-background-900">
         <div className="md:w-2/3 space-y-8">
-          <div className="w-full overflow-hidden">
-            <Banner width="100%" refresh mobile="300x250" type="atf" />
-          </div>
-
           <div className="bg-background-900">
-            <LocaleEpisodeSelector
-              mediaId={anime.id}
-              media={anime}
+            <EpisodeSelector
               episodes={episodes}
+              sourceId={sourceId}
+              media={anime}
+              watchedEpisode={watchedEpisodeData}
               activeEpisode={currentEpisode}
               episodeLinkProps={{ shallow: true, replace: true }}
             />
-          </div>
-
-          <div className="w-full overflow-hidden">
-            <Banner width="100%" refresh desktop="970x250" type="atf" />
           </div>
 
           <DetailsSection
@@ -467,19 +457,9 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
           >
             <MediaDetails media={anime} className="!bg-background-900 !p-0" />
           </DetailsSection>
-
-          <Banner refresh mobile="320x100" type="middle" />
-
-          <DetailsSection
-            title={t("comments_section", { defaultValue: "Comments" })}
-          >
-            <Comments topic={`anime-${anime.id}`} />
-          </DetailsSection>
         </div>
 
         <div className="md:w-1/3">
-          <Banner refresh desktop="300x250" type="atf" />
-
           <Tabs selectedTabClassName="!bg-primary-500 hover:bg-primary-500">
             <TabList className="mb-4 flex overflow-x-auto w-full items-center gap-2">
               <Tab className="px-3 py-2 bg-background-600 hover:bg-white/20 transition duration-300 rounded-md cursor-pointer">
@@ -529,13 +509,11 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
       )}
 
       {isError ? (
-        <ErrorMessage
-          errorMessage={error?.response?.data?.error || error.message}
-        />
+        <ErrorMessage errorMessage={error.message} />
       ) : (
         !isLoading &&
         !isServerLoading &&
-        !data?.sources?.length && (
+        !data?.videos?.length && (
           <ErrorMessage errorMessage={"Failed to extract streams"} />
         )
       )}
@@ -554,13 +532,13 @@ const WatchPage: NextPage<WatchPageProps> = ({ episodes, media: anime }) => {
 
           <div className="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 z-50 w-2/3 p-8 rounded-md bg-background-900">
             <h1 className="text-4xl font-bold mb-4">
-              {t("rewatch_heading", { episodeName: watchedEpisode.name })}
+              {t("rewatch_heading", { episodeName: watchedEpisode.number })}
             </h1>
             <p className="">
-              {t("rewatch_description", { episodeName: watchedEpisode.name })}
+              {t("rewatch_description", { episodeName: watchedEpisode.number })}
             </p>
             <p className="mb-4">
-              {t("rewatch_question", { episodeName: watchedEpisode.name })}
+              {t("rewatch_question", { episodeName: watchedEpisode.number })}
             </p>
             <div className="flex items-center justify-end space-x-4">
               <Button

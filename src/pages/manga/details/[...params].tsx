@@ -1,12 +1,7 @@
-import NativeBanner from "@/components/features/ads/NativeBanner";
-import Comments from "@/components/features/comment/Comments";
-import LocaleChapterSelector from "@/components/features/manga/LocaleChapterSelector";
-import AddTranslationModal from "@/components/shared/AddTranslationModal";
+import SourceChapterSelector from "@/components/features/manga/SourceChapterSelector";
 import Button from "@/components/shared/Button";
 import Card from "@/components/shared/Card";
 import CharacterConnectionCard from "@/components/shared/CharacterConnectionCard";
-import CircleButton from "@/components/shared/CircleButton";
-import ClientOnly from "@/components/shared/ClientOnly";
 import DetailsBanner from "@/components/shared/DetailsBanner";
 import DetailsSection from "@/components/shared/DetailsSection";
 import DotList from "@/components/shared/DotList";
@@ -15,55 +10,34 @@ import InfoItem from "@/components/shared/InfoItem";
 import Link from "@/components/shared/Link";
 import List from "@/components/shared/List";
 import MediaDescription from "@/components/shared/MediaDescription";
-import NotificationButton from "@/components/shared/NotificationButton";
 import PlainCard from "@/components/shared/PlainCard";
-import Popup from "@/components/shared/Popup";
 import Section from "@/components/shared/Section";
-import SourceStatus from "@/components/shared/SourceStatus";
-import Spinner from "@/components/shared/Spinner";
 import { REVALIDATE_TIME } from "@/constants";
-import { useUser } from "@/contexts/AuthContext";
 import withRedirect from "@/hocs/withRedirect";
-import useChapters from "@/hooks/useChapters";
-import useSavedRead from "@/hooks/useSavedRead";
 import { getMediaDetails } from "@/services/anilist";
 import { Media, MediaStatus, MediaType } from "@/types/anilist";
 import { numberWithCommas, stringToSlug } from "@/utils";
 import { convert, getDescription, getTitle } from "@/utils/data";
-import { supabaseClient } from "@supabase/auth-helpers-nextjs";
-import classNames from "classnames";
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
 import { useMemo, useRef } from "react";
-import { isMobile } from "react-device-detect";
-import { AiOutlineUpload } from "react-icons/ai";
-import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { BsFillPlayFill } from "react-icons/bs";
 import { toast } from "react-toastify";
-import dynamic from "next/dynamic";
-
-const Banner = dynamic(() => import("@/components/features/ads/Banner"), {
-  ssr: false,
-});
 
 interface DetailsPageProps {
   manga: Media;
 }
 
 const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
-  const user = useUser();
   const { locale } = useRouter();
   const { t } = useTranslation("manga_details");
-  const { data: chapters, isLoading } = useChapters(manga.id);
-  const { data: readData, isLoading: readLoading } = useSavedRead(manga.id);
+  // const { data: chapters, isLoading } = useChapters(manga.id);
+  // const { data: readData, isLoading: readLoading } = useSavedRead(manga.id);
   const chapterSelectorRef = useRef<HTMLDivElement>(null);
 
-  const title = useMemo(() => getTitle(manga, locale), [manga, locale]);
-  const description = useMemo(
-    () => getDescription(manga, locale),
-    [manga, locale]
-  );
+  const title = useMemo(() => getTitle(manga), [manga]);
+  const description = useMemo(() => getDescription(manga), [manga]);
 
   const handleReadClick = () => {
     if (manga.status === MediaStatus.Not_yet_released) {
@@ -86,23 +60,12 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
       />
 
       <div className="pb-8">
-        <DetailsBanner image={manga.bannerImage}>
-          <div className="absolute right-4 bottom-12 min-w-[300px] min-h-[250px] z-10">
-            <Banner desktop="300x250" type="atf" />
-          </div>
-        </DetailsBanner>
+        <DetailsBanner image={manga.bannerImage}></DetailsBanner>
 
         <Section className="relative z-10 bg-background-900 pb-4">
           <div className="flex md:space-x-8">
-            <div className="shrink-0 relative md:static md:left-0 md:-translate-x-0 w-[120px] md:w-[186px] mt-4 md:-mt-20 space-y-6">
+            <div className="shrink-0 relative md:static md:left-0 md:-translate-x-0 w-[120px] md:w-[186px] mt-4 md:-mt-12 space-y-6">
               <PlainCard src={manga.coverImage.extraLarge} alt={title} />
-
-              {user && !isMobile && (
-                <div className="flex items-center space-x-1">
-                  <SourceStatus type={MediaType.Manga} source={manga} />
-                  <NotificationButton type={MediaType.Manga} source={manga} />
-                </div>
-              )}
             </div>
 
             <div className="flex flex-col justify-between md:py-4 ml-4 text-left items-start md:-mt-16 space-y-4">
@@ -115,37 +78,6 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
                   >
                     <p>{t("read_now")}</p>
                   </Button>
-
-                  <Popup
-                    reference={
-                      <Button
-                        className="!bg-[#393a3b]"
-                        LeftIcon={BiDotsHorizontalRounded}
-                      ></Button>
-                    }
-                    placement="bottom"
-                    type="click"
-                    className="space-y-2"
-                  >
-                    <Link href={`/upload/manga/${manga.id}`}>
-                      <a>
-                        <Button
-                          secondary
-                          className="w-full"
-                          LeftIcon={AiOutlineUpload}
-                        >
-                          <p>Upload</p>
-                        </Button>
-                      </a>
-                    </Link>
-
-                    <AddTranslationModal
-                      mediaId={manga.id}
-                      mediaType={MediaType.Manga}
-                      defaultDescription={description}
-                      defaultTitle={title}
-                    />
-                  </Popup>
                 </div>
 
                 <p className="text-2xl md:text-3xl font-semibold mb-2">
@@ -191,10 +123,6 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
             </div>
           </div>
 
-          <ClientOnly>
-            <Banner mobile="300x250" type="atf" />
-          </ClientOnly>
-
           <MediaDescription
             description={description}
             containerClassName="my-4 block md:hidden"
@@ -202,59 +130,19 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
           />
 
           <div className="flex md:hidden items-center space-x-2 mb-4">
-            {user && isMobile && (
-              <SourceStatus type={MediaType.Manga} source={manga} />
-            )}
-
             <Link href={`/manga/read/${manga.id}`}>
-              <a className={classNames(!user && "flex-1")}>
-                {user ? (
-                  <CircleButton secondary LeftIcon={BsFillPlayFill} />
-                ) : (
-                  <Button
-                    primary
-                    LeftIcon={BsFillPlayFill}
-                    className="relative w-full"
-                  >
-                    <p className="!mx-0 absolute left-1/2 -translate-x-1/2">
-                      {t("read_now")}
-                    </p>
-                  </Button>
-                )}
+              <a className="flex-1">
+                <Button
+                  primary
+                  LeftIcon={BsFillPlayFill}
+                  className="relative w-full"
+                >
+                  <p className="!mx-0 absolute left-1/2 -translate-x-1/2">
+                    {t("read_now")}
+                  </p>
+                </Button>
               </a>
             </Link>
-
-            {user && isMobile && (
-              <NotificationButton type={MediaType.Manga} source={manga} />
-            )}
-
-            <Popup
-              reference={
-                <CircleButton secondary LeftIcon={BiDotsHorizontalRounded} />
-              }
-              placement="bottom"
-              type="click"
-              className="space-y-2"
-            >
-              <AddTranslationModal
-                mediaId={manga.id}
-                mediaType={MediaType.Manga}
-                defaultDescription={description}
-                defaultTitle={title}
-              />
-
-              <Link href={`/upload/manga/${manga.id}`}>
-                <a>
-                  <Button
-                    secondary
-                    className="w-full"
-                    LeftIcon={AiOutlineUpload}
-                  >
-                    <p>Upload</p>
-                  </Button>
-                </a>
-              </Link>
-            </Popup>
           </div>
 
           <div className="md:hidden flex gap-x-8 overflow-x-auto md:gap-x-16 [&>*]:shrink-0">
@@ -326,23 +214,9 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
           </div>
 
           <div className="md:col-span-8 space-y-12">
-            <NativeBanner />
-
-            <Banner desktop="970x250" mobile="320x100" type="middle" />
-
             <DetailsSection title={t("chapters_section")} className="relative">
               <div ref={chapterSelectorRef}>
-                {isLoading || readLoading ? (
-                  <div className="h-full w-full flex items-center justify-center">
-                    <Spinner />
-                  </div>
-                ) : (
-                  <LocaleChapterSelector
-                    readData={readData}
-                    mediaId={manga.id}
-                    chapters={chapters}
-                  />
-                )}
+                <SourceChapterSelector media={manga} />
               </div>
             </DetailsSection>
 
@@ -379,10 +253,6 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
                 </List>
               </DetailsSection>
             )}
-
-            <DetailsSection title={t("comments_section")}>
-              <Comments topic={`manga-${manga.id}`} />
-            </DetailsSection>
           </div>
         </Section>
       </div>
@@ -394,22 +264,6 @@ export const getStaticProps: GetStaticProps = async ({
   params: { params },
 }) => {
   try {
-    const { data: isDMCA } = await supabaseClient
-      .from("kaguya_dmca")
-      .select("id")
-      .eq("mediaId", params[0])
-      .eq("mediaType", MediaType.Manga)
-      .single();
-
-    if (isDMCA) {
-      return {
-        props: null,
-        redirect: {
-          destination: "/got-dmca",
-        },
-      };
-    }
-
     const media = await getMediaDetails({
       type: MediaType.Manga,
       id: Number(params[0]),
@@ -433,7 +287,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export default withRedirect(DetailsPage, (router, props) => {
   const { params } = router.query;
   const [id, slug] = params as string[];
-  const title = getTitle(props.manga, router.locale);
+  const title = getTitle(props.manga);
 
   if (slug) return null;
 

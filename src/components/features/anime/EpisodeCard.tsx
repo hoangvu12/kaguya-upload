@@ -1,4 +1,4 @@
-import { Episode } from "@/types";
+import { Episode } from "@/types/core";
 import React, { useMemo } from "react";
 import Image from "@/components/shared/Image";
 import { getEpisodeDescription, getEpisodeTitle } from "@/utils/data";
@@ -35,30 +35,34 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
   }, [watchedTime, duration]);
 
   const episodeTitle = useMemo(() => {
-    return getEpisodeTitle(episode.title, locale);
-  }, [episode.title, locale]);
+    if (!episode.translations?.length) {
+      return getEpisodeTitle(episode.translations, { locale });
+    }
+
+    return episode.title;
+  }, [episode.title, episode.translations, locale]);
 
   const episodeDescription = useMemo(() => {
-    return getEpisodeDescription(episode.description, locale);
-  }, [episode.description, locale]);
+    return getEpisodeDescription(episode.translations, { locale });
+  }, [episode.translations, locale]);
 
   const episodeDisplayTitle = useMemo(() => {
-    let displayTitle = episode.name;
+    let displayTitle = episode.title;
 
-    if (
-      (episodeTitle || title) &&
-      episodeTitle !== displayTitle &&
-      title !== displayTitle
-    ) {
+    const hasEpisodeTitle = episodeTitle || title;
+    const isSourceTitleSameAsTranslationTitle =
+      episodeTitle !== displayTitle && title !== displayTitle;
+
+    if (hasEpisodeTitle && isSourceTitleSameAsTranslationTitle) {
       displayTitle += ` - ${episodeTitle || title}`;
     }
 
     return displayTitle;
-  }, [episode.name, episodeTitle, title]);
+  }, [episode.title, episodeTitle, title]);
 
   return (
     <div
-      className="relative h-40 w-full hover:bg-white/20 cursor-pointer"
+      className="group relative h-40 w-full hover:bg-white/20 cursor-pointer"
       {...props}
     >
       <Image
@@ -69,10 +73,14 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
           "/error.png"
         }
         layout="fill"
-        alt={episode.name}
+        alt={episode.title}
         objectFit="cover"
-        className="hover:scale-105 transition duration-300"
+        className="group-hover:scale-105 transition duration-300 rounded-md"
       />
+
+      <div className="absolute top-2 left-2 bg-background-400 px-4 py-1 rounded-md font-bold">
+        {episode.number}
+      </div>
 
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/70"></div>
 

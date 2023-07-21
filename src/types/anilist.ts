@@ -1,7 +1,5 @@
 // 💙
 
-import { Translation } from ".";
-
 /* eslint-disable */
 
 // *******************************************************
@@ -206,8 +204,6 @@ export interface Media {
   isReviewBlocked: Maybe<boolean>;
   /** Notes for site moderators*/
   modNotes: Maybe<string>;
-
-  translations?: Translation[];
 }
 
 /** Media query */

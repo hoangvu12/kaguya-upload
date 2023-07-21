@@ -3,31 +3,30 @@ import Button from "@/components/shared/Button";
 import Head from "@/components/shared/Head";
 import Loading from "@/components/shared/Loading";
 import { REVALIDATE_TIME } from "@/constants";
-import useHistory from "@/hooks/useHistory";
 import useEpisodes from "@/hooks/useEpisodes";
+import useHistory from "@/hooks/useHistory";
 import { getMediaDetails } from "@/services/anilist";
 import { Media, MediaType } from "@/types/anilist";
 import { getDescription, getTitle } from "@/utils/data";
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { useTranslation } from "next-i18next";
-import { useRouter } from "next/router";
 import React, { useMemo } from "react";
 
 interface WatchPageContainerProps {
   media: Media;
+  sourceId: string;
 }
 
-const WatchPageContainer: NextPage<WatchPageContainerProps> = ({ media }) => {
-  const { data: episodes, isLoading } = useEpisodes(media.id, true);
-  const { locale } = useRouter();
+const WatchPageContainer: NextPage<WatchPageContainerProps> = ({
+  media,
+  sourceId,
+}) => {
+  const { data: episodes, isLoading } = useEpisodes(media, sourceId);
   const { back } = useHistory();
   const { t } = useTranslation("anime_watch");
 
-  const title = useMemo(() => getTitle(media, locale), [media, locale]);
-  const description = useMemo(
-    () => getDescription(media, locale),
-    [media, locale]
-  );
+  const title = useMemo(() => getTitle(media), [media]);
+  const description = useMemo(() => getDescription(media), [media]);
 
   const hasEpisodes = useMemo(() => episodes?.length > 0, [episodes]);
 
@@ -57,7 +56,7 @@ const WatchPageContainer: NextPage<WatchPageContainerProps> = ({ media }) => {
           </Button>
         </div>
       ) : (
-        <WatchPage episodes={episodes} media={media} />
+        <WatchPage episodes={episodes} media={media} sourceId={sourceId} />
       )}
     </React.Fragment>
   );
@@ -66,6 +65,9 @@ const WatchPageContainer: NextPage<WatchPageContainerProps> = ({ media }) => {
 export const getStaticProps: GetStaticProps = async ({
   params: { params },
 }) => {
+  // /watch/160188/animet/150312
+  // /watch/mediaID/sourceId/episodeId
+
   try {
     const media = await getMediaDetails({
       type: MediaType.Anime,
@@ -79,6 +81,7 @@ export const getStaticProps: GetStaticProps = async ({
     return {
       props: {
         media,
+        sourceId: params[1],
       },
       revalidate: REVALIDATE_TIME,
     };

@@ -4,7 +4,6 @@ import WatchedSwiperSkeleton from "@/components/skeletons/WatchedSwiperSkeleton"
 import useWatched from "@/hooks/useWatched";
 import { getTitle } from "@/utils/data";
 import { useTranslation } from "next-i18next";
-import { useRouter } from "next/dist/client/router";
 import Link from "next/link";
 import React from "react";
 import { BrowserView, MobileOnlyView } from "react-device-detect";
@@ -13,7 +12,6 @@ import EpisodeCard from "./EpisodeCard";
 const WatchedSection = () => {
   const { data, isLoading, isError } = useWatched();
   const { t } = useTranslation("anime_home");
-  const { locale } = useRouter();
 
   if (isLoading) {
     return <WatchedSwiperSkeleton />;
@@ -61,20 +59,18 @@ const WatchedSection = () => {
       </BrowserView>
 
       <MobileOnlyView className="flex snap-x snap-mandatory overflow-x-auto no-scrollbar gap-2">
-        {data.map(({ media, episode, watchedTime, mediaId }) => (
-          <div className="w-full flex-none snap-center" key={mediaId}>
-            <Link
-              href={`/anime/watch/${media.id}/${episode.sourceId}/${episode.sourceEpisodeId}`}
-            >
+        {data.map(({ media, episode, time, sourceId }) => (
+          <div className="w-full flex-none snap-center" key={media.id}>
+            <Link href={`/anime/watch/${media.id}/${sourceId}/${episode.id}`}>
               <a>
                 <EpisodeCard
                   episode={{
                     ...episode,
                     thumbnail: media.bannerImage || media.coverImage.extraLarge,
                   }}
-                  title={getTitle(media, locale)}
+                  title={getTitle(media)}
                   duration={(media?.duration || 0) * 60}
-                  watchedTime={watchedTime}
+                  watchedTime={time}
                 />
               </a>
             </Link>

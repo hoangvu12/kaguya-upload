@@ -1,12 +1,12 @@
 import Button from "@/components/shared/Button";
-import { AnimeServer } from "@/types";
+import { VideoServer } from "@/types/core";
 import classNames from "classnames";
 import React from "react";
 
 export interface ServerSelectorProps {
-  servers: AnimeServer[];
-  onServerChange: (server: AnimeServer) => void;
-  activeServer: AnimeServer;
+  servers: VideoServer[];
+  onServerChange: (server: VideoServer) => void;
+  activeServer: VideoServer;
 }
 
 const ServerSelector: React.FC<ServerSelectorProps> = ({
@@ -21,10 +21,10 @@ const ServerSelector: React.FC<ServerSelectorProps> = ({
       <div className="flex flex-col gap-2">
         {servers.map((server) => (
           <Button
-            key={server.id}
+            key={server.name}
             className={classNames(
               "w-full text-center rounded-md px-3 py-2 line-clamp-1",
-              server.id === activeServer.id
+              server.name === activeServer.name
                 ? "!bg-primary-600"
                 : "!bg-background-600"
             )}

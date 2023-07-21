@@ -1,5 +1,5 @@
-import { Chapter, ImageSource } from "@/types";
 import { Media } from "@/types/anilist";
+import { Chapter, FileUrl } from "@/types/core";
 import { atom, useAtomValue, useSetAtom } from "jotai";
 import { selectAtom } from "jotai/utils";
 import { useEffect } from "react";
@@ -11,7 +11,7 @@ interface State {
   currentChapterIndex: number;
   setChapter: (chapter: Chapter) => void;
   sourceId: string;
-  images: ImageSource[];
+  images: FileUrl[];
 }
 
 export const readStateAtom = atom(null as State);

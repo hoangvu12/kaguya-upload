@@ -111,7 +111,7 @@ const HorizontalContainer: React.FC = () => {
                 "transform duration-300"
               )}
               image={image}
-              key={image.image + index}
+              key={image.url + index}
               data-index={index}
             />
           ))}
@@ -129,7 +129,7 @@ const HorizontalContainer: React.FC = () => {
           {images.map((image) => (
             <SwiperSlide
               className="w-full h-full flex items-center"
-              key={image.image}
+              key={image.url}
             >
               <ReadImage image={image} />
             </SwiperSlide>

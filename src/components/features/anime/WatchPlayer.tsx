@@ -21,7 +21,6 @@ import Player, { PlayerProps } from "./Player";
 import Controls from "./Player/Controls";
 import DesktopServerSelector from "./Player/DesktopServerSelector";
 import EpisodesButton from "./Player/EpisodesButton";
-import LocaleEpisodeSelector from "./Player/LocaleEpisodeSelector";
 import MobileControls from "./Player/MobileControls";
 import MobileEpisodesButton from "./Player/MobileEpisodesButton";
 import MobileNextEpisode from "./Player/MobileNextEpisode";
@@ -31,6 +30,7 @@ import NextEpisodeButton from "./Player/NextEpisodeButton";
 import Overlay from "./Player/Overlay";
 import ProgressSlider from "./Player/ProgressSlider";
 import TimestampSkipButton from "./Player/TimestampSkipButton";
+import EpisodeSelector from "./EpisodeSelector";
 
 export interface WatchPlayerProps extends PlayerProps {
   videoRef?: React.ForwardedRef<HTMLVideoElement>;
@@ -55,45 +55,31 @@ const PlayerControls = React.memo(() => {
   const setEpisode = useAtomValue(setEpisodeAtom);
   const episodes = useAtomValue(episodesAtom);
   const currentEpisodeIndex = useAtomValue(currentEpisodeIndexAtom);
-  const sourceId = useAtomValue(sourceIdAtom);
   const anime = useAtomValue(animeAtom);
   const currentEpisode = useAtomValue(currentEpisodeAtom);
   const servers = useAtomValue(serversAtom);
+  const sourceId = useAtomValue(sourceIdAtom);
   const [currentServer, setCurrentServer] = useAtom(currentServerAtom);
 
   const { isInteracting } = useInteract();
 
-  const sourceEpisodes = React.useMemo(
-    () => episodes.filter((episode) => episode.sourceId === sourceId),
-    [episodes, sourceId]
-  );
-
   const sectionEpisodes = React.useMemo(
     () =>
-      sourceEpisodes.filter(
-        (episode) => episode.section === currentEpisode.section
-      ),
-    [currentEpisode.section, sourceEpisodes]
+      episodes.filter((episode) => episode.section === currentEpisode.section),
+    [currentEpisode.section, episodes]
   );
 
   const currentSectionEpisodeIndex = React.useMemo(
     () =>
-      sectionEpisodes.findIndex(
-        (episode) => episode.sourceEpisodeId === currentEpisode.sourceEpisodeId
-      ),
-    [currentEpisode.sourceEpisodeId, sectionEpisodes]
+      sectionEpisodes.findIndex((episode) => episode.id === currentEpisode.id),
+    [currentEpisode.id, sectionEpisodes]
   );
 
   const nextEpisode = React.useMemo(
     () =>
       sectionEpisodes[currentSectionEpisodeIndex + 1] ||
-      sourceEpisodes[currentEpisodeIndex + 1],
-    [
-      currentEpisodeIndex,
-      currentSectionEpisodeIndex,
-      sectionEpisodes,
-      sourceEpisodes,
-    ]
+      episodes[currentEpisodeIndex + 1],
+    [currentEpisodeIndex, currentSectionEpisodeIndex, sectionEpisodes, episodes]
   );
 
   return !isBackground ? (
@@ -107,10 +93,10 @@ const PlayerControls = React.memo(() => {
           {anime?.id && (
             <EpisodesButton>
               <div className="w-[70vw] overflow-hidden bg-background-900 p-4">
-                <LocaleEpisodeSelector
-                  mediaId={anime.id}
+                <EpisodeSelector
                   media={anime}
                   episodes={episodes}
+                  sourceId={sourceId}
                   activeEpisode={currentEpisode}
                   episodeLinkProps={{ shallow: true, replace: true }}
                 />
@@ -153,37 +139,23 @@ const PlayerMobileControls = React.memo(() => {
   const anime = useAtomValue(animeAtom);
   const currentEpisode = useAtomValue(currentEpisodeAtom);
 
-  const sourceEpisodes = React.useMemo(
-    () => episodes.filter((episode) => episode.sourceId === sourceId),
-    [episodes, sourceId]
-  );
-
   const sectionEpisodes = React.useMemo(
     () =>
-      sourceEpisodes.filter(
-        (episode) => episode.section === currentEpisode.section
-      ),
-    [currentEpisode.section, sourceEpisodes]
+      episodes.filter((episode) => episode.section === currentEpisode.section),
+    [currentEpisode.section, episodes]
   );
 
   const currentSectionEpisodeIndex = React.useMemo(
     () =>
-      sectionEpisodes.findIndex(
-        (episode) => episode.sourceEpisodeId === currentEpisode.sourceEpisodeId
-      ),
-    [currentEpisode.sourceEpisodeId, sectionEpisodes]
+      sectionEpisodes.findIndex((episode) => episode.id === currentEpisode.id),
+    [currentEpisode.id, sectionEpisodes]
   );
 
   const nextEpisode = React.useMemo(
     () =>
       sectionEpisodes[currentSectionEpisodeIndex + 1] ||
-      sourceEpisodes[currentEpisodeIndex + 1],
-    [
-      currentEpisodeIndex,
-      currentSectionEpisodeIndex,
-      sectionEpisodes,
-      sourceEpisodes,
-    ]
+      episodes[currentEpisodeIndex + 1],
+    [currentEpisodeIndex, currentSectionEpisodeIndex, sectionEpisodes, episodes]
   );
 
   return !isBackground ? (
@@ -205,11 +177,10 @@ const PlayerMobileControls = React.memo(() => {
 
                   {anime?.id && (
                     <div className="w-full h-full">
-                      <LocaleEpisodeSelector
-                        className="p-4"
-                        mediaId={anime.id}
+                      <EpisodeSelector
                         media={anime}
                         episodes={episodes}
+                        sourceId={sourceId}
                         activeEpisode={currentEpisode}
                         episodeLinkProps={{ shallow: true, replace: true }}
                       />
@@ -240,9 +211,14 @@ const PlayerOverlay = React.memo(() => {
   const setPlayerState = useSetAtom(playerStateAtom);
   const anime = useAtomValue(animeAtom);
   const currentEpisode = useAtomValue(currentEpisodeAtom);
+  const sourceId = useAtomValue(sourceIdAtom);
 
-  const episodeTitle = getEpisodeTitle(currentEpisode.title, locale);
-  const title = getTitle(anime, locale);
+  const episodeTitle = getEpisodeTitle(currentEpisode.translations, {
+    locale,
+    fallback: currentEpisode.title,
+  });
+
+  const title = getTitle(anime);
 
   return (
     <Overlay>
@@ -256,7 +232,7 @@ const PlayerOverlay = React.memo(() => {
                 )}
                 onClick={() =>
                   push(
-                    `/anime/watch/${anime?.id}/${currentEpisode?.sourceId}/${currentEpisode.sourceEpisodeId}`
+                    `/anime/watch/${anime?.id}/${sourceId}/${currentEpisode.id}`
                   )
                 }
                 tooltip="Expand"
@@ -281,7 +257,7 @@ const PlayerOverlay = React.memo(() => {
         <React.Fragment>
           {anime?.idMal && (
             <TimestampSkipButton
-              episode={parseNumberFromString(currentEpisode.name)}
+              episode={parseNumberFromString(currentEpisode.number)}
               malId={anime.idMal}
             />
           )}
@@ -300,7 +276,7 @@ const PlayerOverlay = React.memo(() => {
             )}
           >
             <p className="font-semibold text-xl line-clamp-1">
-              {currentEpisode.name} {episodeTitle && `- ${episodeTitle}`}
+              {currentEpisode.number} {episodeTitle && `- ${episodeTitle}`}
             </p>
 
             <p className="text-gray-100 text-lg line-clamp-1">{title}</p>
@@ -322,10 +298,10 @@ const PlayerOverlay = React.memo(() => {
 PlayerOverlay.displayName = "PlayerOverlay";
 
 const PlayerMobileOverlay = React.memo(() => {
-  const router = useRouter();
   const { back } = useHistory();
   const { videoEl } = useVideo();
   const { isInteracting } = useInteract();
+  const { locale } = useRouter();
 
   const [videoSize, setVideoSize] = useState({ width: 0, height: 0 });
   const { width: windowWidth } = useWindowSize();
@@ -334,8 +310,13 @@ const PlayerMobileOverlay = React.memo(() => {
   const anime = useAtomValue(animeAtom);
   const currentEpisode = useAtomValue(currentEpisodeAtom);
 
-  const title = getTitle(anime, router.locale);
-  const episodeTitle = getEpisodeTitle(currentEpisode.title, router.locale);
+  const title = getTitle(anime);
+  const episodeTitle = getEpisodeTitle(currentEpisode.translations, {
+    locale,
+    fallback: currentEpisode.title,
+  });
+
+  const sourceId = useAtomValue(sourceIdAtom);
 
   const servers = useAtomValue(serversAtom);
   const [currentServer, setCurrentServer] = useAtom(currentServerAtom);
@@ -386,16 +367,14 @@ const PlayerMobileOverlay = React.memo(() => {
               <React.Fragment>
                 <div className="absolute top-4 left-16 space-y-1 w-96 max-w-[70vw]">
                   <p className="font-semibold text-bas line-clamp-1">
-                    {currentEpisode.name} {episodeTitle && `- ${episodeTitle}`}
+                    {currentEpisode.title} {episodeTitle && `- ${episodeTitle}`}
                   </p>
 
                   <p className="text-gray-300 text-sm line-clamp-1">{title}</p>
                 </div>
 
                 <div className="text-right absolute top-16 right-4">
-                  <p className="font-semibold text-base">
-                    {currentEpisode.source.name}
-                  </p>
+                  <p className="font-semibold text-base">{sourceId}</p>
 
                   {currentServer && (
                     <p className="text-sm text-gray-100">
@@ -418,7 +397,7 @@ const PlayerMobileOverlay = React.memo(() => {
       {anime?.idMal && (
         <Portal retryInterval={1000} selector=".netplayer-container">
           <TimestampSkipButton
-            episode={parseNumberFromString(currentEpisode.name)}
+            episode={parseNumberFromString(currentEpisode.number)}
             malId={anime.idMal}
           />
         </Portal>
@@ -433,40 +412,25 @@ const WatchPlayer: React.FC<WatchPlayerProps> = ({ videoRef, ...props }) => {
   const setEpisode = useAtomValue(setEpisodeAtom);
   const episodes = useAtomValue(episodesAtom);
   const currentEpisodeIndex = useAtomValue(currentEpisodeIndexAtom);
-  const sourceId = useAtomValue(sourceIdAtom);
   const currentEpisode = useAtomValue(currentEpisodeAtom);
-
-  const sourceEpisodes = React.useMemo(
-    () => episodes.filter((episode) => episode.sourceId === sourceId),
-    [episodes, sourceId]
-  );
 
   const sectionEpisodes = React.useMemo(
     () =>
-      sourceEpisodes.filter(
-        (episode) => episode.section === currentEpisode.section
-      ),
-    [currentEpisode.section, sourceEpisodes]
+      episodes.filter((episode) => episode.section === currentEpisode.section),
+    [currentEpisode.section, episodes]
   );
 
   const currentSectionEpisodeIndex = React.useMemo(
     () =>
-      sectionEpisodes.findIndex(
-        (episode) => episode.sourceEpisodeId === currentEpisode.sourceEpisodeId
-      ),
-    [currentEpisode.sourceEpisodeId, sectionEpisodes]
+      sectionEpisodes.findIndex((episode) => episode.id === currentEpisode.id),
+    [currentEpisode.id, sectionEpisodes]
   );
 
   const nextEpisode = React.useMemo(
     () =>
       sectionEpisodes[currentSectionEpisodeIndex + 1] ||
-      sourceEpisodes[currentEpisodeIndex + 1],
-    [
-      currentEpisodeIndex,
-      currentSectionEpisodeIndex,
-      sectionEpisodes,
-      sourceEpisodes,
-    ]
+      episodes[currentEpisodeIndex + 1],
+    [currentEpisodeIndex, currentSectionEpisodeIndex, sectionEpisodes, episodes]
   );
 
   const hotkeys = useMemo(

@@ -1,61 +1,52 @@
-import config from "@/config";
-import { Chapter, ImageSource } from "@/types";
-import axios, { AxiosError } from "axios";
-import { useRouter } from "next/dist/client/router";
-import { useQuery, useQueryClient } from "react-query";
+import { Chapter, FileUrl } from "@/types/core";
+import { sendMessage } from "@/utils/events";
+import { useQuery } from "react-query";
+import { toast } from "react-toastify";
 
-interface ReturnSuccessType {
-  success: true;
-  images: ImageSource[];
+interface MangaImagesProps {
+  chapterId: string;
+  extraData?: Record<string, string>;
+  sourceId: string;
 }
 
-interface ReturnFailType {
-  success: false;
-  error: string;
-  errorMessage: string;
-}
+export const getQueryKey = (chapter: Chapter, sourceId: string) =>
+  `images-${sourceId}-${chapter.id}`;
 
-const useFetchImages = (currentChapter: Chapter, nextChapter?: Chapter) => {
-  const queryClient = useQueryClient();
-  const { locale } = useRouter();
+const useFetchImages = (currentChapter: Chapter, sourceId: string) => {
+  return useQuery<FileUrl[], Error>(
+    getQueryKey(currentChapter, sourceId),
+    async () => {
+      const images = await sendMessage<MangaImagesProps, FileUrl[]>(
+        "get-images",
+        {
+          chapterId: currentChapter.id,
+          sourceId,
+          extraData: currentChapter.extra,
+        }
+      );
 
-  const fetchImages = async (chapter: Chapter) => {
-    const hasViLocale = chapter?.source?.locales?.includes("vi");
+      if (!images?.length) return [];
 
-    const nodeServerUrl = (() => {
-      if (hasViLocale || locale === "vi") {
-        return config.nodeServer.vn;
+      console.log("got images", images);
+
+      console.log("updating rules");
+
+      // update rules to apply required headers
+      const fileUrls = images.filter((image) => image.headers);
+
+      if (fileUrls?.length) {
+        await sendMessage("update-rules", {
+          fileUrls,
+        });
       }
 
-      return config.nodeServer.global;
-    })();
+      console.log("updated rules");
 
-    const { data } = await axios.get<ReturnSuccessType>(
-      `${nodeServerUrl}/images`,
-      {
-        params: {
-          source_media_id: chapter.sourceMediaId,
-          chapter_id: chapter.sourceChapterId,
-          source_id: chapter.sourceId,
-        },
-      }
-    );
-    return data;
-  };
-
-  const getQueryKey = (chapter: Chapter) =>
-    `images-${chapter.sourceId}-${chapter.sourceChapterId}`;
-
-  return useQuery<ReturnSuccessType, AxiosError<ReturnFailType>>(
-    getQueryKey(currentChapter),
-    () => fetchImages(currentChapter),
+      return images;
+    },
     {
-      onSuccess: () => {
-        if (!nextChapter?.sourceChapterId) return;
-
-        queryClient.prefetchQuery(getQueryKey(nextChapter), () =>
-          fetchImages(nextChapter)
-        );
+      onError: (error) => {
+        toast.error(error);
       },
     }
   );

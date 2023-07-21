@@ -1,44 +1,35 @@
-import supabaseClient from "@/lib/supabase";
-
-import { useUser } from "@/contexts/AuthContext";
 import { getMedia } from "@/services/anilist";
-import { Read } from "@/types";
-import { MediaType } from "@/types/anilist";
+import { Media } from "@/types/anilist";
+import { ReadChapter } from "@/types/core";
+import { getReadChapters } from "@/utils/chapter";
+import { isMobile } from "react-device-detect";
 import { useQuery } from "react-query";
 
+export interface ReadChaptersWithMedia extends ReadChapter {
+  media: Media;
+}
+
 const useRead = () => {
-  const user = useUser();
+  return useQuery<ReadChaptersWithMedia[]>("read", async () => {
+    const readChapters = getReadChapters(isMobile ? 10 : 20);
 
-  return useQuery<Read[]>(
-    "read",
-    async () => {
-      const { data, error } = await supabaseClient
-        .from<Read>("kaguya_read")
-        .select(
-          "mediaId, chapter:kaguya_chapters!chapterId(sourceChapterId, name, sourceId)"
-        )
-        .eq("userId", user.id)
-        .order("updated_at", { ascending: false })
-        .limit(10);
+    if (!readChapters?.length) return [];
 
-      if (error) throw error;
+    const mediaIds = readChapters.map((readChapter) => readChapter.mediaId);
 
-      const anilistMedia = await getMedia({
-        id_in: data.map((read) => read.mediaId),
-        type: MediaType.Manga,
-      });
+    const anilistMedia = await getMedia({
+      id_in: mediaIds,
+    });
 
-      return data.map((read) => {
-        const media = anilistMedia.find((media) => media.id === read.mediaId);
+    return readChapters.map((read) => {
+      const media = anilistMedia.find((media) => media.id === read.mediaId);
 
-        return {
-          ...read,
-          media,
-        };
-      });
-    },
-    { enabled: !!user }
-  );
+      return {
+        ...read,
+        media,
+      };
+    });
+  });
 };
 
 export default useRead;

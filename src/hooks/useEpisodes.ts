@@ -1,115 +1,58 @@
-import config from "@/config";
-import supabaseClient from "@/lib/supabase";
-import { AnimeSourceConnection } from "@/types";
-import { sortMediaUnit } from "@/utils/data";
-import axios from "axios";
-import { useRouter } from "next/router";
-import { useCallback } from "react";
-import { useQuery } from "react-query";
+import { DataWithExtra } from "@/types";
+import { Media } from "@/types/anilist";
+import { Episode } from "@/types/core";
+import { sendMessage } from "@/utils/events";
+import { UseQueryOptions, useQuery } from "react-query";
+import { toast } from "react-toastify";
 
-const query = `
-  *,
-  episodes:kaguya_episodes(
-      *,
-      source:kaguya_sources(
-          *
-      )
-  )
-`;
-
-type EpisodeInfo = {
-  id: string;
-  title: string;
-  description: string;
-  episodeNumber: number;
-  image: string;
-  isFiller: boolean;
+type AnimeIdProps = {
+  sourceId: string;
+  anilist: Media;
 };
 
-const useEpisodes = (mediaId: number, includeEpisodeInfo?: boolean) => {
-  const { locale } = useRouter();
+type EpisodeProps = {
+  sourceId: string;
+  animeId: string;
+  extraData?: Record<string, string>;
+};
 
-  const fetchEpisodeInfo = useCallback(
-    async (mediaId: number) => {
-      const nodeServerUrl = (() => {
-        if (locale === "vi") {
-          return config.nodeServer.vn;
-        }
+const defaultValue: Episode[] = [];
 
-        return config.nodeServer.global;
-      })();
+const useEpisodes = (
+  anilist: Media,
+  sourceId: string,
+  options?: Omit<
+    UseQueryOptions<Episode[], unknown, Episode[]>,
+    "queryKey" | "queryFn"
+  >
+) => {
+  return useQuery(
+    ["episodes", anilist.id, sourceId],
+    async () => {
+      console.log("[web page] fetching anime id");
 
-      const { data } = await axios.get<EpisodeInfo[]>(
-        `${nodeServerUrl}/episode-info/${mediaId}?language=${locale}`,
-        {
-          timeout: 2000,
-        }
+      const { data: animeId, extraData } = await sendMessage<
+        AnimeIdProps,
+        DataWithExtra<string>
+      >("get-anime-id", { sourceId, anilist });
+
+      if (!animeId) {
+        toast.error("No anime link was found, please try again.");
+
+        return defaultValue;
+      }
+
+      console.log("[web page] fetching episodes");
+
+      const episodes = await sendMessage<EpisodeProps, Episode[]>(
+        "get-episodes",
+        { animeId: animeId, sourceId, extraData }
       );
 
-      return data;
+      return episodes || defaultValue;
     },
-    [locale]
+    options
   );
-
-  return useQuery(["episodes", mediaId], async () => {
-    const kaguyaEpisodesPromise = supabaseClient
-      .from<AnimeSourceConnection>("kaguya_anime_source")
-      .select(query)
-      .eq("mediaId", mediaId);
-
-    let episodeInfoPromise: Promise<EpisodeInfo[]> = Promise.resolve([]);
-
-    if (includeEpisodeInfo) {
-      episodeInfoPromise = fetchEpisodeInfo(mediaId);
-    }
-
-    const [episodePromise, infoEpisodesPromise] = await Promise.allSettled([
-      kaguyaEpisodesPromise,
-      episodeInfoPromise,
-    ]);
-
-    if (episodePromise.status === "rejected") {
-      throw episodePromise.reason;
-    }
-
-    let infoEpisodes: EpisodeInfo[] = [];
-
-    if (infoEpisodesPromise.status === "fulfilled") {
-      infoEpisodes = infoEpisodesPromise.value;
-    }
-
-    const { data, error } = episodePromise.value;
-
-    if (error) throw error;
-
-    const episodes = data?.flatMap((connection) => connection.episodes);
-
-    const sortedEpisodes = sortMediaUnit(
-      episodes.filter((episode) => episode.published)
-    );
-
-    if (includeEpisodeInfo) {
-      if (infoEpisodes?.length) {
-        episodes.forEach((episode) => {
-          const infoEpisode = infoEpisodes.find(
-            (infoEpisode) => infoEpisode.episodeNumber === episode.episodeNumber
-          );
-
-          if (!infoEpisode) return;
-
-          episode.description = {};
-          episode.title = {};
-
-          episode.description.en = infoEpisode.description;
-          episode.thumbnail = infoEpisode.image;
-          episode.title.en = infoEpisode.title;
-          episode.isFiller = false;
-        });
-      }
-    }
-
-    return sortedEpisodes;
-  });
 };
 
 export default useEpisodes;

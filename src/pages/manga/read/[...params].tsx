@@ -15,19 +15,19 @@ import React, { useMemo } from "react";
 
 interface ReadPageContainerProps {
   media: Media;
+  sourceId: string;
 }
 
-const ReadPageContainer: NextPage<ReadPageContainerProps> = ({ media }) => {
-  const { data: chapters, isLoading } = useChapters(media.id);
-  const { locale } = useRouter();
+const ReadPageContainer: NextPage<ReadPageContainerProps> = ({
+  media,
+  sourceId,
+}) => {
+  const { data: chapters, isLoading } = useChapters(media, sourceId);
   const { back } = useHistory();
   const { t } = useTranslation("manga_read");
 
-  const title = useMemo(() => getTitle(media, locale), [media, locale]);
-  const description = useMemo(
-    () => getDescription(media, locale),
-    [media, locale]
-  );
+  const title = useMemo(() => getTitle(media), [media]);
+  const description = useMemo(() => getDescription(media), [media]);
 
   const hasChapters = useMemo(() => chapters?.length > 0, [chapters]);
 
@@ -59,7 +59,7 @@ const ReadPageContainer: NextPage<ReadPageContainerProps> = ({ media }) => {
           </Button>
         </div>
       ) : (
-        <ReadPage chapters={chapters} media={media} />
+        <ReadPage sourceId={sourceId} chapters={chapters} media={media} />
       )}
     </React.Fragment>
   );
@@ -68,6 +68,9 @@ const ReadPageContainer: NextPage<ReadPageContainerProps> = ({ media }) => {
 export const getStaticProps: GetStaticProps = async ({
   params: { params },
 }) => {
+  // /read/160188/animet/150312
+  // /read/mediaID/sourceId/chapterId
+
   try {
     const media = await getMediaDetails({
       type: MediaType.Manga,
@@ -81,6 +84,7 @@ export const getStaticProps: GetStaticProps = async ({
     return {
       props: {
         media,
+        sourceId: params[1],
       },
       revalidate: REVALIDATE_TIME,
     };

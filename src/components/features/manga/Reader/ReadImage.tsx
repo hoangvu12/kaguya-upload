@@ -1,17 +1,15 @@
 import { useReadSettings } from "@/contexts/ReadSettingsContext";
 import useIntersectionObserver from "@/hooks/useIntersectionObserver";
-import { ImageSource } from "@/types";
-import { createProxyUrl } from "@/utils";
+import { FileUrl } from "@/types/core";
 import classNames from "classnames";
 import { motion } from "framer-motion";
-import { useRouter } from "next/dist/client/router";
 import { ImageProps } from "next/image";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { BsFillImageFill } from "react-icons/bs";
 
 interface ReadImageProps extends Omit<ImageProps, "src"> {
   onVisible?: () => void;
-  image: ImageSource;
+  image: FileUrl;
   loadingClassName?: string;
   containerClassName?: string;
 }
@@ -29,7 +27,6 @@ const ReadImage: React.FC<ReadImageProps> = ({
   const { fitMode } = useReadSettings();
   const ref = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
-  const { locale } = useRouter();
 
   const entry = useIntersectionObserver(imageRef, {
     rootMargin: "0px 0px 10px 0px",
@@ -48,21 +45,6 @@ const ReadImage: React.FC<ReadImageProps> = ({
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entry?.isIntersecting]);
-
-  const src = useMemo(
-    () =>
-      image.useProxy || image.usePublicProxy || image.useEdgeProxy
-        ? createProxyUrl(
-            image.image,
-            image.proxy,
-            image.usePublicProxy,
-            image.useEdgeProxy,
-            locale
-          )
-        : image.image,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [image.image, locale]
-  );
 
   // I have to use img instead of Next/Image because I want to image calculate the height itself
   return (
@@ -101,7 +83,7 @@ const ReadImage: React.FC<ReadImageProps> = ({
             className
           )}
           alt="Read Manga at Kaguya"
-          src={src}
+          src={image.url}
           onLoad={(e) => {
             setLoaded(true);
 

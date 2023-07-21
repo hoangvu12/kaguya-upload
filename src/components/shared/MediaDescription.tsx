@@ -1,5 +1,4 @@
 import useDevice from "@/hooks/useDevice";
-import { Editor } from "@tiptap/react";
 import classNames from "classnames";
 import { useTranslation } from "next-i18next";
 import React, { useCallback, useEffect, useRef } from "react";
@@ -20,13 +19,13 @@ const MediaDescription: React.FC<MediaDescriptionProps> = ({
   const [isDescriptionExpanded, setIsDescriptionExpanded] =
     React.useState(false);
   const { t } = useTranslation("common");
-  const ref = useRef<Editor>(null);
+  const ref = useRef<HTMLDivElement>(null);
   const { isMobile } = useDevice();
 
   useEffect(() => {
     if (!ref.current) return;
 
-    const element = ref.current?.options?.element;
+    const element = ref?.current;
 
     if (!element) return;
 
@@ -50,9 +49,7 @@ const MediaDescription: React.FC<MediaDescriptionProps> = ({
           isDescriptionExpanded ? "line-clamp-none" : "line-clamp-6",
           className
         )}
-        containerProps={{
-          onClick: isMobile ? handleClick : noop,
-        }}
+        onClick={isMobile ? handleClick : noop}
         {...props}
       />
 

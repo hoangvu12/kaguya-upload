@@ -1,40 +1,58 @@
-import supabaseClient from "@/lib/supabase";
-import { MangaSourceConnection } from "@/types";
-import { sortMediaUnit } from "@/utils/data";
-import { useSupabaseQuery } from "@/utils/supabase";
-import { useMemo } from "react";
+import { DataWithExtra } from "@/types";
+import { Media } from "@/types/anilist";
+import { Chapter } from "@/types/core";
+import { sendMessage } from "@/utils/events";
+import { UseQueryOptions, useQuery } from "react-query";
+import { toast } from "react-toastify";
 
-const query = `
-  *,
-  chapters:kaguya_chapters(
-      *,
-      source:kaguya_sources(
-          *
-      )
-  )
-`;
+type MangaIdProps = {
+  sourceId: string;
+  anilist: Media;
+};
 
-const useChapters = (mediaId: number) => {
-  const { data, isLoading, ...rest } = useSupabaseQuery(
-    ["chapters", mediaId],
-    () =>
-      supabaseClient
-        .from<MangaSourceConnection>("kaguya_manga_source")
-        .select(query)
-        .eq("mediaId", mediaId)
+type ChapterProps = {
+  sourceId: string;
+  mangaId: string;
+  extraData?: Record<string, string>;
+};
+
+const defaultValue: Chapter[] = [];
+
+const useChapters = (
+  anilist: Media,
+  sourceId: string,
+  options?: Omit<
+    UseQueryOptions<Chapter[], unknown, Chapter[]>,
+    "queryKey" | "queryFn"
+  >
+) => {
+  return useQuery(
+    ["chapters", anilist.id, sourceId],
+    async () => {
+      console.log("[web page] fetching anime id");
+
+      const { data: mangaId, extraData } = await sendMessage<
+        MangaIdProps,
+        DataWithExtra<string>
+      >("get-manga-id", { sourceId, anilist });
+
+      if (!mangaId) {
+        toast.error("No manga id was found, please try again.");
+
+        return defaultValue;
+      }
+
+      console.log("[web page] fetching episodes");
+
+      const chapters = await sendMessage<ChapterProps, Chapter[]>(
+        "get-chapters",
+        { mangaId: mangaId, sourceId, extraData }
+      );
+
+      return chapters || defaultValue;
+    },
+    options
   );
-
-  const chapters = useMemo(
-    () => data?.flatMap((connection) => connection.chapters),
-    [data]
-  );
-
-  const sortedChapters = useMemo(
-    () => (isLoading ? [] : sortMediaUnit(chapters)),
-    [chapters, isLoading]
-  );
-
-  return { data: sortedChapters, isLoading, ...rest };
 };
 
 export default useChapters;

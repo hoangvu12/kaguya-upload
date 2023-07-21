@@ -2,7 +2,6 @@ import ButtonTooltip from "@/components/shared/ButtonTooltip";
 import CircleButton from "@/components/shared/CircleButton";
 import Input from "@/components/shared/Input";
 import Kbd from "@/components/shared/Kbd";
-import Select from "@/components/shared/Select";
 import {
   chaptersAtom,
   currentChapterAtom,
@@ -20,15 +19,13 @@ import {
   useReadSettings,
 } from "@/contexts/ReadSettingsContext";
 import useHistory from "@/hooks/useHistory";
-import { groupBy, sortObjectByValue } from "@/utils";
 import { getTitle } from "@/utils/data";
 import classNames from "classnames";
-import { motion, Variants } from "framer-motion";
+import { Variants, motion } from "framer-motion";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useTranslation } from "next-i18next";
-import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
-import { BrowserView, isMobileOnly, MobileView } from "react-device-detect";
+import { BrowserView, MobileView, isMobileOnly } from "react-device-detect";
 import { AiOutlineSearch } from "react-icons/ai";
 import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
 import { BsArrowLeft } from "react-icons/bs";
@@ -67,8 +64,6 @@ const Sidebar = () => {
   const isSidebarOpen = useAtomValue(isSidebarOpenAtom);
   const setState = useSetAtom(readPanelStateAtom);
 
-  const router = useRouter();
-
   const manga = useAtomValue(mangaAtom);
   const currentChapter = useAtomValue(currentChapterAtom);
   const chapters = useAtomValue(chaptersAtom);
@@ -79,88 +74,24 @@ const Sidebar = () => {
   const { t } = useTranslation("manga_read");
 
   const [filterText, setFilterText] = useState("");
-  const [activeSource, setActiveSource] = useState(
-    currentChapter?.source?.name || chapters[0]?.source?.name
-  );
 
   const handleSidebarState = (isOpen: boolean) => () => {
     setState((prev) => ({ ...prev, isSidebarOpen: isOpen }));
   };
 
-  const title = useMemo(
-    () => getTitle(manga, router.locale),
-    [manga, router.locale]
-  );
-
-  const sourceChapters = useMemo(
-    () => chapters.filter((chapter) => chapter.source.name === activeSource),
-    [activeSource, chapters]
-  );
+  const title = useMemo(() => getTitle(manga), [manga]);
 
   const filteredChapters = useMemo(() => {
-    return sourceChapters.filter((chapter) =>
-      chapter.name.includes(filterText)
+    return chapters.filter(
+      (chapter) =>
+        chapter?.title?.includes(filterText) ||
+        chapter?.number?.includes(filterText)
     );
-  }, [filterText, sourceChapters]);
-
-  const sources = useMemo(
-    () => groupBy(chapters, (data) => data.source.name),
-    [chapters]
-  );
-
-  const verifiedSources = useMemo(() => {
-    const verifiedChapters = chapters.filter(
-      (chapter) => chapter.source.isCustomSource
-    );
-
-    const sources = groupBy(verifiedChapters, (chapter) => chapter.source.name);
-
-    const sortedSources = sortObjectByValue(
-      sources,
-      (a, b) => b.length - a.length
-    );
-
-    return sortedSources;
-  }, [chapters]);
-
-  const nonVerifiedSources = useMemo(() => {
-    const nonVerifiedChapters = chapters.filter(
-      (chapter) => !chapter.source.isCustomSource
-    );
-
-    const sources = groupBy(
-      nonVerifiedChapters,
-      (chapter) => chapter.source.name
-    );
-
-    const sortedSources = sortObjectByValue(
-      sources,
-      (a, b) => b.length - a.length
-    );
-
-    return sortedSources;
-  }, [chapters]);
+  }, [filterText, chapters]);
 
   const handleChangeChapterIndex = (index: number) => () => {
-    setChapter(sourceChapters[index]);
+    setChapter(chapters[index]);
   };
-
-  const handleChangeSource = (source: string) => {
-    setActiveSource(source);
-  };
-
-  useEffect(() => {
-    const currentChapterNumber = currentChapter?.chapterNumber;
-
-    const sourceChapter =
-      sourceChapters.find(
-        (chapter) => chapter.chapterNumber === currentChapterNumber
-      ) || sourceChapters[0];
-
-    setChapter(sourceChapter);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeSource]);
 
   useEffect(() => {
     const currentChapterEl = document.querySelector(".active-chapter");
@@ -205,25 +136,6 @@ const Sidebar = () => {
           </BrowserView>
         </div>
 
-        <MobileView>
-          <div className="flex gap-x-2 w-full px-2 overflow-x-auto no-scrollbar [&>*]:shrink-0">
-            {Object.keys(sources).map((source) => (
-              <div
-                className={classNames(
-                  "text-gray-300 cursor-pointer rounded-[18px] px-2 py-1 w-[max-content] duration-300 transition",
-                  activeSource === source
-                    ? "bg-white text-black"
-                    : "hover:text-white"
-                )}
-                key={source}
-                onClick={() => handleChangeSource(source)}
-              >
-                {source}
-              </div>
-            ))}
-          </div>
-        </MobileView>
-
         {/* Mobile chapter selector */}
         <div className="flex items-center justify-center md:justify-between space-x-2 md:space-x-0">
           <ButtonTooltip
@@ -242,30 +154,27 @@ const Sidebar = () => {
 
           <MobileView className="grow">
             <select
-              value={currentChapter.sourceChapterId}
+              value={currentChapter.id}
               onChange={(e) => {
-                const sourceChapterId = e.target.value;
-                const chapter = sourceChapters.find(
-                  (chapter) => chapter.sourceChapterId === sourceChapterId
+                const chapterId = e.target.value;
+                const chapter = chapters.find(
+                  (chapter) => chapter.id === chapterId
                 );
 
                 setChapter(chapter);
               }}
               className="rounded-md py-1 px-2 appearance-none w-full bg-background-700"
             >
-              {sourceChapters.map((chapter) => (
-                <option
-                  key={chapter.sourceChapterId}
-                  value={chapter.sourceChapterId}
-                >
-                  {chapter.name}
+              {chapters.map((chapter) => (
+                <option key={chapter.id} value={chapter.id}>
+                  {chapter.number}
                 </option>
               ))}
             </select>
           </MobileView>
 
           <BrowserView>
-            <p>{currentChapter.name}</p>
+            <p>{currentChapter.number}</p>
           </BrowserView>
 
           <ButtonTooltip
@@ -277,7 +186,7 @@ const Sidebar = () => {
             LeftIcon={BiChevronRight}
             iconClassName="w-8 h-8"
             secondary
-            disabled={currentChapterIndex === sourceChapters.length - 1}
+            disabled={currentChapterIndex === chapters.length - 1}
             onClick={handleChangeChapterIndex(currentChapterIndex + 1)}
             shortcutKey="]"
           />
@@ -344,39 +253,12 @@ const Sidebar = () => {
               setFilterText((e.target as HTMLInputElement).value)
             }
           />
-
-          <div className="flex items-center gap-2 mb-4">
-            <label htmlFor="source-selector" className="font-medium">
-              Sources:{" "}
-            </label>
-
-            <Select
-              id="source-selector"
-              options={[
-                {
-                  label: "Verified",
-                  options: sourcesToOptions(Object.keys(verifiedSources)),
-                },
-                {
-                  label: "Not verified",
-                  options: sourcesToOptions(Object.keys(nonVerifiedSources)),
-                },
-              ]}
-              onChange={({ value }) => {
-                setActiveSource(value);
-              }}
-              defaultValue={{ value: activeSource, label: activeSource }}
-              isClearable={false}
-              isSearchable={false}
-            />
-          </div>
         </BrowserView>
 
         <BrowserView renderWithFragment>
           <ul className="h-full overflow-auto bg-background-900">
             {filteredChapters.map((chapter) => {
-              const isActive =
-                chapter.sourceChapterId === currentChapter.sourceChapterId;
+              const isActive = chapter.id === currentChapter.id;
 
               return (
                 <li
@@ -384,11 +266,10 @@ const Sidebar = () => {
                     "relative px-4 py-2 cursor-pointer hover:bg-white/20 transition duration-300",
                     isActive && "active-chapter"
                   )}
-                  key={chapter.sourceChapterId}
+                  key={chapter.id}
                   onClick={() => setChapter(chapter)}
                 >
-                  {chapter.name}
-
+                  {chapter.number} {chapter.title && ` - ${chapter.title}`}
                   {isActive && (
                     <div className="absolute left-0 top-0 h-full w-1 bg-primary-500"></div>
                   )}

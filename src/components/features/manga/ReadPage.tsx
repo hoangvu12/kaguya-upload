@@ -6,18 +6,24 @@ import Portal from "@/components/shared/Portal";
 import { ReadContextProvider } from "@/contexts/ReadContext";
 import { ReadSettingsContextProvider } from "@/contexts/ReadSettingsContext";
 import useFetchImages from "@/hooks/useFetchImages";
-import useSavedRead from "@/hooks/useSavedRead";
-import useSaveRead from "@/hooks/useSaveRead";
-import { Chapter } from "@/types";
+import useReadChapter from "@/hooks/useReadChapter";
+import useSaveReadData from "@/hooks/useSaveReadData";
 import { Media } from "@/types/anilist";
+import { Chapter } from "@/types/core";
+import { parseNumberFromString } from "@/utils";
 import { getDescription, getTitle, sortMediaUnit } from "@/utils/data";
 import { NextPage } from "next";
 import { useTranslation } from "next-i18next";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { toast } from "react-toastify";
-import React from "react";
 
 const ReadPanel = dynamic(
   () => import("@/components/features/manga/Reader/ReadPanel"),
@@ -29,102 +35,76 @@ const ReadPanel = dynamic(
 interface ReadPageProps {
   chapters: Chapter[];
   media: Media;
+  sourceId: string;
 }
 
-const ReadPage: NextPage<ReadPageProps> = ({ chapters, media: manga }) => {
+const ReadPage: NextPage<ReadPageProps> = ({
+  chapters,
+  media: manga,
+  sourceId,
+}) => {
   const router = useRouter();
   const [showReadOverlay, setShowReadOverlay] = useState(false);
   const [declinedReread, setDeclinedReread] = useState(false);
   const saveReadTimeout = useRef<NodeJS.Timeout>();
-  const { locale } = useRouter();
   const { t } = useTranslation("manga_read");
-  const saveReadMutation = useSaveRead();
 
   const sortedChapters = useMemo(() => sortMediaUnit(chapters), [chapters]);
 
   const { params } = router.query;
 
-  const [
-    mangaId,
-    sourceId = chapters[0].sourceId,
-    chapterId = chapters[0].sourceChapterId,
-  ] = params as string[];
+  const [mangaId, _, chapterId = sortedChapters[0].id] = params as string[];
+
+  const saveReadMutation = useSaveReadData();
 
   const {
     data: savedReadData,
     isLoading: isSavedDataLoading,
     isError: isSavedDataError,
-  } = useSavedRead(Number(mangaId));
+  } = useReadChapter(Number(mangaId), sourceId);
 
-  const title = useMemo(() => getTitle(manga, locale), [manga, locale]);
-  const description = useMemo(
-    () => getDescription(manga, locale),
-    [manga, locale]
-  );
-
-  const sourceChapters = useMemo(
-    () => sortedChapters.filter((chapter) => chapter.sourceId === sourceId),
-    [sortedChapters, sourceId]
-  );
+  const title = useMemo(() => getTitle(manga), [manga]);
+  const description = useMemo(() => getDescription(manga), [manga]);
 
   const currentChapter = useMemo(() => {
-    const chapter = sourceChapters.find(
-      (chapter) => chapter.sourceChapterId === chapterId
-    );
+    const chapter = chapters.find((chapter) => chapter.id === chapterId);
 
     if (!chapter) {
       toast.error(
         "The requested chapter was not found. It's either deleted or doesn't exist."
       );
 
-      return sourceChapters[0] || chapters[0];
+      return chapters[0] || chapters[0];
     }
 
     return chapter;
-  }, [sourceChapters, chapterId, chapters]);
+  }, [chapters, chapterId]);
 
   const currentChapterIndex = useMemo(
-    () =>
-      sourceChapters.findIndex(
-        (chapter) => chapter.sourceChapterId === chapterId
-      ),
-    [sourceChapters, chapterId]
-  );
-
-  const nextChapter = useMemo(
-    () => sourceChapters[Number(currentChapterIndex) + 1],
-    [currentChapterIndex, sourceChapters]
+    () => chapters.findIndex((chapter) => chapter.id === chapterId),
+    [chapters, chapterId]
   );
 
   const readChapter = useMemo(
     () =>
       isSavedDataError
         ? null
-        : chapters.find(
-            (chapter) =>
-              chapter.sourceChapterId ===
-                savedReadData?.chapter.sourceChapterId &&
-              chapter.sourceId === savedReadData?.chapter.sourceId
-          ),
+        : chapters.find((chapter) => chapter.id === savedReadData?.chapter.id),
     [chapters, savedReadData, isSavedDataError]
   );
 
   const { data, isError, error, isLoading } = useFetchImages(
     currentChapter,
-    nextChapter
+    sourceId
   );
 
   const handleChapterNavigate = useCallback(
     (chapter: Chapter) => {
-      router.replace(
-        `/manga/read/${mangaId}/${chapter.sourceId}/${chapter.sourceChapterId}`,
-        null,
-        {
-          shallow: true,
-        }
-      );
+      router.replace(`/manga/read/${mangaId}/${sourceId}/${chapter.id}`, null, {
+        shallow: true,
+      });
     },
-    [mangaId, router]
+    [mangaId, router, sourceId]
   );
 
   useEffect(() => {
@@ -136,7 +116,10 @@ const ReadPage: NextPage<ReadPageProps> = ({ chapters, media: manga }) => {
     )
       return;
 
-    if (currentChapter.chapterNumber >= readChapter?.chapterNumber) {
+    const currentChapterNumber = parseNumberFromString(currentChapter.number);
+    const readChapterNumber = parseNumberFromString(readChapter?.number);
+
+    if (currentChapterNumber >= readChapterNumber) {
       setDeclinedReread(true);
 
       return;
@@ -144,8 +127,7 @@ const ReadPage: NextPage<ReadPageProps> = ({ chapters, media: manga }) => {
 
     setShowReadOverlay(true);
   }, [
-    currentChapter?.chapterNumber,
-    currentChapter?.sourceChapterId,
+    currentChapter.number,
     declinedReread,
     isSavedDataError,
     isSavedDataLoading,
@@ -160,8 +142,9 @@ const ReadPage: NextPage<ReadPageProps> = ({ chapters, media: manga }) => {
     saveReadTimeout.current = setTimeout(
       () =>
         saveReadMutation.mutate({
-          chapter_id: `${currentChapter.source.id}-${currentChapter.sourceChapterId}`,
-          media_id: Number(mangaId),
+          chapter: currentChapter,
+          mediaId: Number(mangaId),
+          sourceId,
         }),
       10000
     );
@@ -170,7 +153,7 @@ const ReadPage: NextPage<ReadPageProps> = ({ chapters, media: manga }) => {
       clearTimeout(saveReadTimeout.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentChapter, mangaId]);
+  }, [currentChapter, mangaId, sourceId]);
 
   return (
     <React.Fragment>
@@ -182,7 +165,7 @@ const ReadPage: NextPage<ReadPageProps> = ({ chapters, media: manga }) => {
           chapters,
           setChapter: handleChapterNavigate,
           sourceId,
-          images: data?.images,
+          images: data,
         }}
       />
 
@@ -190,10 +173,10 @@ const ReadPage: NextPage<ReadPageProps> = ({ chapters, media: manga }) => {
 
       <div className="fixed inset-0 flex items-center justify-center w-full min-h-screen">
         <Head
-          title={`${title} (${currentChapter.name}) - Kaguya`}
+          title={`${title} (${currentChapter.number}) - Kaguya`}
           description={`${description} - ${t("head_description", {
             title,
-            chapterName: currentChapter.name,
+            chapterName: currentChapter.number,
           })}`}
           image={manga.bannerImage || manga.coverImage.extraLarge}
         />
@@ -205,7 +188,7 @@ const ReadPage: NextPage<ReadPageProps> = ({ chapters, media: manga }) => {
                 <p className="text-4xl font-semibold">｡゜(｀Д´)゜｡</p>
                 <p className="text-xl">
                   {t("error_message", {
-                    error: error?.response?.data?.error || error.message,
+                    error: error.message,
                   })}
                 </p>
 
@@ -231,13 +214,13 @@ const ReadPage: NextPage<ReadPageProps> = ({ chapters, media: manga }) => {
 
             <div className="fixed left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 z-50 w-11/12 lg:w-2/3 p-8 rounded-md bg-background-900">
               <h1 className="text-4xl font-bold mb-4">
-                {t("reread_heading", { chapterName: readChapter.name })}
+                {t("reread_heading", { chapterName: readChapter.number })}
               </h1>
               <p>
-                {t("reread_description", { chapterName: readChapter.name })}
+                {t("reread_description", { chapterName: readChapter.number })}
               </p>
               <p className="mb-4">
-                {t("reread_question", { chapterName: readChapter.name })}
+                {t("reread_question", { chapterName: readChapter.number })}
               </p>
               <div className="flex items-center justify-end space-x-4">
                 <Button
@@ -253,10 +236,7 @@ const ReadPage: NextPage<ReadPageProps> = ({ chapters, media: manga }) => {
                     if (!readChapter || isSavedDataLoading) return;
 
                     const chapter = chapters.find(
-                      (chapter) =>
-                        chapter.sourceChapterId ===
-                          readChapter.sourceChapterId &&
-                        chapter.sourceId === readChapter.sourceId
+                      (chapter) => chapter.id === readChapter.id
                     );
 
                     handleChapterNavigate(chapter);

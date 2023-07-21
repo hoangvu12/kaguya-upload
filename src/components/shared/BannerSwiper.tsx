@@ -4,7 +4,6 @@ import useDevice from "@/hooks/useDevice";
 import { Media } from "@/types/anilist";
 import { getTitle } from "@/utils/data";
 import { motion } from "framer-motion";
-import { useRouter } from "next/router";
 import React from "react";
 
 interface BannerSwiperProps extends SwiperProps {
@@ -13,7 +12,6 @@ interface BannerSwiperProps extends SwiperProps {
 
 const BannerSwiper: React.FC<BannerSwiperProps> = ({ data, ...props }) => {
   const { isDesktop } = useDevice();
-  const { locale } = useRouter();
 
   return (
     <Swiper
@@ -46,7 +44,7 @@ const BannerSwiper: React.FC<BannerSwiperProps> = ({ data, ...props }) => {
       {data.map((anime) => (
         <SwiperSlide key={anime.id}>
           {({ isActive }) => {
-            const title = getTitle(anime, locale);
+            const title = getTitle(anime);
 
             return (
               <motion.div

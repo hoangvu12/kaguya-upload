@@ -1,13 +1,14 @@
-import NativeBanner from "@/components/features/ads/NativeBanner";
 import ReadSection from "@/components/features/manga/ReadSection";
 import RecommendedMangaSection from "@/components/features/manga/RecommendedMangaSection";
+import Card from "@/components/shared/Card";
 import CardSwiper from "@/components/shared/CardSwiper";
 import GenreSwiper from "@/components/shared/GenreSwiper";
 import Head from "@/components/shared/Head";
 import HomeBanner from "@/components/shared/HomeBanner";
-import NewestComments from "@/components/shared/NewestComments";
+import List from "@/components/shared/List";
 import Section from "@/components/shared/Section";
 import ShouldWatch from "@/components/shared/ShouldWatch";
+import ListSkeleton from "@/components/skeletons/ListSkeleton";
 import ListSwiperSkeleton from "@/components/skeletons/ListSwiperSkeleton";
 import useMedia from "@/hooks/useMedia";
 import { DeviceSelectors } from "@/types";
@@ -19,17 +20,9 @@ import { NextPage } from "next/types";
 import React, { useMemo } from "react";
 import {
   BrowserView,
-  getSelectorsByUserAgent,
   MobileOnlyView,
+  getSelectorsByUserAgent,
 } from "react-device-detect";
-import dynamic from "next/dynamic";
-import ListSkeleton from "@/components/skeletons/ListSkeleton";
-import Card from "@/components/shared/Card";
-import List from "@/components/shared/List";
-
-const Banner = dynamic(() => import("@/components/features/ads/Banner"), {
-  ssr: false,
-});
 
 interface HomeProps {
   selectors: DeviceSelectors;
@@ -80,8 +73,6 @@ const Home: NextPage<HomeProps> = ({ selectors }) => {
           isLoading={trendingLoading}
         />
 
-        <Banner desktop="970x250" mobile="320x100" type="atf" />
-
         <div className="space-y-8">
           <ReadSection />
 
@@ -125,8 +116,6 @@ const Home: NextPage<HomeProps> = ({ selectors }) => {
             </Section>
           </MobileOnlyView>
 
-          {!isMobileOnly && <NewestComments type={MediaType.Manga} />}
-
           {!isMobileOnly && (
             <div
               className={classNames(
@@ -153,10 +142,6 @@ const Home: NextPage<HomeProps> = ({ selectors }) => {
               </Section>
             </div>
           )}
-
-          <Section>
-            <NativeBanner />
-          </Section>
         </div>
       </div>
     </React.Fragment>

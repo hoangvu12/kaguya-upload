@@ -1,12 +1,7 @@
-import NativeBanner from "@/components/features/ads/NativeBanner";
-import LocaleEpisodeSelector from "@/components/features/anime/Player/LocaleEpisodeSelector";
-import Comments from "@/components/features/comment/Comments";
-import AddTranslationModal from "@/components/shared/AddTranslationModal";
+import SourceEpisodeSelector from "@/components/features/anime/SourceEpisodeSelector";
 import Button from "@/components/shared/Button";
 import Card from "@/components/shared/Card";
 import CharacterConnectionCard from "@/components/shared/CharacterConnectionCard";
-import CircleButton from "@/components/shared/CircleButton";
-import ClientOnly from "@/components/shared/ClientOnly";
 import DetailsBanner from "@/components/shared/DetailsBanner";
 import DetailsSection from "@/components/shared/DetailsSection";
 import DotList from "@/components/shared/DotList";
@@ -15,17 +10,10 @@ import InfoItem from "@/components/shared/InfoItem";
 import Link from "@/components/shared/Link";
 import List from "@/components/shared/List";
 import MediaDescription from "@/components/shared/MediaDescription";
-import NotificationButton from "@/components/shared/NotificationButton";
 import PlainCard from "@/components/shared/PlainCard";
-import Popup from "@/components/shared/Popup";
 import Section from "@/components/shared/Section";
-import SourceStatus from "@/components/shared/SourceStatus";
-import Spinner from "@/components/shared/Spinner";
 import { REVALIDATE_TIME } from "@/constants";
-import { useUser } from "@/contexts/AuthContext";
 import withRedirect from "@/hocs/withRedirect";
-import useEpisodes from "@/hooks/useEpisodes";
-import useSavedWatched from "@/hooks/useSavedWatched";
 import dayjs from "@/lib/dayjs";
 import { getMediaDetails } from "@/services/anilist";
 import { Media, MediaStatus, MediaType } from "@/types/anilist";
@@ -35,37 +23,21 @@ import {
   stringToSlug,
 } from "@/utils";
 import { convert, getDescription, getTitle } from "@/utils/data";
-import { supabaseClient } from "@supabase/auth-helpers-nextjs";
-import classNames from "classnames";
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { useTranslation } from "next-i18next";
-import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef } from "react";
-import { isMobile } from "react-device-detect";
-import { AiOutlineUpload } from "react-icons/ai";
-import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { BsFillPlayFill } from "react-icons/bs";
 import { toast } from "react-toastify";
-
-const Banner = dynamic(() => import("@/components/features/ads/Banner"), {
-  ssr: false,
-});
 
 interface DetailsPageProps {
   anime: Media;
 }
 
 const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
-  const user = useUser();
   const { locale } = useRouter();
   const { t } = useTranslation("anime_details");
   const episodeSelectorRef = useRef<HTMLDivElement>(null);
-
-  const { data: episodes, isLoading } = useEpisodes(anime.id, true);
-  const { data: watchedData, isLoading: watchedLoading } = useSavedWatched(
-    anime.id
-  );
 
   const nextAiringSchedule = useMemo(
     () =>
@@ -81,11 +53,8 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
     return dayjs.unix(nextAiringSchedule.airingAt).locale(locale).fromNow();
   }, [nextAiringSchedule?.airingAt, locale]);
 
-  const title = useMemo(() => getTitle(anime, locale), [anime, locale]);
-  const description = useMemo(
-    () => getDescription(anime, locale),
-    [anime, locale]
-  );
+  const title = useMemo(() => getTitle(anime), [anime]);
+  const description = useMemo(() => getDescription(anime), [anime]);
 
   const handleWatchClick = () => {
     if (anime.status === MediaStatus.Not_yet_released) {
@@ -122,23 +91,12 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
       />
 
       <div className="pb-8">
-        <DetailsBanner image={anime.bannerImage}>
-          <div className="absolute right-4 bottom-12 min-w-[300px] min-h-[250px] z-10">
-            <Banner desktop="300x250" type="atf" />
-          </div>
-        </DetailsBanner>
+        <DetailsBanner image={anime.bannerImage}></DetailsBanner>
 
         <Section className="relative pb-4 bg-background-900">
           <div className="flex flex-row md:space-x-8">
-            <div className="shrink-0 relative md:static md:left-0 md:-translate-x-0 w-[120px] md:w-[186px] mt-4 md:-mt-20 space-y-6">
+            <div className="shrink-0 relative md:static md:left-0 md:-translate-x-0 w-[120px] md:w-[186px] mt-4 md:-mt-12 space-y-6">
               <PlainCard src={anime.coverImage.extraLarge} alt={title} />
-
-              {user && !isMobile && (
-                <div className="hidden md:flex items-center space-x-1">
-                  <SourceStatus type={MediaType.Anime} source={anime} />
-                  <NotificationButton type={MediaType.Anime} source={anime} />
-                </div>
-              )}
             </div>
 
             <div className="flex flex-col justify-between md:py-4 ml-4 text-left items-start md:-mt-16 space-y-4">
@@ -151,49 +109,6 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
                   >
                     <p>{t("common:watch_now")}</p>
                   </Button>
-
-                  <Popup
-                    reference={
-                      <Button
-                        className="!bg-[#393a3b]"
-                        LeftIcon={BiDotsHorizontalRounded}
-                      ></Button>
-                    }
-                    placement="bottom"
-                    type="click"
-                    className="space-y-2"
-                  >
-                    <Link href={`/wwf/create/${anime.id}`}>
-                      <a>
-                        <Button
-                          secondary
-                          className="w-full"
-                          LeftIcon={BsFillPlayFill}
-                        >
-                          <p>{t("watch_with_friends")}</p>
-                        </Button>
-                      </a>
-                    </Link>
-
-                    <AddTranslationModal
-                      mediaId={anime.id}
-                      mediaType={MediaType.Anime}
-                      defaultDescription={description}
-                      defaultTitle={title}
-                    />
-
-                    <Link href={`/upload/anime/${anime.id}`}>
-                      <a>
-                        <Button
-                          secondary
-                          className="w-full"
-                          LeftIcon={AiOutlineUpload}
-                        >
-                          <p>Upload</p>
-                        </Button>
-                      </a>
-                    </Link>
-                  </Popup>
                 </div>
 
                 <p className="mb-2 text-2xl md:text-3xl font-semibold">
@@ -257,10 +172,6 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
             </div>
           </div>
 
-          <ClientOnly>
-            <Banner mobile="300x250" type="atf" />
-          </ClientOnly>
-
           <MediaDescription
             description={description}
             containerClassName="my-4 block md:hidden"
@@ -268,74 +179,18 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
           />
 
           <div className="flex md:hidden items-center space-x-2 mb-4">
-            {user && isMobile && (
-              <SourceStatus type={MediaType.Anime} source={anime} />
-            )}
-
-            <div className={classNames(!user && "flex-1")}>
-              {user ? (
-                <CircleButton
-                  onClick={handleWatchClick}
-                  secondary
-                  LeftIcon={BsFillPlayFill}
-                />
-              ) : (
-                <Button
-                  onClick={handleWatchClick}
-                  primary
-                  LeftIcon={BsFillPlayFill}
-                  className="relative w-full"
-                >
-                  <p className="!mx-0 absolute left-1/2 -translate-x-1/2">
-                    {t("common:watch_now")}
-                  </p>
-                </Button>
-              )}
+            <div className="flex-1">
+              <Button
+                onClick={handleWatchClick}
+                primary
+                LeftIcon={BsFillPlayFill}
+                className="relative w-full"
+              >
+                <p className="!mx-0 absolute left-1/2 -translate-x-1/2">
+                  {t("common:watch_now")}
+                </p>
+              </Button>
             </div>
-
-            {user && isMobile && (
-              <NotificationButton type={MediaType.Anime} source={anime} />
-            )}
-
-            <Popup
-              reference={
-                <CircleButton secondary LeftIcon={BiDotsHorizontalRounded} />
-              }
-              placement="bottom"
-              type="click"
-              className="space-y-2"
-            >
-              <Link href={`/wwf/create/${anime.id}`}>
-                <a>
-                  <Button
-                    secondary
-                    className="w-full"
-                    LeftIcon={BsFillPlayFill}
-                  >
-                    <p>{t("watch_with_friends")}</p>
-                  </Button>
-                </a>
-              </Link>
-
-              <AddTranslationModal
-                mediaId={anime.id}
-                mediaType={MediaType.Anime}
-                defaultDescription={description}
-                defaultTitle={title}
-              />
-
-              <Link href={`/upload/anime/${anime.id}`}>
-                <a>
-                  <Button
-                    secondary
-                    className="w-full"
-                    LeftIcon={AiOutlineUpload}
-                  >
-                    <p>Upload</p>
-                  </Button>
-                </a>
-              </Link>
-            </Popup>
           </div>
 
           <div className="md:hidden flex gap-x-8 overflow-x-auto md:gap-x-16 [&>*]:shrink-0">
@@ -450,27 +305,12 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
           </div>
 
           <div className="space-y-12 md:col-span-8">
-            <NativeBanner />
-
-            <Banner desktop="970x250" mobile="320x100" type="middle" />
-
             <DetailsSection
               title={t("episodes_section")}
               className="overflow-hidden"
             >
               <div ref={episodeSelectorRef}>
-                {isLoading || watchedLoading ? (
-                  <div className="h-full w-full flex items-center justify-center">
-                    <Spinner />
-                  </div>
-                ) : (
-                  <LocaleEpisodeSelector
-                    watchedData={watchedData}
-                    mediaId={anime.id}
-                    episodes={episodes}
-                    media={anime}
-                  />
-                )}
+                <SourceEpisodeSelector media={anime} />
               </div>
             </DetailsSection>
 
@@ -507,10 +347,6 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
                 </List>
               </DetailsSection>
             )}
-
-            <DetailsSection title={t("comments_section")}>
-              <Comments topic={`anime-${anime.id}`} />
-            </DetailsSection>
           </div>
         </Section>
       </div>
@@ -522,22 +358,6 @@ export const getStaticProps: GetStaticProps = async ({
   params: { params },
 }) => {
   try {
-    const { data: isDMCA } = await supabaseClient
-      .from("kaguya_dmca")
-      .select("id")
-      .eq("mediaId", params[0])
-      .eq("mediaType", MediaType.Anime)
-      .single();
-
-    if (isDMCA) {
-      return {
-        props: null,
-        redirect: {
-          destination: "/got-dmca",
-        },
-      };
-    }
-
     const media = await getMediaDetails({
       type: MediaType.Anime,
       id: Number(params[0]),
@@ -563,7 +383,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export default withRedirect(DetailsPage, (router, props) => {
   const { params } = router.query;
   const [id, slug] = params as string[];
-  const title = getTitle(props.anime, router.locale);
+  const title = getTitle(props.anime);
 
   if (slug) return null;
 

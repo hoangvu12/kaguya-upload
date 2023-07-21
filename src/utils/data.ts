@@ -2,9 +2,13 @@ import enTranslations from "@/constants/en";
 import esTranslations from "@/constants/es";
 import ruTranslations from "@/constants/ru";
 import viTranslations from "@/constants/vi";
-import { Chapter, Episode } from "@/types";
 import { Media } from "@/types/anilist";
 import { Translation } from "next-i18next";
+import {
+  Chapter,
+  Episode,
+  Translation as MediaUnitTranslation,
+} from "@/types/core";
 import { parseNumbersFromString } from ".";
 
 type Translate = { readonly value: string; readonly label: string } & Record<
@@ -102,65 +106,53 @@ export const convert = (
   return constant[index].label;
 };
 
-export const getTitle = (data: Media, locale?: string) => {
-  const translations = data?.translations || [];
-
-  const translation = translations.find((trans) => trans.locale === locale);
-
-  if (!translation) {
-    return data?.title?.userPreferred;
-  }
-
-  return translation.title || data?.title?.userPreferred;
+export const getTitle = (data: Media) => {
+  return data?.title?.userPreferred;
 };
 
-export const getDescription = (data: Media, locale?: string) => {
-  const translations = data?.translations || [];
-
-  const translation = translations.find((trans) => trans.locale === locale);
-
-  if (!translation) {
-    return data?.description;
-  }
-
-  return translation.description || data?.description;
+export const getDescription = (data: Media) => {
+  return data?.description;
 };
 
 export const getEpisodeTitle = (
-  titles: Record<string, string>,
-  locale?: string
+  translations: MediaUnitTranslation[],
+  options: { locale?: string; fallback?: string } = {
+    locale: "en",
+    fallback: null,
+  }
 ) => {
-  if (!titles) return null;
+  if (!translations?.length) return options.fallback;
 
-  const keys = Object.keys(titles);
+  const translation = translations.find(
+    (translation) => translation.locale === options.locale
+  );
 
-  if (!keys.length) return null;
+  if (translation) return translation.title;
 
-  if (titles[locale]) return titles[locale];
-
-  return titles[keys[0]];
+  return options.fallback;
 };
 export const getEpisodeDescription = (
-  descriptions: Record<string, string>,
-  locale?: string
-) => {
-  if (!descriptions) return null;
-
-  const keys = Object.keys(descriptions);
-
-  if (!keys.length) return null;
-
-  if (descriptions[locale]) {
-    return descriptions[locale];
+  translations: MediaUnitTranslation[],
+  options: { locale?: string; fallback?: string } = {
+    locale: "en",
+    fallback: null,
   }
+) => {
+  if (!translations?.length) return options.fallback;
 
-  return descriptions[keys[0]];
+  const translation = translations.find(
+    (translation) => translation.locale === options.locale
+  );
+
+  if (translation) return translation.description;
+
+  return options.fallback;
 };
 
 export const sortMediaUnit = <T extends Chapter | Episode>(data: T[]) => {
   return data.sort((a, b) => {
-    const aNumber = parseNumbersFromString(a.name, 9999)?.[0];
-    const bNumber = parseNumbersFromString(b.name, 9999)?.[0];
+    const aNumber = parseNumbersFromString(a.number, 9999)?.[0];
+    const bNumber = parseNumbersFromString(b.number, 9999)?.[0];
 
     return aNumber - bNumber;
   });

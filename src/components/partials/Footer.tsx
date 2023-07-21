@@ -1,11 +1,11 @@
+import NextLink from "@/components/shared/Link";
+import Logo from "@/components/shared/Logo";
 import { DISCORD_URL, FACEBOOK_URL } from "@/constants";
+import { useTranslation } from "next-i18next";
+import { LinkProps } from "next/link";
 import React from "react";
 import { AiFillFacebook } from "react-icons/ai";
 import { FaDiscord } from "react-icons/fa";
-import Logo from "@/components/shared/Logo";
-import NextLink from "@/components/shared/Link";
-import { LinkProps } from "next/link";
-import { useTranslation } from "next-i18next";
 
 interface FooterItemProps {
   Icon: React.ComponentType<any>;

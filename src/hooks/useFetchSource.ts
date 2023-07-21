@@ -1,84 +1,70 @@
-import config from "@/config";
-import { Episode, Font, Subtitle, VideoSource } from "@/types";
-import { createProxyUrl } from "@/utils";
-import axios, { AxiosError } from "axios";
-import { useRouter } from "next/dist/client/router";
-import { useQuery } from "react-query";
+import { Episode, VideoContainer, VideoServer } from "@/types/core";
+import { sendMessage } from "@/utils/events";
+import { UseQueryOptions, useQuery } from "react-query";
 import { toast } from "react-toastify";
 
-interface ReturnSuccessType {
-  success: true;
-  sources: VideoSource[];
-  subtitles?: Subtitle[];
-  fonts?: Font[];
-  thumbnail?: string;
+interface VideoContainerProps {
+  videoServer: VideoServer;
+  extraData: Record<string, string>;
+  sourceId: string;
 }
 
-interface ReturnFailType {
-  success: false;
-  error: string;
-  errorMessage: string;
-}
+export const getQueryKey = (episode: Episode, sourceId: string) =>
+  `source-${sourceId}-${episode.id}`;
 
-export const fetchSource = async (
-  episode: Episode,
-  serverId: string,
-  locale: string
+export const useFetchSource = (
+  currentEpisode: Episode,
+  sourceId: string,
+  server: VideoServer,
+  options?: Omit<
+    UseQueryOptions<VideoContainer, Error, VideoContainer, any>,
+    "queryKey" | "queryFn"
+  >
 ) => {
-  const hasViLocale = episode?.source?.locales?.includes("vi");
+  return useQuery<VideoContainer, Error>(
+    [getQueryKey(currentEpisode, sourceId), server],
+    async () => {
+      // console.log(JSON.stringify({ currentEpisode, server }));
 
-  const nodeServerUrl = (() => {
-    if (hasViLocale || locale === "vi") {
-      return config.nodeServer.vn;
-    }
+      const videoContainer = await sendMessage<
+        VideoContainerProps,
+        VideoContainer
+      >("get-video-container", {
+        videoServer: server,
+        extraData: server.extraData,
+        sourceId,
+      });
 
-    return config.nodeServer.global;
-  })();
+      if (!videoContainer?.videos?.length)
+        return {
+          videos: [],
+          subtitles: [],
+        };
 
-  const convertSources = (sources: VideoSource[]) =>
-    sources.map((source) => {
-      if (source.useProxy && !source.isEmbed) {
-        source.file = createProxyUrl(
-          source.file,
-          source.proxy,
-          source.usePublicProxy,
-          source.useEdgeProxy,
-          episode?.source?.locales?.includes("vi") ? "vi" : locale
-        );
+      // update rules to apply required headers
+      const videoFileUrls = videoContainer.videos.map((video) => video.file);
+      const subtitleFileUrls =
+        videoContainer.subtitles?.map((subtitle) => subtitle.file) || [];
+
+      const fileUrls = [...videoFileUrls, ...subtitleFileUrls].filter(
+        (url) => url.headers
+      );
+
+      if (fileUrls?.length) {
+        await sendMessage("update-rules", {
+          fileUrls,
+        });
       }
 
-      return source;
-    });
-
-  const { data } = await axios.get<ReturnSuccessType>(
-    `${nodeServerUrl}/source`,
-    {
-      params: {
-        episode_id: episode.sourceEpisodeId,
-        source_media_id: episode.sourceMediaId,
-        source_id: episode.sourceId,
-        server_id: serverId,
-      },
-    }
-  );
-  data.sources = convertSources(data.sources);
-  return data;
-};
-
-export const getQueryKey = (episode: Episode, serverId: string) =>
-  `source-${episode.sourceId}-${episode.sourceEpisodeId}-${serverId}`;
-
-export const useFetchSource = (currentEpisode: Episode, serverId: string) => {
-  const { locale } = useRouter();
-
-  return useQuery<ReturnSuccessType, AxiosError<ReturnFailType>>(
-    getQueryKey(currentEpisode, serverId),
-    () => fetchSource(currentEpisode, serverId, locale),
+      return videoContainer;
+    },
     {
       onError: (error) => {
-        toast.error(error.message);
+        toast.error(error);
       },
-      enabled: !!serverId,
+      enabled: !!server?.name,
+
+      ...options,
     }
   );
 };

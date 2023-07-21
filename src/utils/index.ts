@@ -1,6 +1,4 @@
-import config from "@/config";
 import dayjs from "@/lib/dayjs";
-import { Proxy } from "@/types";
 import {
   Character,
   Media,
@@ -11,7 +9,6 @@ import {
 } from "@/types/anilist";
 import axios from "axios";
 import mime from "mime";
-import { stringify } from "querystring";
 import { toast } from "react-toastify";
 import slugify, { charmap, multicharmap } from "slug";
 
@@ -365,72 +362,6 @@ export const createFileFromUrl = async (url: string, filename: string) => {
   return file;
 };
 
-export const createProxyUrl = (
-  url: string,
-  proxy: Proxy,
-  isPublicProxy?: boolean,
-  isEdgeProxy?: boolean,
-  locale = "en"
-) => {
-  console.log("creating proxy url");
-
-  if (isPublicProxy) return `https://corsproxy.io/?${encodeURIComponent(url)}`;
-
-  const composeHeaders = (
-    headers: Record<string, string>
-  ): [string, string][] => {
-    return Object.entries(headers).map(([key, value]) => [key, value]);
-  };
-
-  const {
-    appendReqHeaders = {},
-    appendResHeaders = {},
-    deleteReqHeaders = [],
-    deleteResHeaders = [],
-    ...rest
-  } = proxy;
-
-  const modifiedAppendReqHeaders = JSON.stringify(
-    composeHeaders(appendReqHeaders)
-  );
-  const modifiedAppendResHeaders = JSON.stringify(
-    composeHeaders(appendResHeaders)
-  );
-
-  const modifiedDeleteReqHeaders = JSON.stringify(deleteReqHeaders);
-  const modifiedDeleteResHeaders = JSON.stringify(deleteResHeaders);
-
-  const params = stringify({
-    appendReqHeaders: modifiedAppendReqHeaders,
-    appendResHeaders: modifiedAppendResHeaders,
-    deleteReqHeaders: modifiedDeleteReqHeaders,
-    deleteResHeaders: modifiedDeleteResHeaders,
-    ...rest,
-  });
-
-  const proxyUrl = (() => {
-    if (isEdgeProxy) return config.proxyServer.edge;
-
-    if (locale === "en") return config.proxyServer.global;
-
-    return config.proxyServer.vn;
-  })();
-
-  console.log(proxyUrl, config.proxyServer);
-
-  return `${proxyUrl}/?url=${encodeURIComponent(url)}&${params}`;
-};
-
-export const createAttachmentUrl = (url: string, locale = "en") => {
-  const nodeServerUrl = (() => {
-    if (locale === "en") return config.nodeServer.global;
-
-    return config.nodeServer.vn;
-  })();
-
-  return `${nodeServerUrl}/file/${url}`;
-};
-
 export const createMediaDetailsUrl = (media: Media) => {
   if (!media) return "";
 
@@ -510,3 +441,6 @@ export function getWithExpiry<T>(key: string): T {
 
   return item.value;
 }
+
+export const compareTwoObject = (obj1: any, obj2: any) =>
+  JSON.stringify(obj1) === JSON.stringify(obj2);

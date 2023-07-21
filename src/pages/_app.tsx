@@ -1,9 +1,7 @@
 import IosAlert from "@/components/features/others/IosAlert";
 import BaseLayout from "@/components/layouts/BaseLayout";
 import { AppErrorFallback } from "@/components/shared/AppErrorFallback";
-import { AuthContextProvider } from "@/contexts/AuthContext";
 import GlobalPlayerContextProvider from "@/contexts/GlobalPlayerContext";
-import { SubscriptionContextProvider } from "@/contexts/SubscriptionContext";
 import { pageview } from "@/lib/gtag";
 import "@/styles/index.css";
 import { logError } from "@/utils/error";
@@ -170,9 +168,6 @@ function App({ Component, pageProps, router, err }: WorkaroundAppProps) {
 
       <Provider>
         <QueryClientProvider client={queryClient}>
-          <AuthContextProvider />
-          {/* <AdsProvider /> */}
-          <SubscriptionContextProvider />
           <GlobalPlayerContextProvider />
 
           <ErrorBoundary

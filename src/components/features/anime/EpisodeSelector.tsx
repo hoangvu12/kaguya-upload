@@ -4,11 +4,10 @@ import HeadlessSwiper, {
 } from "@/components/shared/HeadlessSwiper";
 import Link from "@/components/shared/Link";
 import Select from "@/components/shared/Select";
-import { Episode, Watched } from "@/types";
 import { Media } from "@/types/anilist";
+import { Episode, WatchedEpisode } from "@/types/core";
 import { chunk, groupBy, parseNumberFromString } from "@/utils";
 import classNames from "classnames";
-import { LinkProps } from "next/link";
 import { useRouter } from "next/router";
 import React, {
   useCallback,
@@ -22,30 +21,31 @@ import { HiOutlineViewGrid } from "react-icons/hi";
 import { IoMdImage } from "react-icons/io";
 import { SwiperOptions } from "swiper";
 import EpisodeCard from "./EpisodeCard";
+import { LinkProps } from "next/link";
 
 export interface EpisodeSelectorProps {
   episodes: Episode[];
-  mediaId?: number;
+  sourceId: string;
+  media: Media;
   activeEpisode?: Episode;
+  watchedEpisode?: WatchedEpisode;
   episodeLinkProps?: Omit<LinkProps, "href">;
-  onEachEpisode?: (episode: Episode) => React.ReactNode;
-  episodeChunk?: number;
-  watchedData?: Watched;
-  media?: Media;
 }
 
 export interface EpisodeButtonProps {
   episode: Episode;
-  watchedData?: Watched;
   media?: Media;
   episodes: Episode[];
   activeEpisode?: Episode;
+  watchedEpisode?: WatchedEpisode;
 }
 
 export enum EpisodeShowType {
   Thumbnail = "thumbnail",
   Grid = "grid",
 }
+
+const EPISODE_CHUNK = isMobileOnly ? 12 : 24;
 
 const swiperOptions: SwiperOptions = {
   spaceBetween: 10,
@@ -82,53 +82,70 @@ const swiperOptions: SwiperOptions = {
 const EpisodeButton: React.FC<EpisodeButtonProps> = ({
   media,
   episode,
-  watchedData,
   episodes,
   activeEpisode,
+  watchedEpisode,
 }) => {
+  const watchedEpisodeNumber = useMemo(
+    () =>
+      watchedEpisode?.episode?.number
+        ? parseNumberFromString(watchedEpisode?.episode?.number)
+        : null,
+    [watchedEpisode?.episode?.number]
+  );
+
+  const episodeNumber = useMemo(
+    () => parseNumberFromString(episode.number),
+    [episode.number]
+  );
+
   const watchProgressPercent = useMemo(() => {
-    if (watchedData?.episode?.episodeNumber === episode.episodeNumber) {
+    if (!watchedEpisode) return 0;
+
+    if (watchedEpisodeNumber === episodeNumber) {
       if (media?.duration === null) return 100;
 
       const duration = media.duration * 60;
 
-      if (duration < watchedData?.watchedTime) return 100;
+      if (duration < watchedEpisode?.time) return 100;
 
-      const percent = (watchedData?.watchedTime / duration) * 100;
+      const percent = (watchedEpisode?.time / duration) * 100;
 
       return percent < 10 ? 10 : percent;
     }
 
     // If episodeNumber is 0, it mean it is a special episode.
-    if (episode.episodeNumber === 0 && episodes.length > 1) return 0;
+    if (episodeNumber === 0 && episodes.length > 1) return 0;
 
-    if (episode.episodeNumber < watchedData?.episode?.episodeNumber) return 100;
+    if (episodeNumber < watchedEpisodeNumber) return 100;
 
     return 0;
   }, [
-    episode.episodeNumber,
+    episodeNumber,
     episodes.length,
-    media.duration,
-    watchedData?.episode?.episodeNumber,
-    watchedData?.watchedTime,
+    media?.duration,
+    watchedEpisode,
+    watchedEpisodeNumber,
   ]);
 
   return (
     <div
       className={classNames(
         "relative rounded-md bg-background-700 col-span-1 aspect-w-2 aspect-h-1 group",
-        episode.sourceEpisodeId === activeEpisode?.sourceEpisodeId
+        episode.id === activeEpisode?.id
           ? "text-primary-300"
-          : watchedData?.episode?.episodeNumber >= episode.episodeNumber &&
-              "text-white/70"
+          : watchedEpisodeNumber >= episodeNumber && "text-white/70"
       )}
     >
-      <div className="flex items-center justify-center w-full h-full group-hover:bg-white/10 rounded-md transition duration-300">
-        <p>{episode.name}</p>
+      <div
+        title={episode.title}
+        className="flex items-center justify-center w-full h-full group-hover:bg-white/10 rounded-md transition duration-300"
+      >
+        <p>{episode.number}</p>
       </div>
 
       <div className="absolute w-full h-full">
-        {watchedData?.episode?.episodeNumber >= episode.episodeNumber && (
+        {watchedEpisodeNumber >= episodeNumber && (
           <div
             className="absolute bottom-0 h-0.5 bg-primary-500"
             style={{ width: `${watchProgressPercent}%` }}
@@ -145,73 +162,34 @@ const EpisodeButton: React.FC<EpisodeButtonProps> = ({
   );
 };
 
-const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
-  const [swiper, setSwiper] = useState<SwiperInstance>();
+const EpisodeSelector: React.FC<EpisodeSelectorProps> = ({
+  episodes,
+  sourceId,
+  media,
+  activeEpisode,
+  watchedEpisode,
+  episodeLinkProps,
+}) => {
+  const [videoContainer, setVideoContainer] = useState<HTMLElement>();
+  const savedActiveChunkIndex = useRef<number>(0);
   const [showType, setShowType] = useState<EpisodeShowType>(() => {
     if (isMobileOnly) return EpisodeShowType.Grid;
 
-    if (props.episodes.some((episode) => episode.thumbnail && episode.title))
+    if (episodes.some((episode) => episode.thumbnail && episode.title))
       return EpisodeShowType.Thumbnail;
 
     return EpisodeShowType.Grid;
   });
-
-  const { asPath } = useRouter();
   const containerEl = useRef<HTMLDivElement>(null);
+  const [swiper, setSwiper] = useState<SwiperInstance>();
 
-  const {
-    watchedData,
-    episodes,
-    media,
-    activeEpisode,
-    episodeLinkProps,
-    episodeChunk = isMobileOnly ? 12 : 24,
-    onEachEpisode = (episode) => {
-      const watchedTime = (() => {
-        if (watchedData?.episode?.episodeNumber === episode.episodeNumber) {
-          return watchedData?.watchedTime;
-        }
-
-        // If episodeNumber is 0, it mean it is a special episode.
-        if (episode.episodeNumber === 0 && episodes.length > 1) return 0;
-
-        if (episode.episodeNumber < watchedData?.episode?.episodeNumber)
-          return media?.duration * 60;
-
-        return 0;
-      })();
-
-      return (
-        <Link
-          href={`/anime/watch/${props.mediaId}/${episode.sourceId}/${episode.sourceEpisodeId}`}
-          key={episode.sourceEpisodeId}
-          shallow
-          {...episodeLinkProps}
-        >
-          {showType === EpisodeShowType.Grid ? (
-            <a>
-              <EpisodeButton episode={episode} {...props} />
-            </a>
-          ) : (
-            <a>
-              <EpisodeCard
-                episode={episode}
-                watchedTime={watchedTime}
-                media={media}
-                duration={media.duration * 60}
-                isActive={
-                  episode.sourceEpisodeId === activeEpisode?.sourceEpisodeId
-                }
-              />
-            </a>
-          )}
-        </Link>
-      );
-    },
-  } = props;
-
-  const [videoContainer, setVideoContainer] = useState<HTMLElement>();
-  const savedActiveChunkIndex = useRef<number>(0);
+  const watchedEpisodeNumber = useMemo(
+    () =>
+      watchedEpisode?.episode?.number
+        ? parseNumberFromString(watchedEpisode?.episode?.number)
+        : null,
+    [watchedEpisode?.episode?.number]
+  );
 
   const sections = useMemo(
     () => groupBy(episodes, (episode) => episode.section),
@@ -231,17 +209,19 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
   }, [activeSection, sections]);
 
   const chunks = useMemo(
-    () => chunk(sectionEpisodes, episodeChunk),
-    [episodeChunk, sectionEpisodes]
+    () => chunk(sectionEpisodes, EPISODE_CHUNK),
+    [sectionEpisodes]
   );
+
+  const { asPath } = useRouter();
 
   const [activeChunk, setActiveChunk] = useState(() => {
     return (
       chunks.find((chunk) =>
         chunk.some(
           (episode) =>
-            episode.sourceEpisodeId === activeEpisode?.sourceEpisodeId ||
-            episode.episodeNumber === watchedData?.episode?.episodeNumber
+            episode.id === activeEpisode?.id ||
+            parseNumberFromString(episode.number) === watchedEpisodeNumber
         )
       ) || chunks.sort((a, b) => b.length - a.length)[0]
     );
@@ -254,12 +234,12 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
   const chunkOptions = useMemo(() => {
     const options = chunks.map((chunk, i) => {
       const firstEpisodeName = parseNumberFromString(
-        chunk[0].name,
-        chunk[0].name
+        chunk[0].number,
+        chunk[0].number
       );
       const lastEpisodeName = parseNumberFromString(
-        chunk[chunk.length - 1].name,
-        chunk[chunk.length - 1].name
+        chunk[chunk.length - 1].number,
+        chunk[chunk.length - 1].number
       );
 
       const title =
@@ -278,7 +258,7 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
 
   const sectionOptions = useMemo(() => {
     const sectionKeys = Object.keys(sections).filter(
-      (section) => section && section !== "null"
+      (section) => section && section !== "null" && section !== "undefined"
     );
 
     if (!sectionKeys.length) {
@@ -296,23 +276,6 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
   const activeSectionOption = useMemo(() => {
     return sectionOptions.find((option) => option.value === activeSection);
   }, [activeSection, sectionOptions]);
-
-  const watchedSourceEpisode = useMemo(() => {
-    const watchedEpisode = watchedData?.episode;
-
-    if (!watchedEpisode) return null;
-    if (!activeChunk) return watchedEpisode;
-
-    const watchedEpisodeNumber = watchedEpisode.episodeNumber;
-
-    const watchedEpisodeInActiveChunk = activeChunk.find(
-      (chunk) => chunk.episodeNumber === watchedEpisodeNumber
-    );
-
-    if (!watchedEpisodeInActiveChunk) return watchedEpisode;
-
-    return watchedEpisodeInActiveChunk;
-  }, [activeChunk, watchedData?.episode]);
 
   const onChunkChange = ({ value }) => {
     setActiveChunk(value);
@@ -359,8 +322,8 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
     const chunk = chunks.find((chunk) =>
       chunk.some(
         (episode) =>
-          episode.sourceEpisodeId === activeEpisode?.sourceEpisodeId ||
-          episode.episodeNumber === watchedData?.episode?.episodeNumber
+          episode.id === activeEpisode?.id ||
+          parseNumberFromString(episode.number) === watchedEpisodeNumber
       )
     );
 
@@ -378,9 +341,9 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     savedActiveChunkIndex.current,
-    activeEpisode?.sourceEpisodeId,
+    activeEpisode?.id,
     chunks,
-    watchedData?.episode?.episodeNumber,
+    watchedEpisodeNumber,
   ]);
 
   useEffect(() => {
@@ -467,40 +430,71 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = (props) => {
       </div>
 
       <div className="mt-10 space-y-4 max-h-96 overflow-y-auto">
-        {watchedSourceEpisode && (
+        {watchedEpisode?.episode && (
           <div className="flex items-center gap-4">
             <p className="shrink-0">Continue watching: </p>
 
             <div className="grid grid-cols-1 w-28">
               <Link
-                href={`/anime/watch/${props.mediaId}/${watchedSourceEpisode.sourceId}/${watchedSourceEpisode.sourceEpisodeId}`}
-                key={watchedSourceEpisode.sourceEpisodeId}
+                href={`/anime/watch/${media.id}/${sourceId}/${watchedEpisode.episode.id}`}
+                key={watchedEpisode.episode.id}
                 shallow
                 {...episodeLinkProps}
               >
                 <a>
-                  <EpisodeButton episode={watchedSourceEpisode} {...props} />
+                  <EpisodeButton
+                    media={media}
+                    episodes={episodes}
+                    episode={watchedEpisode.episode}
+                    activeEpisode={activeEpisode}
+                    watchedEpisode={watchedEpisode}
+                  />
                 </a>
               </Link>
             </div>
           </div>
         )}
 
-        {activeChunk?.length && (
-          <div
-            className={classNames(
-              showType === EpisodeShowType.Grid
-                ? "xl:grid-cols-8 lg:grid-cols-7 md:grid-cols-6 sm:grid-cols-5 grid-cols-4"
-                : "xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 grid-cols-1",
-              "grid gap-4"
-            )}
-          >
-            {activeChunk.map(onEachEpisode)}
-          </div>
-        )}
+        <div
+          className={classNames(
+            showType === EpisodeShowType.Grid
+              ? "xl:grid-cols-8 lg:grid-cols-7 md:grid-cols-6 sm:grid-cols-5 grid-cols-4"
+              : "xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 grid-cols-1",
+            "mt-8 grid gap-4"
+          )}
+        >
+          {episodes.map((episode) => (
+            <Link
+              href={`/anime/watch/${media.id}/${sourceId}/${episode.id}`}
+              key={episode.id}
+              shallow
+              {...episodeLinkProps}
+            >
+              <a>
+                {showType === EpisodeShowType.Grid ? (
+                  <EpisodeButton
+                    media={media}
+                    episodes={episodes}
+                    episode={episode}
+                    activeEpisode={activeEpisode}
+                    watchedEpisode={watchedEpisode}
+                  />
+                ) : (
+                  <EpisodeCard
+                    episode={episode}
+                    watchedTime={watchedEpisode?.time}
+                    media={media}
+                    duration={media.duration * 60}
+                    isActive={episode.id === activeEpisode?.id}
+                  />
+                )}
+              </a>
+            </Link>
+          ))}
+        </div>
       </div>
     </React.Fragment>
   );
 };
 
-export default React.memo(EpisodeSelector);
+export default EpisodeSelector;

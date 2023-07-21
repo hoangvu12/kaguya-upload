@@ -1,13 +1,8 @@
-import config from "@/config";
 import { SKIP_TIME } from "@/constants";
 import useConstantTranslation from "@/hooks/useConstantTranslation";
-import { Font, VideoSource } from "@/types";
-import { createProxyUrl } from "@/utils";
+import { Subtitle as SubtitleType, Video } from "@/types/core";
 import NetPlayer, { NetPlayerProps } from "netplayer";
-import Hls from "netplayer/dist/types/hls.js";
-import { useRouter } from "next/router";
-import React, { useCallback, useMemo } from "react";
-import { buildAbsoluteURL } from "url-toolkit";
+import React, { useMemo } from "react";
 import Subtitle from "./Subtitle";
 
 const skipOPEDHotkey = () => ({
@@ -18,21 +13,17 @@ const skipOPEDHotkey = () => ({
   name: "skip-op/ed",
 });
 
-export interface PlayerProps extends NetPlayerProps {
-  fonts?: Font[];
+export interface PlayerProps
+  extends Omit<NetPlayerProps, "sources" | "subtitles"> {
+  sources: Video[];
+  subtitles: SubtitleType[];
 }
 
-const corsServers = [
-  config.proxyServer.global,
-  config.proxyServer.vn,
-  config.proxyServer.edge,
-  "https://corsproxy.io",
-];
-
 const Player = React.forwardRef<HTMLVideoElement, PlayerProps>(
-  ({ hotkeys = [], components = [], subtitles = [], ...props }, ref) => {
-    const { locale } = useRouter();
-
+  (
+    { hotkeys = [], components = [], subtitles = [], sources, ...props },
+    ref
+  ) => {
     const { PLAYER_TRANSLATIONS } = useConstantTranslation();
 
     const playerComponents = useMemo(
@@ -45,127 +36,24 @@ const Player = React.forwardRef<HTMLVideoElement, PlayerProps>(
       [hotkeys]
     );
 
-    const handleHlsInit = useCallback(
-      (hls: Hls, source: VideoSource) => {
-        // @ts-ignore
-        hls.on("hlsFragLoading", (_, { frag }) => {
-          if (
-            !corsServers.some((server) => frag.url.includes(server)) ||
-            frag.relurl.includes("http")
-          )
-            return;
-
-          if (
-            frag.url.includes(config.proxyServer.global) ||
-            frag.url.includes(config.proxyServer.vn) ||
-            frag.url.includes(config.proxyServer.edge)
-          ) {
-            const href = new URL(frag.baseurl);
-            const targetUrl = href.searchParams.get("url");
-
-            const url = buildAbsoluteURL(targetUrl, frag.relurl, {
-              alwaysNormalize: true,
-            });
-
-            href.searchParams.set("url", url);
-
-            frag.url = href.toString();
-
-            // Free CORS server
-          } else if (frag.url.includes("corsproxy")) {
-            const targetUrl = decodeURIComponent(
-              frag.baseurl.replace("https://corsproxy.io/?", "")
-            );
-
-            const url = buildAbsoluteURL(targetUrl, frag.relurl, {
-              alwaysNormalize: true,
-            });
-
-            frag.url = `https://corsproxy.io/?${encodeURIComponent(url)}`;
-          }
-        });
-
-        // @ts-ignore
-        hls.on("hlsManifestParsed", (_, info) => {
-          info.levels.forEach((level) => {
-            if (!level?.url?.length) return;
-
-            level.url = level.url.map((url) => {
-              if (!corsServers.some((server) => url.includes(server)))
-                return url;
-
-              if (url.includes("corsproxy")) {
-                const targetUrl = decodeURIComponent(
-                  url.replace("https://corsproxy.io/", "")
-                );
-
-                const finalUrl = buildAbsoluteURL(source.file, targetUrl, {
-                  alwaysNormalize: true,
-                });
-
-                return `https://corsproxy.io/?${encodeURIComponent(finalUrl)}`;
-              } else if (
-                url.includes(config.proxyServer.global) ||
-                url.includes(config.proxyServer.vn) ||
-                url.includes(config.proxyServer.edge)
-              ) {
-                const proxyUrl = (() => {
-                  if (source.useEdgeProxy) return config.proxyServer.edge;
-                  if (locale === "vi") return config.proxyServer.vn;
-
-                  return config.proxyServer.global;
-                })(); // https://deno-proxy.kaguya.app
-
-                const targetUrl = decodeURIComponent(
-                  url.replace(proxyUrl + "/", "")
-                ); // ep.1.1673285640.1080.m3u8
-
-                let baseUrl = source.file;
-
-                if (baseUrl.includes(proxyUrl)) {
-                  const { searchParams } = new URL(baseUrl);
-
-                  baseUrl = decodeURIComponent(searchParams.get("url"));
-                }
-
-                const finalUrl = buildAbsoluteURL(baseUrl, targetUrl, {
-                  alwaysNormalize: true,
-                });
-
-                return createProxyUrl(
-                  finalUrl,
-                  source.proxy,
-                  source.usePublicProxy,
-                  source.useEdgeProxy,
-                  locale
-                );
-              }
-            });
-          });
-        });
-      },
-      [locale]
+    const composedSubtitles = useMemo(
+      () =>
+        subtitles.map((sub) => ({
+          file: sub.file.url,
+          lang: sub.language,
+          language: sub.language,
+        })),
+      [subtitles]
     );
 
-    const proxyBuilder = useCallback(
-      (url: string, source: VideoSource) => {
-        if (
-          corsServers.some((server) => url.includes(server)) ||
-          (!source.useProxy && !source.usePublicProxy && !source.useEdgeProxy)
-        )
-          return url;
-
-        const requestUrl = createProxyUrl(
-          url,
-          source.proxy,
-          source.usePublicProxy,
-          source.useEdgeProxy,
-          locale
-        );
-
-        return requestUrl;
-      },
-      [locale]
+    const composedSources = useMemo(
+      () =>
+        sources.map((source) => ({
+          file: source.file.url,
+          label: source.quality,
+          type: source.format,
+        })),
+      [sources]
     );
 
     return (
@@ -173,10 +61,9 @@ const Player = React.forwardRef<HTMLVideoElement, PlayerProps>(
         ref={ref}
         i18n={PLAYER_TRANSLATIONS}
         hotkeys={playerHotkeys}
-        onHlsInit={handleHlsInit}
         components={playerComponents}
-        subtitles={subtitles}
-        changeSourceUrl={proxyBuilder}
+        subtitles={composedSubtitles}
+        sources={composedSources}
         preferQuality={(qualities) => {
           const priority = ["1080p", "720p", "480p", "360p", "240p"];
 

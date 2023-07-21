@@ -1,45 +1,37 @@
-import { useUser } from "@/contexts/AuthContext";
-import supabaseClient from "@/lib/supabase";
-
 import { getMedia } from "@/services/anilist";
-import { Watched } from "@/types";
+import { Media } from "@/types/anilist";
+import { WatchedEpisode } from "@/types/core";
+import { getWatchedEpisodes } from "@/utils/episode";
 import { isMobile } from "react-device-detect";
 import { useQuery } from "react-query";
 
+export interface WatchedEpisodesWithMedia extends WatchedEpisode {
+  media: Media;
+}
+
 const useWatched = () => {
-  const user = useUser();
+  return useQuery<WatchedEpisodesWithMedia[]>("watched", async () => {
+    const watchedEpisodes = getWatchedEpisodes(isMobile ? 10 : 20);
 
-  return useQuery<Watched[]>(
-    "watched",
-    async () => {
-      const { data, error } = await supabaseClient
-        .from<Watched>("kaguya_watched")
-        .select(
-          "mediaId, episode:kaguya_episodes!episodeId(sourceEpisodeId, name, sourceId), watchedTime"
-        )
-        .eq("userId", user.id)
-        .order("updated_at", { ascending: false })
-        .limit(isMobile ? 5 : 10);
+    if (!watchedEpisodes?.length) return [];
 
-      if (error) throw error;
+    const mediaIds = watchedEpisodes.map(
+      (watchedEpisode) => watchedEpisode.mediaId
+    );
 
-      const anilistMedia = await getMedia({
-        id_in: data.map((watched) => watched.mediaId),
-      });
+    const anilistMedia = await getMedia({
+      id_in: mediaIds,
+    });
 
-      return data.map((watched) => {
-        const media = anilistMedia.find(
-          (media) => media.id === watched.mediaId
-        );
+    return watchedEpisodes.map((watched) => {
+      const media = anilistMedia.find((media) => media.id === watched.mediaId);
 
-        return {
-          ...watched,
-          media,
-        };
-      });
-    },
-    { enabled: !!user }
-  );
+      return {
+        ...watched,
+        media,
+      };
+    });
+  });
 };
 
 export default useWatched;

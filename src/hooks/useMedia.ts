@@ -2,8 +2,7 @@ import { getMedia } from "@/services/anilist";
 import { mediaDefaultFields } from "@/services/anilist/queries";
 import { Media, MediaArgs, PageArgs } from "@/types/anilist";
 import { AxiosError } from "axios";
-import { isMobileOnly } from "react-device-detect";
-import { useQuery, UseQueryOptions } from "react-query";
+import { UseQueryOptions, useQuery } from "react-query";
 
 const useMedia = (
   args: MediaArgs & PageArgs,
@@ -14,7 +13,7 @@ const useMedia = (
 ) => {
   return useQuery<Media[]>(
     ["media", { args }],
-    () => getMedia(args, mediaDefaultFields, !isMobileOnly),
+    () => getMedia(args, mediaDefaultFields),
     options
   );
 };

@@ -1,5 +1,3 @@
-import supabaseClient from "@/lib/supabase";
-
 import { getMedia } from "@/services/anilist";
 import { Media, MediaType } from "@/types/anilist";
 import axios from "axios";

@@ -1,4 +1,3 @@
-import NativeBanner from "@/components/features/ads/NativeBanner";
 import TraceImageSearch from "@/components/features/trace/TraceImageSearch";
 import TracePanel from "@/components/features/trace/TracePanel";
 import Button from "@/components/shared/Button";
@@ -44,8 +43,6 @@ const TracePage = () => {
       />
 
       <Section className="pt-20 space-y-16 flex flex-col items-center justify-center">
-        <NativeBanner />
-
         <div className="text-center">
           <h1 className="text-3xl font-bold mb-1">{t("heading")}</h1>
 

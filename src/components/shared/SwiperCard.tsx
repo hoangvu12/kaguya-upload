@@ -68,10 +68,7 @@ const Card: React.FC<AnimeCardProps> = (props) => {
         : "white",
     [data]
   );
-  const title = useMemo(
-    () => getTitle(data, router.locale),
-    [data, router?.locale]
-  );
+  const title = useMemo(() => getTitle(data), [data]);
 
   const nextEpisodeAiringTimeDuration = useMemo(() => {
     const nextEpisodeAiringTime = !data.nextAiringEpisode
@@ -129,7 +126,7 @@ const Card: React.FC<AnimeCardProps> = (props) => {
                   <Image
                     src={data.coverImage?.extraLarge}
                     objectFit="cover"
-                    className="rounded-sm"
+                    className="rounded-md"
                     alt={title}
                     layout="fill"
                     quality={80}
@@ -165,7 +162,7 @@ const Card: React.FC<AnimeCardProps> = (props) => {
                   <Image
                     src={data.bannerImage || data.coverImage?.extraLarge}
                     objectFit="cover"
-                    className="rounded-sm"
+                    className="rounded-md"
                     alt={title}
                     quality={80}
                     layout="fill"

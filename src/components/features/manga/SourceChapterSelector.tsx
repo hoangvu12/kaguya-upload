@@ -1,16 +1,16 @@
 import Loading from "@/components/shared/Loading";
 import Popup from "@/components/shared/Popup";
 import Select from "@/components/shared/Select";
-import useEpisodes from "@/hooks/useEpisodes";
+import useChapters from "@/hooks/useChapters";
 import useSources, { SourceType } from "@/hooks/useSources";
 import { Media } from "@/types/anilist";
 import { Source } from "@/types/core";
 import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
-import EpisodeSelector, { EpisodeSelectorProps } from "./EpisodeSelector";
-import useWatchedEpisode from "@/hooks/useWatchedEpisode";
+import ChapterSelector from "./ChapterSelector";
+import useReadChapter from "@/hooks/useReadChapter";
 
-interface SourceEpisodeSelectorProps extends Partial<EpisodeSelectorProps> {
+interface SourceChapterSelectorProps {
   media: Media;
 }
 
@@ -20,25 +20,23 @@ const sourceToOption = (source: Source) => {
   return { value: source.id, label: source.name };
 };
 
-const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
+const SourceChapterSelector: React.FC<SourceChapterSelectorProps> = ({
   media,
-  ...props
 }) => {
   const [videoContainer, setVideoContainer] = useState<HTMLElement>();
   const containerEl = useRef<HTMLDivElement>(null);
 
   const { asPath } = useRouter();
 
-  const { data: sources, isLoading, isError } = useSources(SourceType.Anime);
+  const { data: sources, isLoading, isError } = useSources(SourceType.Manga);
   const [activeSource, setActiveSource] = useState<Source>(sources?.[0]);
   const {
-    data: episodes,
-    isLoading: episodesLoading,
-    isError: episodesError,
-  } = useEpisodes(media, activeSource?.id, { enabled: !!activeSource?.id });
-
-  const { data: watchedEpisodeData, isLoading: watchedEpisodeDataLoading } =
-    useWatchedEpisode(media.id, activeSource?.id);
+    data: chapters,
+    isLoading: chaptersLoading,
+    isError: chaptersError,
+  } = useChapters(media, activeSource?.id, { enabled: !!activeSource?.id });
+  const { data: readChapterData, isLoading: readChapterDataLoading } =
+    useReadChapter(media.id, activeSource?.id);
 
   useEffect(() => {
     const videoElement: HTMLDivElement = document.querySelector(
@@ -119,17 +117,16 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
         </div>
       </div>
 
-      {episodesLoading || watchedEpisodeDataLoading ? (
+      {chaptersLoading || readChapterDataLoading ? (
         <div className="relative w-full h-full flex items-center justify-center">
           <Loading />
         </div>
-      ) : episodes?.length ? (
-        <EpisodeSelector
+      ) : chapters?.length ? (
+        <ChapterSelector
           media={media}
-          episodes={episodes}
+          chapters={chapters}
           sourceId={activeSource?.id}
-          watchedEpisode={watchedEpisodeData}
-          {...props}
+          readChapter={readChapterData}
         />
       ) : (
         <p className="text-center justify-center text-2xl font-semibold">
@@ -140,4 +137,4 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
   );
 };
 
-export default React.memo(SourceEpisodeSelector);
+export default React.memo(SourceChapterSelector);

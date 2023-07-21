@@ -1,15 +1,14 @@
 import CardSwiper from "@/components/shared/CardSwiper";
+import Section from "@/components/shared/Section";
 import ListSwiperSkeleton from "@/components/skeletons/ListSwiperSkeleton";
-import Section from "@/components/shared//Section";
 import useMangaRecommendedList from "@/hooks/useMangaRecommendedList";
-import { Read } from "@/types";
+import { ReadChaptersWithMedia } from "@/hooks/useRead";
 import { getTitle } from "@/utils/data";
-import React from "react";
-import { useRouter } from "next/router";
 import { useTranslation } from "next-i18next";
+import React from "react";
 
-const composeData = (data: Read, locale?: string) => {
-  const title = getTitle(data.media, locale);
+const composeData = (data: ReadChaptersWithMedia) => {
+  const title = getTitle(data.media);
 
   const recommendations = data.media?.recommendations?.nodes.map((node) => {
     return node.mediaRecommendation;
@@ -23,7 +22,6 @@ const composeData = (data: Read, locale?: string) => {
 
 const RecommendedMangaSection = () => {
   const { data, isError, isLoading } = useMangaRecommendedList();
-  const { locale } = useRouter();
   const { t } = useTranslation("manga_home");
 
   if (isLoading) {
@@ -34,7 +32,7 @@ const RecommendedMangaSection = () => {
     return null;
   }
 
-  const composedData = composeData(data, locale);
+  const composedData = composeData(data);
 
   return composedData?.list?.length ? (
     <Section title={`${t("because_you_read")} "${composedData.title}"`}>
