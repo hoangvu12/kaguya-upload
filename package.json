@@ -1,6 +1,6 @@
 {
   "name": "kaguya-web",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -31,7 +31,7 @@
     "libass-wasm": "^4.0.0",
     "markdown-it": "^13.0.1",
     "mime": "^3.0.0",
-    "netplayer": "^1.6.2",
+    "netplayer": "^1.6.4",
     "next": "12.1.6",
     "next-i18next": "^11.0.0",
     "next-pwa": "^5.4.4",
