@@ -141,6 +141,20 @@ function App({ Component, pageProps, router, err }: WorkaroundAppProps) {
     };
   }, [router.asPath, router.events]);
 
+  useEffect(() => {
+    const handleResponse = (e: CustomEvent) => {
+      removeEventListener("response-ext_id", handleResponse);
+
+      if (!e.detail) return;
+
+      window.__kaguya__ = { extId: e.detail };
+    };
+
+    addEventListener("response-ext_id", handleResponse);
+
+    dispatchEvent(new CustomEvent("request-ext_id"));
+  }, []);
+
   const getLayout =
     // @ts-ignore
     Component.getLayout || ((page) => <BaseLayout>{page}</BaseLayout>);
@@ -191,3 +205,9 @@ function App({ Component, pageProps, router, err }: WorkaroundAppProps) {
 }
 
 export default appWithTranslation(App, nextI18nextConfig);
+
+declare global {
+  interface Window {
+    __kaguya__: { extId: string };
+  }
+}

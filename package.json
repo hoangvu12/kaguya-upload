@@ -1,6 +1,6 @@
 {
-  "name": "kaguya",
-  "version": "1.0.0",
+  "name": "kaguya-web",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -61,6 +61,7 @@
     "@babel/core": "^7.17.8",
     "@tailwindcss/typography": "^0.5.2",
     "@types/audioworklet": "^0.0.29",
+    "@types/chrome": "^0.0.241",
     "@types/formidable": "^2.0.5",
     "@types/google-publisher-tag": "^1.20230206.0",
     "@types/jsdom": "^16.2.13",

@@ -3,41 +3,30 @@ enum EventType {
   Response = "RESPONSE",
 }
 
-type CustomEventDetail<T> = {
-  endpoint: string;
-  data: T;
-  type: EventType.Response;
-};
-
 export const sendMessage = async <T, K>(
   endpoint: string,
   data?: T
 ): Promise<K> => {
   return new Promise((resolve, reject) => {
-    console.log("send message to", endpoint, data);
+    const extId = window.__kaguya__?.extId;
 
-    const handleBridgeResponse = (e: CustomEvent<CustomEventDetail<K>>) => {
-      if (e?.detail?.endpoint !== endpoint) return;
+    if (!extId)
+      reject(
+        new Error(
+          "No extension ID is found, please check your extension again."
+        )
+      );
 
-      if (e?.detail?.type !== EventType.Response) {
-        return reject(new Error("Invalid response from event"));
+    chrome.runtime.sendMessage(
+      extId,
+      {
+        endpoint,
+        data,
+        type: EventType.Request,
+      },
+      (response) => {
+        resolve(response);
       }
-
-      removeEventListener("bridge-response", handleBridgeResponse);
-
-      resolve(e.detail.data);
-    };
-
-    addEventListener("bridge-response", handleBridgeResponse);
-
-    dispatchEvent(
-      new CustomEvent("bridge-request", {
-        detail: {
-          endpoint,
-          data,
-          type: EventType.Request,
-        },
-      })
     );
   });
 };
