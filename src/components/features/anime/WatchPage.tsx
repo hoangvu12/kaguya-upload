@@ -79,7 +79,8 @@ const WatchPage: NextPage<WatchPageProps> = ({
 
   const saveWatchedInterval = useRef<NodeJS.Timer>(null);
   const saveWatchedMutation = useSaveWatchedData();
-  const lastServer = useRef<VideoServer>(null);
+  const lastEpisodeServer = useRef<VideoServer>(null);
+  const lastEpisodeServers = useRef<VideoServer[]>([]);
 
   const { t } = useTranslation("anime_watch");
 
@@ -173,13 +174,13 @@ const WatchPage: NextPage<WatchPageProps> = ({
 
     if (!currentServer) return false;
 
-    if (!lastServer.current) return true;
+    if (!lastEpisodeServer.current) return true;
 
     // When new servers are fetched, the current server will be updated using useEffect
     // but useFetchSource run before useEffect run, that means useFetchSource will use
     // old currentServer, therefore getting wrong sources. Compare current server with
     // old one to see if they are the same
-    return compareTwoObject(lastServer.current, currentServer);
+    return compareTwoObject(lastEpisodeServer.current, currentServer);
   }, [currentServer, isServerLoading]);
 
   const { data, isLoading, isError, error } = useFetchSource(
@@ -201,8 +202,15 @@ const WatchPage: NextPage<WatchPageProps> = ({
   }, [servers, setCurrentServer, isServerLoading]);
 
   useEffect(() => {
-    lastServer.current = currentServer;
-  }, [currentServer]);
+    // If last episode servers and current servers are not the same
+    // that mean user just changed episode
+    // currentServer right now is one of last episode servers
+    if (!compareTwoObject(lastEpisodeServers.current, servers)) {
+      lastEpisodeServer.current = currentServer;
+    }
+
+    lastEpisodeServers.current = servers;
+  }, [currentServer, servers]);
 
   // Refetch watched data whenever load new episodes
   useEffect(() => {
@@ -252,8 +260,6 @@ const WatchPage: NextPage<WatchPageProps> = ({
       }
 
       saveWatchedInterval.current = setInterval(() => {
-        console.log("saved");
-
         saveWatchedMutation.mutate({
           episode: currentEpisode,
           mediaId: Number(animeId),
