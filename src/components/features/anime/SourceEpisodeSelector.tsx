@@ -65,7 +65,7 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
 
   if (isLoading) {
     return (
-      <div className="relative w-full h-full flex items-center justify-center">
+      <div className="relative w-full h-full min-h-[4rem] flex items-center justify-center">
         <Loading />
       </div>
     );
@@ -120,7 +120,7 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
       </div>
 
       {episodesLoading || watchedEpisodeDataLoading ? (
-        <div className="relative w-full h-full flex items-center justify-center">
+        <div className="relative w-full h-full min-h-[4rem] flex items-center justify-center">
           <Loading />
         </div>
       ) : episodes?.length ? (
