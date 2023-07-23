@@ -19,9 +19,10 @@ import React, {
 import { isMobileOnly } from "react-device-detect";
 import { HiOutlineViewGrid } from "react-icons/hi";
 import { IoMdImage } from "react-icons/io";
-import { SwiperOptions } from "swiper";
+import { Mousewheel, SwiperOptions } from "swiper";
 import EpisodeCard from "./EpisodeCard";
 import { LinkProps } from "next/link";
+import Swiper from "swiper";
 
 export interface EpisodeSelectorProps {
   episodes: Episode[];
@@ -45,12 +46,15 @@ export enum EpisodeShowType {
   Grid = "grid",
 }
 
+Swiper.use([Mousewheel]);
+
 const EPISODE_CHUNK = isMobileOnly ? 12 : 24;
 
 const swiperOptions: SwiperOptions = {
   spaceBetween: 10,
   mousewheel: true,
   keyboard: true,
+  freeMode: true,
   breakpoints: {
     1536: {
       slidesPerView: 8.5,
