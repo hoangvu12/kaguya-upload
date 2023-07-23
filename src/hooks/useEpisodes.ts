@@ -1,6 +1,7 @@
 import { DataWithExtra } from "@/types";
 import { Media } from "@/types/anilist";
 import { Episode } from "@/types/core";
+import { sortMediaUnit } from "@/utils/data";
 import { sendMessage } from "@/utils/events";
 import { UseQueryOptions, useQuery } from "react-query";
 import { toast } from "react-toastify";
@@ -49,7 +50,7 @@ const useEpisodes = (
         { animeId: animeId, sourceId, extraData }
       );
 
-      return episodes || defaultValue;
+      return sortMediaUnit(episodes) || defaultValue;
     },
     options
   );
