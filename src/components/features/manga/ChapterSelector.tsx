@@ -17,7 +17,7 @@ import React, {
   useState,
 } from "react";
 import { isMobileOnly } from "react-device-detect";
-import { SwiperOptions } from "swiper";
+import Swiper, { Mousewheel, SwiperOptions } from "swiper";
 
 interface ChapterSelectorProps {
   chapters: Episode[];
@@ -41,12 +41,15 @@ export enum EpisodeShowType {
   Grid = "grid",
 }
 
+Swiper.use([Mousewheel]);
+
 const CHAPTER_CHUNK = isMobileOnly ? 5 : 10;
 
 const swiperOptions: SwiperOptions = {
   spaceBetween: 10,
   mousewheel: true,
   keyboard: true,
+  freeMode: true,
   breakpoints: {
     1536: {
       slidesPerView: 8.5,
