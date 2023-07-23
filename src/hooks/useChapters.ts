@@ -1,6 +1,7 @@
 import { DataWithExtra } from "@/types";
 import { Media } from "@/types/anilist";
 import { Chapter } from "@/types/core";
+import { sortMediaUnit } from "@/utils/data";
 import { sendMessage } from "@/utils/events";
 import { UseQueryOptions, useQuery } from "react-query";
 import { toast } from "react-toastify";
@@ -49,7 +50,7 @@ const useChapters = (
         { mangaId: mangaId, sourceId, extraData }
       );
 
-      return chapters || defaultValue;
+      return sortMediaUnit(chapters) || defaultValue;
     },
     options
   );
