@@ -463,7 +463,7 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = ({
             "mt-8 grid gap-4"
           )}
         >
-          {episodes.map((episode) => (
+          {activeChunk.map((episode) => (
             <Link
               href={`/anime/watch/${media.id}/${sourceId}/${episode.id}`}
               key={episode.id}
