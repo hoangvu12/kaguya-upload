@@ -6,7 +6,7 @@ import useSources, { SourceType } from "@/hooks/useSources";
 import { Media } from "@/types/anilist";
 import { Source } from "@/types/core";
 import { useRouter } from "next/router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import EpisodeSelector, { EpisodeSelectorProps } from "./EpisodeSelector";
 import useWatchedEpisode from "@/hooks/useWatchedEpisode";
 
@@ -30,7 +30,27 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
   const { asPath } = useRouter();
 
   const { data: sources, isLoading, isError } = useSources(SourceType.Anime);
-  const [activeSource, setActiveSource] = useState<Source>(sources?.[0]);
+
+  const languages = useMemo(() => {
+    if (!sources?.length) return [];
+
+    return Array.from(new Set(sources.flatMap((source) => source.languages)));
+  }, [sources]);
+
+  const [activeLanguage, setActiveLanguage] = useState<string>(languages?.[0]);
+
+  const languageSources = useMemo(() => {
+    if (!sources?.length) return [];
+    if (!activeLanguage) return [];
+
+    return sources.filter((source) =>
+      source.languages.includes(activeLanguage)
+    );
+  }, [activeLanguage, sources]);
+
+  const [activeSource, setActiveSource] = useState<Source>(
+    languageSources?.[0]
+  );
   const {
     data: episodes,
     isLoading: episodesLoading,
@@ -62,6 +82,14 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
 
     setActiveSource(sources[0]);
   }, [sources]);
+
+  useEffect(() => {
+    if (!languages?.length) return;
+
+    const activeLanguage = languages[0];
+
+    setActiveLanguage(activeLanguage);
+  }, [languages]);
 
   if (isLoading) {
     return (
@@ -98,15 +126,36 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
           </Popup>
 
           <div className="flex items-center gap-2">
-            <label htmlFor="source-selector" className="font-medium">
-              Sources:{" "}
-            </label>
+            {languages?.length && (
+              <Select
+                id="language-selector"
+                options={languages.map((language) => ({
+                  value: language,
+                  label: language,
+                }))}
+                onChange={({ value }: any) => {
+                  setActiveLanguage(value);
+
+                  const source = sources.find((source) =>
+                    source.languages.includes(value)
+                  );
+
+                  setActiveSource(source);
+                }}
+                value={{ value: activeLanguage, label: activeLanguage }}
+                isClearable={false}
+                isSearchable={false}
+                menuPortalTarget={videoContainer}
+              />
+            )}
 
             <Select
               id="source-selector"
-              options={sourcesToOptions(sources)}
+              options={sourcesToOptions(languageSources)}
               onChange={({ value }: any) => {
-                const source = sources.find((source) => source.id === value);
+                const source = languageSources.find(
+                  (source) => source.id === value
+                );
 
                 setActiveSource(source);
               }}
