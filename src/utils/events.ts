@@ -25,7 +25,17 @@ export const sendMessage = async <T, K>(
         type: EventType.Request,
       },
       (response) => {
-        resolve(response);
+        if (!response?.type) {
+          return reject("Unknown error, please try again.");
+        }
+
+        if (response.type === "error") {
+          console.log(response.error);
+
+          return reject(new Error(response.error));
+        }
+
+        resolve(response.data);
       }
     );
   });

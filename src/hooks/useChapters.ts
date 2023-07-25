@@ -27,7 +27,7 @@ const useChapters = (
     "queryKey" | "queryFn"
   >
 ) => {
-  return useQuery(
+  return useQuery<Chapter[], Error, Chapter[], any>(
     ["chapters", anilist.id, sourceId],
     async () => {
       console.log("[web page] fetching anime id");
@@ -52,7 +52,10 @@ const useChapters = (
 
       return sortMediaUnit(chapters) || defaultValue;
     },
-    options
+    {
+      onError: (err) => toast.error(err.message),
+      ...options,
+    }
   );
 };
 

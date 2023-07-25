@@ -23,7 +23,7 @@ const useEpisodes = (
   anilist: Media,
   sourceId: string,
   options?: Omit<
-    UseQueryOptions<Episode[], unknown, Episode[]>,
+    UseQueryOptions<Episode[], Error, Episode[], any>,
     "queryKey" | "queryFn"
   >
 ) => {
@@ -52,7 +52,10 @@ const useEpisodes = (
 
       return sortMediaUnit(episodes) || defaultValue;
     },
-    options
+    {
+      onError: (err) => toast.error(err.message),
+      ...options,
+    }
   );
 };
 
