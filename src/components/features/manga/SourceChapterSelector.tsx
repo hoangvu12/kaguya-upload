@@ -122,7 +122,7 @@ const SourceChapterSelector: React.FC<SourceChapterSelectorProps> = ({
             </p>
           </Popup>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center flex-wrap justify-end gap-2">
             {languages?.length && (
               <Select
                 id="language-selector"
