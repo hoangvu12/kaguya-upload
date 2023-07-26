@@ -1,5 +1,5 @@
 import { isBackgroundAtom } from "@/contexts/GlobalPlayerContext";
-import { isValidUrl } from "@/utils";
+import { SubtitleFormat } from "@/types/core";
 import { parse } from "@plussub/srt-vtt-parser";
 import classNames from "classnames";
 import { useAtomValue } from "jotai";
@@ -9,14 +9,11 @@ import {
   useSubtitleSettings,
   useTextScaling,
   useVideo,
-  useVideoProps,
   useVideoState,
 } from "netplayer";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { isDesktop } from "react-device-detect";
 import { toast } from "react-toastify";
-import { buildAbsoluteURL } from "url-toolkit";
-import { PlayerProps } from ".";
 
 const textStyles = {
   none: "",
@@ -28,32 +25,11 @@ const LINE_HEIHT_RATIO = 1.333;
 const PADDING_X_RATIO = 0.5;
 const PADDING_Y_RATIO = 0.25;
 
-const M3U8_SUBTITLE_REGEX = /.*\.(vtt|srt)/g;
-
 const requestSubtitle = async (url: string): Promise<string | null> => {
-  if (url.includes("vtt") || url.includes("srt")) {
-    const response = await fetch(url);
-    const text = await response.text();
+  const response = await fetch(url);
+  const text = await response.text();
 
-    return text;
-  }
-
-  if (url.includes("m3u8")) {
-    const response = await fetch(url);
-    const text = await response.text();
-
-    const matches = text.match(M3U8_SUBTITLE_REGEX);
-
-    if (!matches?.length) return null;
-
-    const nextUrl = isValidUrl(matches[0])
-      ? matches[0]
-      : buildAbsoluteURL(url, matches[0]);
-
-    return requestSubtitle(nextUrl);
-  }
-
-  return null;
+  return text;
 };
 
 const Subtitle = () => {
@@ -83,7 +59,10 @@ const Subtitle = () => {
       subtitlesOctopusRef.current = null;
     }
 
-    if (subtitle.file.includes(".ass")) {
+    if (
+      subtitle.file.includes(".ass") ||
+      subtitle.format === SubtitleFormat.ASS
+    ) {
       const options = {
         video: videoEl,
         subUrl: subtitle.file,
@@ -102,19 +81,31 @@ const Subtitle = () => {
       return;
     }
 
-    const getSubtitle = async () => {
-      setIsLoading(true);
+    console.log(subtitle);
 
-      const text = await requestSubtitle(subtitle.file);
+    if (
+      subtitle.format === SubtitleFormat.SRT ||
+      subtitle.format === SubtitleFormat.VTT ||
+      subtitle.file.includes(".vtt") ||
+      subtitle.file.includes(".srt")
+    ) {
+      console.log("getting subtitle");
 
-      setIsLoading(false);
+      const getSubtitle = async () => {
+        setIsLoading(true);
 
-      if (!text) return;
+        const text = await requestSubtitle(subtitle.file);
 
-      setSubtitleText(text);
-    };
+        setIsLoading(false);
 
-    getSubtitle();
+        if (!text) return;
+
+        setSubtitleText(text);
+      };
+
+      getSubtitle();
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [subtitle, videoEl]);
 
@@ -141,7 +132,10 @@ const Subtitle = () => {
         setCurrentText(currentEntry?.text || "");
       };
 
-      if (subtitle.file.includes(".ass")) {
+      if (
+        subtitle.file.includes(".ass") ||
+        subtitle.format === SubtitleFormat.ASS
+      ) {
         videoEl.removeEventListener("timeupdate", handleSubtitle);
 
         return;

@@ -42,6 +42,7 @@ const Player = React.forwardRef<HTMLVideoElement, PlayerProps>(
           file: sub.file.url,
           lang: sub.language,
           language: sub.language,
+          format: sub.format,
         })),
       [subtitles]
     );

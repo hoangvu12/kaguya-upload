@@ -1,7 +1,13 @@
-enum Format {
+export enum SubtitleFormat {
   VTT = "vtt",
   ASS = "ass",
   SRT = "srt",
+}
+
+export enum VideoFormat {
+  CONTAINER = "container",
+  HLS = "hls",
+  DASH = "dash",
 }
 
 export interface Translation {
@@ -60,12 +66,12 @@ export interface SearchResult {
 export interface Subtitle {
   language: string;
   file: FileUrl;
-  type: Format;
+  format: SubtitleFormat;
 }
 
 export interface Video {
   quality?: string;
-  format?: Format;
+  format?: VideoFormat;
   file: FileUrl;
 }
 
