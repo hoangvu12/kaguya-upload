@@ -12,6 +12,7 @@ import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
 import React, { useMemo } from "react";
+import ExtensionInstallAlert from "@/components/shared/ExtensionInstallAlert";
 
 interface ReadPageContainerProps {
   media: Media;
@@ -40,27 +41,34 @@ const ReadPageContainer: NextPage<ReadPageContainerProps> = ({
         })}`}
         image={media.bannerImage || media.coverImage.extraLarge}
       />
-      {isLoading ? (
-        <div className="flex relative w-full min-h-screen">
-          <Loading />
-        </div>
-      ) : !hasChapters ? (
-        <div className="flex flex-col items-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 space-y-4">
-          <p className="text-4xl font-semibold text-center">｡゜(｀Д´)゜｡</p>
 
-          <p className="text-xl text-center">
-            {t("error_message", {
-              error: t("no_chapters_message"),
-            })}
-          </p>
+      {typeof window !== "undefined" ? (
+        !window?.__kaguya__?.extId ? (
+          <div className="w-full min-h-screen flex items-center justify-center">
+            <ExtensionInstallAlert />
+          </div>
+        ) : isLoading ? (
+          <div className="flex relative w-full min-h-screen">
+            <Loading />
+          </div>
+        ) : !hasChapters ? (
+          <div className="flex flex-col items-center absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 space-y-4">
+            <p className="text-4xl font-semibold text-center">｡゜(｀Д´)゜｡</p>
 
-          <Button className="w-[max-content]" primary onClick={back}>
-            {t("error_goback")}
-          </Button>
-        </div>
-      ) : (
-        <ReadPage sourceId={sourceId} chapters={chapters} media={media} />
-      )}
+            <p className="text-xl text-center">
+              {t("error_message", {
+                error: t("no_chapters_message"),
+              })}
+            </p>
+
+            <Button className="w-[max-content]" primary onClick={back}>
+              {t("error_goback")}
+            </Button>
+          </div>
+        ) : (
+          <ReadPage sourceId={sourceId} chapters={chapters} media={media} />
+        )
+      ) : null}
     </React.Fragment>
   );
 };

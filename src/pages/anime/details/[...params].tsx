@@ -5,6 +5,7 @@ import CharacterConnectionCard from "@/components/shared/CharacterConnectionCard
 import DetailsBanner from "@/components/shared/DetailsBanner";
 import DetailsSection from "@/components/shared/DetailsSection";
 import DotList from "@/components/shared/DotList";
+import ExtensionInstallAlert from "@/components/shared/ExtensionInstallAlert";
 import Head from "@/components/shared/Head";
 import InfoItem from "@/components/shared/InfoItem";
 import Link from "@/components/shared/Link";
@@ -310,7 +311,13 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
               className="overflow-hidden"
             >
               <div ref={episodeSelectorRef}>
-                <SourceEpisodeSelector media={anime} />
+                {typeof window !== "undefined" ? (
+                  !window?.__kaguya__?.extId ? (
+                    <ExtensionInstallAlert />
+                  ) : (
+                    <SourceEpisodeSelector media={anime} />
+                  )
+                ) : null}
               </div>
             </DetailsSection>
 
