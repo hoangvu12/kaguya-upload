@@ -9,7 +9,6 @@ import { Provider } from "jotai";
 import { appWithTranslation } from "next-i18next";
 import nextI18nextConfig from "next-i18next.config";
 import { AppProps } from "next/app";
-import dynamic from "next/dynamic";
 import Router from "next/router";
 import NProgress from "nprogress";
 import React, { useEffect, useState } from "react";
@@ -27,13 +26,6 @@ import "react-toastify/dist/ReactToastify.min.css";
 Router.events.on("routeChangeStart", NProgress.start);
 Router.events.on("routeChangeComplete", NProgress.done);
 Router.events.on("routeChangeError", NProgress.done);
-
-const AIFloatingButton = dynamic(
-  () => import("@/components/features/ai/AIFloatingButton"),
-  {
-    ssr: false,
-  }
-);
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -175,8 +167,6 @@ function App({ Component, pageProps, router, err }: WorkaroundAppProps) {
         pauseOnHover
         theme="dark"
       />
-
-      <AIFloatingButton />
 
       <IosAlert />
 
