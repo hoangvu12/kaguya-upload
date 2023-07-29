@@ -49,12 +49,13 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
   const episodeDisplayTitle = useMemo(() => {
     let displayTitle = episode.title;
 
-    const hasEpisodeTitle = episodeTitle || title;
-    const isSourceTitleSameAsTranslationTitle =
-      episodeTitle !== displayTitle && title !== displayTitle;
+    const finalEpisodeTitle = episodeTitle || title;
 
-    if (hasEpisodeTitle && isSourceTitleSameAsTranslationTitle) {
-      displayTitle += ` - ${episodeTitle || title}`;
+    const isSourceTitleSameAsTranslationTitle =
+      finalEpisodeTitle === displayTitle;
+
+    if (finalEpisodeTitle && isSourceTitleSameAsTranslationTitle) {
+      displayTitle += ` - ${finalEpisodeTitle}`;
     }
 
     return displayTitle;
@@ -73,7 +74,7 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
           "/error.png"
         }
         layout="fill"
-        alt={episode.title}
+        alt={episodeDisplayTitle || title}
         objectFit="cover"
         className="group-hover:scale-105 transition duration-300 rounded-md"
       />
@@ -91,7 +92,7 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
             isActive && "text-primary-300"
           )}
         >
-          {episodeDisplayTitle}
+          {episodeDisplayTitle || title}
         </p>
 
         {episodeDescription && (
