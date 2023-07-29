@@ -98,7 +98,7 @@ const WatchPage: NextPage<WatchPageProps> = ({
     isLoading: isSavedDataLoading,
     isError: isSavedDataError,
     refetch: refetchWatchedData,
-  } = useWatchedEpisode(Number(animeId), sourceId);
+  } = useWatchedEpisode(Number(animeId));
 
   const watchedEpisode = useMemo(
     () =>

@@ -61,7 +61,7 @@ const ReadPage: NextPage<ReadPageProps> = ({
     data: savedReadData,
     isLoading: isSavedDataLoading,
     isError: isSavedDataError,
-  } = useReadChapter(Number(mangaId), sourceId);
+  } = useReadChapter(Number(mangaId));
 
   const title = useMemo(() => getTitle(manga), [manga]);
   const description = useMemo(() => getDescription(manga), [manga]);

@@ -2,14 +2,14 @@ import Loading from "@/components/shared/Loading";
 import Popup from "@/components/shared/Popup";
 import Select from "@/components/shared/Select";
 import useChapters from "@/hooks/useChapters";
+import useReadChapter from "@/hooks/useReadChapter";
 import useSources, { SourceType } from "@/hooks/useSources";
 import { Media } from "@/types/anilist";
 import { Source } from "@/types/core";
+import ISO6391 from "iso-639-1";
 import { useRouter } from "next/router";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import ChapterSelector from "./ChapterSelector";
-import useReadChapter from "@/hooks/useReadChapter";
-import ISO6391 from "iso-639-1";
 
 interface SourceChapterSelectorProps {
   media: Media;
@@ -68,7 +68,7 @@ const SourceChapterSelector: React.FC<SourceChapterSelectorProps> = ({
     { enabled: !!activeSource?.id }
   );
   const { data: readChapterData, isLoading: readChapterDataLoading } =
-    useReadChapter(media.id, activeSource?.id);
+    useReadChapter(media.id);
 
   useEffect(() => {
     const videoElement: HTMLDivElement = document.querySelector(

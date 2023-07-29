@@ -69,7 +69,7 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
   );
 
   const { data: watchedEpisodeData, isLoading: watchedEpisodeDataLoading } =
-    useWatchedEpisode(media.id, activeSource?.id);
+    useWatchedEpisode(media.id);
 
   useEffect(() => {
     const videoElement: HTMLDivElement = document.querySelector(
