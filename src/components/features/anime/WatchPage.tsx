@@ -436,6 +436,26 @@ const WatchPage: NextPage<WatchPageProps> = ({
     });
   }, [anime, animeId, currentEpisode.number, nextEpisode, sourceId]);
 
+  useEffect(() => {
+    if (isError) {
+      setVideoLoadError(error.message);
+
+      return;
+    }
+
+    if (!isLoading && !isServerLoading && !data?.videos?.length) {
+      setVideoLoadError("Failed to extract streams");
+
+      return;
+    }
+  }, [
+    data?.videos?.length,
+    error?.message,
+    isError,
+    isLoading,
+    isServerLoading,
+  ]);
+
   return (
     <React.Fragment>
       <Head
@@ -512,16 +532,6 @@ const WatchPage: NextPage<WatchPageProps> = ({
         <Portal retryInterval={1000} selector=".netplayer-container">
           <Loading />
         </Portal>
-      )}
-
-      {isError ? (
-        <ErrorMessage errorMessage={error.message} />
-      ) : (
-        !isLoading &&
-        !isServerLoading &&
-        !data?.videos?.length && (
-          <ErrorMessage errorMessage={"Failed to extract streams"} />
-        )
       )}
 
       {videoLoadError && <ErrorMessage errorMessage={videoLoadError} />}
