@@ -138,6 +138,8 @@ export const parseNumbersFromString = (
   text: string,
   fallbackNumber = null
 ): number[] => {
+  if (!text) return [fallbackNumber];
+
   const matches = text.match(/\d+([\.,][\d{1,2}])?/g);
 
   if (!matches) return [fallbackNumber];

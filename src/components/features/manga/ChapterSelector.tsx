@@ -293,7 +293,7 @@ const ChapterSelector: React.FC<ChapterSelectorProps> = ({
       </div>
 
       <div className="mt-4 space-y-2 overflow-hidden">
-        {activeChunk.map((chapter) => {
+        {activeChunk?.map((chapter) => {
           const isRead =
             parseNumberFromString(chapter.number) <= readChapterNumber;
 
