@@ -467,34 +467,60 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = ({
             "mt-8 grid gap-4"
           )}
         >
-          {activeChunk?.map((episode) => (
-            <Link
-              href={`/anime/watch/${media.id}/${sourceId}/${episode.id}`}
-              key={episode.id}
-              shallow
-              {...episodeLinkProps}
-            >
-              <a>
-                {showType === EpisodeShowType.Grid ? (
-                  <EpisodeButton
-                    media={media}
-                    episodes={episodes}
-                    episode={episode}
-                    activeEpisode={activeEpisode}
-                    watchedEpisode={watchedEpisode}
-                  />
-                ) : (
-                  <EpisodeCard
-                    episode={episode}
-                    watchedTime={watchedEpisode?.time}
-                    media={media}
-                    duration={media.duration * 60}
-                    isActive={episode.id === activeEpisode?.id}
-                  />
-                )}
-              </a>
-            </Link>
-          ))}
+          {activeChunk?.map((episode) => {
+            const episodeNumber = parseNumberFromString(episode.number);
+
+            const watchTime = (() => {
+              if (!watchedEpisode) return 0;
+
+              if (watchedEpisodeNumber === episodeNumber) {
+                if (media?.duration === null) return 0;
+
+                const duration = media.duration * 60;
+
+                if (duration < watchedEpisode?.time) return duration;
+
+                return watchedEpisode?.time;
+              }
+
+              // If episodeNumber is 0, it mean it is a special episode.
+              if (episodeNumber === 0 && episodes.length > 1) return 0;
+
+              if (episodeNumber < watchedEpisodeNumber)
+                return media.duration * 60;
+
+              return 0;
+            })();
+
+            return (
+              <Link
+                href={`/anime/watch/${media.id}/${sourceId}/${episode.id}`}
+                key={episode.id}
+                shallow
+                {...episodeLinkProps}
+              >
+                <a>
+                  {showType === EpisodeShowType.Grid ? (
+                    <EpisodeButton
+                      media={media}
+                      episodes={episodes}
+                      episode={episode}
+                      activeEpisode={activeEpisode}
+                      watchedEpisode={watchedEpisode}
+                    />
+                  ) : (
+                    <EpisodeCard
+                      episode={episode}
+                      watchedTime={watchTime}
+                      media={media}
+                      duration={media.duration * 60}
+                      isActive={episode.id === activeEpisode?.id}
+                    />
+                  )}
+                </a>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </React.Fragment>
