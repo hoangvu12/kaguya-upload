@@ -176,14 +176,16 @@ const PlayerMobileControls = React.memo(() => {
                   />
 
                   {anime?.id && (
-                    <div className="w-full h-full">
-                      <EpisodeSelector
-                        media={anime}
-                        episodes={episodes}
-                        sourceId={sourceId}
-                        activeEpisode={currentEpisode}
-                        episodeLinkProps={{ shallow: true, replace: true }}
-                      />
+                    <div className="w-full h-full px-4">
+                      <div className="mt-16">
+                        <EpisodeSelector
+                          media={anime}
+                          episodes={episodes}
+                          sourceId={sourceId}
+                          activeEpisode={currentEpisode}
+                          episodeLinkProps={{ shallow: true, replace: true }}
+                        />
+                      </div>
                     </div>
                   )}
                 </div>
