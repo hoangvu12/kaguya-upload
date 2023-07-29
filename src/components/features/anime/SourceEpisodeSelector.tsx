@@ -9,6 +9,7 @@ import { useRouter } from "next/router";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import EpisodeSelector, { EpisodeSelectorProps } from "./EpisodeSelector";
 import useWatchedEpisode from "@/hooks/useWatchedEpisode";
+import ISO6391 from "iso-639-1";
 
 interface SourceEpisodeSelectorProps extends Partial<EpisodeSelectorProps> {
   media: Media;
@@ -27,7 +28,7 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
   const [videoContainer, setVideoContainer] = useState<HTMLElement>();
   const containerEl = useRef<HTMLDivElement>(null);
 
-  const { asPath } = useRouter();
+  const { asPath, locale } = useRouter();
 
   const { data: sources, isLoading, isError } = useSources(SourceType.Anime);
 
@@ -37,7 +38,17 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
     return Array.from(new Set(sources.flatMap((source) => source.languages)));
   }, [sources]);
 
-  const [activeLanguage, setActiveLanguage] = useState<string>(languages?.[0]);
+  const [activeLanguage, setActiveLanguage] = useState<string>(() => {
+    const userLanguage = ISO6391.getName(locale);
+
+    let activeLanguage = languages[0];
+
+    if (languages.includes(userLanguage)) {
+      activeLanguage = userLanguage;
+    }
+
+    return activeLanguage;
+  });
 
   const languageSources = useMemo(() => {
     if (!sources?.length) return [];
@@ -51,11 +62,11 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
   const [activeSource, setActiveSource] = useState<Source>(
     languageSources?.[0]
   );
-  const {
-    data: episodes,
-    isLoading: episodesLoading,
-    isError: episodesError,
-  } = useEpisodes(media, activeSource?.id, { enabled: !!activeSource?.id });
+  const { data: episodes, isLoading: episodesLoading } = useEpisodes(
+    media,
+    activeSource?.id,
+    { enabled: !!activeSource?.id }
+  );
 
   const { data: watchedEpisodeData, isLoading: watchedEpisodeDataLoading } =
     useWatchedEpisode(media.id, activeSource?.id);
@@ -78,18 +89,24 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
   }, [asPath]);
 
   useEffect(() => {
-    if (!sources?.length) return;
+    if (!languageSources?.length) return;
 
-    setActiveSource(sources[0]);
-  }, [sources]);
+    setActiveSource(languageSources[0]);
+  }, [languageSources]);
 
   useEffect(() => {
     if (!languages?.length) return;
 
-    const activeLanguage = languages[0];
+    const userLanguage = ISO6391.getName(locale);
+
+    let activeLanguage = languages[0];
+
+    if (languages.includes(userLanguage)) {
+      activeLanguage = userLanguage;
+    }
 
     setActiveLanguage(activeLanguage);
-  }, [languages]);
+  }, [languages, locale]);
 
   if (isLoading) {
     return (
