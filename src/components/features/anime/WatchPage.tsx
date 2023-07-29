@@ -263,8 +263,8 @@ const WatchPage: NextPage<WatchPageProps> = ({
         saveWatchedMutation.mutate({
           episode: currentEpisode,
           mediaId: Number(animeId),
-          sourceId,
           time: videoRef.current?.currentTime,
+          sourceId,
         });
       }, 30000);
     };
@@ -443,18 +443,14 @@ const WatchPage: NextPage<WatchPageProps> = ({
       return;
     }
 
-    if (!isLoading && !isServerLoading && !data?.videos?.length) {
+    if (!data?.videos) return;
+
+    if (!isLoading && !isServerLoading && !data.videos?.length) {
       setVideoLoadError("Failed to extract streams");
 
       return;
     }
-  }, [
-    data?.videos?.length,
-    error?.message,
-    isError,
-    isLoading,
-    isServerLoading,
-  ]);
+  }, [data?.videos, error?.message, isError, isLoading, isServerLoading]);
 
   return (
     <React.Fragment>

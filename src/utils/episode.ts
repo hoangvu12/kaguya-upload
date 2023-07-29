@@ -1,6 +1,6 @@
 import { Episode, WatchedEpisode } from "@/types/core";
 
-const ANIME_APP_NAMESPACE = "kaguya";
+const ANIME_APP_NAMESPACE = "kaguya_new";
 
 export function getWatchedEpisodes(limit?: number): WatchedEpisode[] {
   try {
@@ -12,11 +12,16 @@ export function getWatchedEpisodes(limit?: number): WatchedEpisode[] {
 
     if (!parsedData?.watchedEpisodes) return [];
 
+    const watchedEpisodes: WatchedEpisode[] = parsedData.watchedEpisodes.sort(
+      (a, b) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    );
+
     if (limit) {
-      return parsedData.watchedEpisodes.slice(0, limit);
+      return watchedEpisodes.slice(0, limit);
     }
 
-    return parsedData.watchedEpisodes;
+    return watchedEpisodes;
   } catch (err) {
     console.error("Failed to get watched episodes", err);
 
@@ -27,26 +32,33 @@ export function getWatchedEpisodes(limit?: number): WatchedEpisode[] {
 export function markEpisodeAsWatched({
   episode,
   time,
-  sourceId,
   mediaId,
+  sourceId,
 }: {
   episode: Episode;
   time: number;
-  sourceId: string;
   mediaId: number;
+  sourceId: string;
 }) {
   const watchedEpisodes = getWatchedEpisodes();
 
   const watchedEpisode = watchedEpisodes?.find(
-    (watchedEpisode) =>
-      watchedEpisode.mediaId === mediaId && watchedEpisode.sourceId === sourceId
+    (watchedEpisode) => watchedEpisode.mediaId === mediaId
   );
 
   if (watchedEpisode) {
     watchedEpisode.time = time;
     watchedEpisode.episode = episode;
+    watchedEpisode.updatedAt = new Date();
   } else {
-    watchedEpisodes.push({ episode, time, sourceId, mediaId });
+    watchedEpisodes.push({
+      episode,
+      time,
+      mediaId,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      sourceId,
+    });
   }
 
   saveWatchedEpisodes(watchedEpisodes);
@@ -75,14 +87,10 @@ export function saveWatchedEpisodes(watchedEpisodes: WatchedEpisode[]) {
   }
 }
 
-export function getWatchedEpisode(
-  mediaId: number,
-  sourceId: string
-): WatchedEpisode {
+export function getWatchedEpisode(mediaId: number): WatchedEpisode {
   const watchedEpisodes = getWatchedEpisodes();
 
   return watchedEpisodes.find(
-    (watchedEpisode) =>
-      watchedEpisode.mediaId === mediaId && watchedEpisode.sourceId === sourceId
+    (watchedEpisode) => watchedEpisode.mediaId === mediaId
   );
 }

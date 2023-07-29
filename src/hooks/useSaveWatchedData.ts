@@ -9,8 +9,8 @@ const useSaveWatchedData = () => {
     {
       episode: Episode;
       time: number;
-      sourceId: string;
       mediaId: number;
+      sourceId: string;
     }
   >(async (data) => {
     return markEpisodeAsWatched(data);

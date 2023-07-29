@@ -8,8 +8,8 @@ const useSaveReadData = () => {
     unknown,
     {
       chapter: Chapter;
-      sourceId: string;
       mediaId: number;
+      sourceId: string;
     }
   >(async (data) => {
     return markChapterAsRead(data);

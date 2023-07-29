@@ -40,14 +40,18 @@ export interface Episode {
 export interface WatchedEpisode {
   episode: Episode;
   time: number;
-  sourceId: string;
   mediaId: number;
+  createdAt: Date;
+  updatedAt: Date;
+  sourceId: string;
 }
 
 export interface ReadChapter {
   chapter: Chapter;
-  sourceId: string;
   mediaId: number;
+  createdAt: Date;
+  updatedAt: Date;
+  sourceId: string;
 }
 
 export interface FileUrl {

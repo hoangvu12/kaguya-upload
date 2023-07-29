@@ -1,6 +1,6 @@
 import { Chapter, ReadChapter } from "@/types/core";
 
-const ANIME_APP_NAMESPACE = "kaguya";
+const ANIME_APP_NAMESPACE = "kaguya_new";
 
 export function getReadChapters(limit?: number): ReadChapter[] {
   try {
@@ -12,11 +12,16 @@ export function getReadChapters(limit?: number): ReadChapter[] {
 
     if (!parsedData?.readChapters) return [];
 
+    const readChapters: ReadChapter[] = parsedData.readChapters.sort(
+      (a, b) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    );
+
     if (limit) {
-      return parsedData.readChapters.slice(0, limit);
+      return readChapters.slice(0, limit);
     }
 
-    return parsedData.readChapters;
+    return readChapters;
   } catch (err) {
     console.error("Failed to get watched episodes", err);
 
@@ -26,8 +31,8 @@ export function getReadChapters(limit?: number): ReadChapter[] {
 
 export function markChapterAsRead({
   chapter,
-  sourceId,
   mediaId,
+  sourceId,
 }: {
   chapter: Chapter;
   sourceId: string;
@@ -36,14 +41,20 @@ export function markChapterAsRead({
   const readChapters = getReadChapters();
 
   const readChapter = readChapters?.find(
-    (readChapter) =>
-      readChapter.mediaId === mediaId && readChapter.sourceId === sourceId
+    (readChapter) => readChapter.mediaId === mediaId
   );
 
   if (readChapter) {
     readChapter.chapter = chapter;
+    readChapter.updatedAt = new Date();
   } else {
-    readChapters.push({ chapter, sourceId, mediaId });
+    readChapters.push({
+      chapter,
+      mediaId,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      sourceId,
+    });
   }
 
   saveReadChapters(readChapters);
@@ -69,11 +80,8 @@ export function saveReadChapters(readChapters: ReadChapter[]) {
   }
 }
 
-export function getReadChapter(mediaId: number, sourceId: string): ReadChapter {
+export function getReadChapter(mediaId: number): ReadChapter {
   const readChapters = getReadChapters();
 
-  return readChapters.find(
-    (readChapter) =>
-      readChapter.mediaId === mediaId && readChapter.sourceId === sourceId
-  );
+  return readChapters.find((readChapter) => readChapter.mediaId === mediaId);
 }
