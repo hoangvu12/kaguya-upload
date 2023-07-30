@@ -159,7 +159,7 @@ function App({ Component, pageProps, router, err }: WorkaroundAppProps) {
       <script id="syncData" type="application/json"></script>
 
       <ToastContainer
-        position="bottom-center"
+        position="top-center"
         autoClose={5000}
         hideProgressBar={true}
         newestOnTop={true}
