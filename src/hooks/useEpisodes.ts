@@ -19,6 +19,8 @@ type EpisodeProps = {
 
 const defaultValue: Episode[] = [];
 
+const toastId = "use-episodes";
+
 const useEpisodes = (
   anilist: Media,
   sourceId: string,
@@ -32,28 +34,52 @@ const useEpisodes = (
     async () => {
       console.log("[web page] fetching anime id");
 
+      toast.loading("Fetching Anime ID...", { toastId });
+
       const { data: animeId, extraData } = await sendMessage<
         AnimeIdProps,
         DataWithExtra<string>
       >("get-anime-id", { sourceId, anilist });
 
       if (!animeId) {
-        toast.error("No anime link was found, please try again.");
+        toast.error(
+          "No anime id was found, please try again or try another source."
+        );
+
+        toast.dismiss(toastId);
 
         return defaultValue;
       }
 
       console.log("[web page] fetching episodes");
 
+      toast.update(toastId, {
+        render: "Fetching episodes...",
+        isLoading: true,
+      });
+
       const episodes = await sendMessage<EpisodeProps, Episode[]>(
         "get-episodes",
         { animeId: animeId, sourceId, extraData }
       );
 
-      return sortMediaUnit(episodes) || defaultValue;
+      if (!episodes?.length) {
+        toast.error(
+          "No episodes were found, please try again or try another source."
+        );
+      }
+
+      toast.dismiss(toastId);
+
+      const composedEpisodes = sortMediaUnit(episodes) || defaultValue;
+
+      return composedEpisodes;
     },
     {
-      onError: (err) => toast.error(err.message),
+      onError: (err) => {
+        toast.error(err.message);
+        toast.dismiss(toastId);
+      },
       ...options,
     }
   );

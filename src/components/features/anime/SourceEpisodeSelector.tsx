@@ -27,6 +27,7 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
 }) => {
   const [videoContainer, setVideoContainer] = useState<HTMLElement>();
   const containerEl = useRef<HTMLDivElement>(null);
+  const [message, setMessage] = useState("");
 
   const { asPath, locale } = useRouter();
 
@@ -64,8 +65,7 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
   );
   const { data: episodes, isLoading: episodesLoading } = useEpisodes(
     media,
-    activeSource?.id,
-    { enabled: !!activeSource?.id }
+    activeSource?.id
   );
 
   const { data: watchedEpisodeData, isLoading: watchedEpisodeDataLoading } =

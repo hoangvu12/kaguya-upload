@@ -21,6 +21,7 @@ import {
 } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { ToastContainer } from "react-toastify";
+
 import "react-toastify/dist/ReactToastify.min.css";
 
 Router.events.on("routeChangeStart", NProgress.start);
@@ -34,6 +35,7 @@ const queryClient = new QueryClient({
       refetchOnMount: false,
       refetchOnReconnect: false,
       retry: 1,
+      staleTime: Infinity,
     },
   },
   queryCache: new QueryCache({
@@ -157,7 +159,7 @@ function App({ Component, pageProps, router, err }: WorkaroundAppProps) {
       <script id="syncData" type="application/json"></script>
 
       <ToastContainer
-        position="bottom-left"
+        position="bottom-center"
         autoClose={5000}
         hideProgressBar={true}
         newestOnTop={true}
@@ -166,6 +168,8 @@ function App({ Component, pageProps, router, err }: WorkaroundAppProps) {
         draggable
         pauseOnHover
         theme="dark"
+        bodyClassName="!bg-background-700"
+        toastClassName="!bg-background-700"
       />
 
       <IosAlert />
