@@ -4,6 +4,7 @@ import ExtensionInstallAlert from "@/components/shared/ExtensionInstallAlert";
 import Head from "@/components/shared/Head";
 import Loading from "@/components/shared/Loading";
 import { REVALIDATE_TIME } from "@/constants";
+import useAnimeId from "@/hooks/useAnimeId";
 import useEpisodes from "@/hooks/useEpisodes";
 import useHistory from "@/hooks/useHistory";
 import { getMediaDetails } from "@/services/anilist";
@@ -22,7 +23,15 @@ const WatchPageContainer: NextPage<WatchPageContainerProps> = ({
   media,
   sourceId,
 }) => {
-  const { data: episodes, isLoading } = useEpisodes(media, sourceId);
+  const { data: animeIdData, isLoading: animeIdLoading } = useAnimeId(
+    media,
+    sourceId
+  );
+  const { data: episodes, isLoading } = useEpisodes(
+    media,
+    sourceId,
+    animeIdData
+  );
   const { back } = useHistory();
   const { t } = useTranslation("anime_watch");
 
@@ -44,7 +53,7 @@ const WatchPageContainer: NextPage<WatchPageContainerProps> = ({
           <div className="w-full min-h-screen flex items-center justify-center">
             <ExtensionInstallAlert />
           </div>
-        ) : isLoading ? (
+        ) : isLoading || animeIdLoading ? (
           <div className="flex relative w-full min-h-screen">
             <Loading />
           </div>

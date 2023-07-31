@@ -62,7 +62,6 @@ export interface FileUrl {
 export interface SearchResult {
   id: string;
   title: string;
-  description?: string;
   thumbnail: string;
   extra?: Record<string, string>;
 }

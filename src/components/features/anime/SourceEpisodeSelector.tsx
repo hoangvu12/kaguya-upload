@@ -3,13 +3,15 @@ import Popup from "@/components/shared/Popup";
 import Select from "@/components/shared/Select";
 import useEpisodes from "@/hooks/useEpisodes";
 import useSources, { SourceType } from "@/hooks/useSources";
-import { Media } from "@/types/anilist";
+import { Media, MediaType } from "@/types/anilist";
 import { Source } from "@/types/core";
 import { useRouter } from "next/router";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import EpisodeSelector, { EpisodeSelectorProps } from "./EpisodeSelector";
 import useWatchedEpisode from "@/hooks/useWatchedEpisode";
 import ISO6391 from "iso-639-1";
+import WrongTitle from "@/components/shared/WrongTitle";
+import useAnimeId from "@/hooks/useAnimeId";
 
 interface SourceEpisodeSelectorProps extends Partial<EpisodeSelectorProps> {
   media: Media;
@@ -27,7 +29,6 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
 }) => {
   const [videoContainer, setVideoContainer] = useState<HTMLElement>();
   const containerEl = useRef<HTMLDivElement>(null);
-  const [message, setMessage] = useState("");
 
   const { asPath, locale } = useRouter();
 
@@ -63,9 +64,16 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
   const [activeSource, setActiveSource] = useState<Source>(
     languageSources?.[0]
   );
-  const { data: episodes, isLoading: episodesLoading } = useEpisodes(
+
+  const { data: animeIdData, isLoading: animeIdLoading } = useAnimeId(
     media,
     activeSource?.id
+  );
+
+  const { data: episodes, isLoading: episodesLoading } = useEpisodes(
+    media,
+    activeSource?.id,
+    animeIdData
   );
 
   const { data: watchedEpisodeData, isLoading: watchedEpisodeDataLoading } =
@@ -128,19 +136,13 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
     <React.Fragment>
       <div ref={containerEl} className="flex justify-end w-full mx-auto mb-8">
         <div className="flex md:items-center flex-col md:flex-row gap-2">
-          <Popup
-            reference={
-              <p className="text-right font-semibold underline">Wrong title?</p>
-            }
-            placement="top"
-            className="bg-background-700"
-            showArrow
-          >
-            <p className="max-w-[60vw]">
-              You can either change the source or report the issue in our{" "}
-              Discord server.
-            </p>
-          </Popup>
+          {activeSource?.id && (
+            <WrongTitle
+              sourceId={activeSource.id}
+              mediaType={MediaType.Anime}
+              anilist={media}
+            />
+          )}
 
           <div className="flex items-center flex-wrap justify-end gap-2">
             {languages?.length && (
@@ -185,7 +187,7 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
         </div>
       </div>
 
-      {episodesLoading || watchedEpisodeDataLoading ? (
+      {episodesLoading || watchedEpisodeDataLoading || animeIdLoading ? (
         <div className="relative w-full h-full min-h-[4rem] flex items-center justify-center">
           <Loading />
         </div>

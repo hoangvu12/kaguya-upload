@@ -6,11 +6,6 @@ import { sendMessage } from "@/utils/events";
 import { UseQueryOptions, useQuery } from "react-query";
 import { toast } from "react-toastify";
 
-type AnimeIdProps = {
-  sourceId: string;
-  anilist: Media;
-};
-
 type EpisodeProps = {
   sourceId: string;
   animeId: string;
@@ -24,33 +19,20 @@ const toastId = "use-episodes";
 const useEpisodes = (
   anilist: Media,
   sourceId: string,
+  {
+    animeId,
+    extraData,
+  }: { animeId: string; extraData?: Record<string, string> } = {
+    animeId: null,
+  },
   options?: Omit<
     UseQueryOptions<Episode[], Error, Episode[], any>,
     "queryKey" | "queryFn"
   >
 ) => {
   return useQuery(
-    ["episodes", anilist.id, sourceId],
+    ["episodes", anilist.id, sourceId, animeId],
     async () => {
-      console.log("[web page] fetching anime id");
-
-      toast.loading("Fetching Anime ID...", { toastId });
-
-      const { data: animeId, extraData } = await sendMessage<
-        AnimeIdProps,
-        DataWithExtra<string>
-      >("get-anime-id", { sourceId, anilist });
-
-      if (!animeId) {
-        toast.error(
-          "No anime id was found, please try again or try another source."
-        );
-
-        toast.dismiss(toastId);
-
-        return defaultValue;
-      }
-
       console.log("[web page] fetching episodes");
 
       toast.update(toastId, {
@@ -80,6 +62,7 @@ const useEpisodes = (
         toast.error(err.message);
         toast.dismiss(toastId);
       },
+      enabled: !!animeId,
       ...options,
     }
   );
