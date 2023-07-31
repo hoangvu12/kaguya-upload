@@ -14,17 +14,16 @@ const Card: React.FC<CardProps> = (props) => {
     <div title={data.title} {...divProps}>
       <div className={classNames("relative aspect-w-2 aspect-h-3")}>
         <Image
-          src={data.thumbnail}
+          src={
+            data.thumbnail ||
+            "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/default.jpg"
+          }
           layout="fill"
           objectFit="cover"
           className="rounded-md"
           alt={data.title}
           quality={80}
         />
-
-        <div className="z-0 flex flex-col justify-end absolute inset-0">
-          <div className="h-32 bg-gradient-to-t from-black/80 to-transparent z-40"></div>
-        </div>
       </div>
 
       <p className="mt-1 text-base font-semibold line-clamp-2">{data.title}</p>
