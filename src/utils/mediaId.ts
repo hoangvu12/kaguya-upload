@@ -9,9 +9,11 @@ export interface Mapping {
 
 export function getMediaId(anilistId: number, sourceId: string): Mapping {
   try {
-    const mappings = getMappings(anilistId);
+    const mappings = getMappings();
 
-    const mapping = mappings.find((media) => media?.sourceId === sourceId);
+    const mapping = mappings.find(
+      (media) => media?.sourceId === sourceId && media.anilistId === anilistId
+    );
 
     return mapping;
   } catch (err) {
@@ -28,9 +30,11 @@ export function saveMapping(
   extra?: Record<string, string>
 ) {
   try {
-    const mappings = getMappings(anilistId);
+    const mappings = getMappings();
 
-    const mapping = mappings.find((media) => media?.sourceId === sourceId);
+    const mapping = mappings.find(
+      (media) => media?.sourceId === sourceId && media.anilistId === anilistId
+    );
 
     if (mapping) {
       mapping.mediaId = mediaId;
@@ -48,7 +52,7 @@ export function saveMapping(
   }
 }
 
-export function getMappings(anilistId: number): Mapping[] {
+export function getMappings(): Mapping[] {
   try {
     const data = localStorage.getItem(MAPPING_NAMESPACE);
 
@@ -58,7 +62,7 @@ export function getMappings(anilistId: number): Mapping[] {
 
     if (!parsedData?.length) return [];
 
-    return parsedData.filter((map) => map.anilistId === anilistId);
+    return parsedData;
   } catch (err) {
     console.error("Failed to get mappings", err);
 

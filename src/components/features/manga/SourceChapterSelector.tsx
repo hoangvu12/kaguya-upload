@@ -1,10 +1,11 @@
 import Loading from "@/components/shared/Loading";
-import Popup from "@/components/shared/Popup";
 import Select from "@/components/shared/Select";
+import WrongTitle from "@/components/shared/WrongTitle";
 import useChapters from "@/hooks/useChapters";
+import useMangaId from "@/hooks/useMangaId";
 import useReadChapter from "@/hooks/useReadChapter";
 import useSources, { SourceType } from "@/hooks/useSources";
-import { Media } from "@/types/anilist";
+import { Media, MediaType } from "@/types/anilist";
 import { Source } from "@/types/core";
 import ISO6391 from "iso-639-1";
 import { useRouter } from "next/router";
@@ -62,10 +63,18 @@ const SourceChapterSelector: React.FC<SourceChapterSelectorProps> = ({
     languageSources?.[0]
   );
 
+  const { data: mangaIdData, isLoading: mangaIdLoading } = useMangaId(
+    media,
+    activeSource?.id
+  );
+
+  console.log(mangaIdData);
+
   const { data: chapters, isLoading: chaptersLoading } = useChapters(
     media,
     activeSource?.id,
-    { enabled: !!activeSource?.id }
+    mangaIdData,
+    { enabled: !!activeSource?.id && !!mangaIdData }
   );
   const { data: readChapterData, isLoading: readChapterDataLoading } =
     useReadChapter(media.id);
@@ -127,19 +136,13 @@ const SourceChapterSelector: React.FC<SourceChapterSelectorProps> = ({
     <React.Fragment>
       <div ref={containerEl} className="flex justify-end w-full mx-auto mb-8">
         <div className="flex md:items-center flex-col md:flex-row gap-2">
-          <Popup
-            reference={
-              <p className="text-right font-semibold underline">Wrong title?</p>
-            }
-            placement="top"
-            className="bg-background-700"
-            showArrow
-          >
-            <p className="max-w-[60vw]">
-              You can either change the source or report the issue in our{" "}
-              Discord server.
-            </p>
-          </Popup>
+          {activeSource?.id && (
+            <WrongTitle
+              anilist={media}
+              mediaType={MediaType.Manga}
+              sourceId={activeSource.id}
+            />
+          )}
 
           <div className="flex items-center flex-wrap justify-end gap-2">
             {languages?.length && (
@@ -184,7 +187,7 @@ const SourceChapterSelector: React.FC<SourceChapterSelectorProps> = ({
         </div>
       </div>
 
-      {chaptersLoading || readChapterDataLoading ? (
+      {chaptersLoading || readChapterDataLoading || mangaIdLoading ? (
         <div className="relative w-full h-full min-h-[4rem] flex items-center justify-center">
           <Loading />
         </div>

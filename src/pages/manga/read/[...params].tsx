@@ -13,6 +13,7 @@ import { useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
 import React, { useMemo } from "react";
 import ExtensionInstallAlert from "@/components/shared/ExtensionInstallAlert";
+import useMangaId from "@/hooks/useMangaId";
 
 interface ReadPageContainerProps {
   media: Media;
@@ -23,7 +24,16 @@ const ReadPageContainer: NextPage<ReadPageContainerProps> = ({
   media,
   sourceId,
 }) => {
-  const { data: chapters, isLoading } = useChapters(media, sourceId);
+  const { data: mangaIdData, isLoading: mangaIdLoading } = useMangaId(
+    media,
+    sourceId
+  );
+  const { data: chapters, isLoading } = useChapters(
+    media,
+    sourceId,
+    mangaIdData,
+    { enabled: !!mangaIdData?.mangaId }
+  );
   const { back } = useHistory();
   const { t } = useTranslation("manga_read");
 
@@ -47,7 +57,7 @@ const ReadPageContainer: NextPage<ReadPageContainerProps> = ({
           <div className="w-full min-h-screen flex items-center justify-center">
             <ExtensionInstallAlert />
           </div>
-        ) : isLoading ? (
+        ) : isLoading || mangaIdLoading ? (
           <div className="flex relative w-full min-h-screen">
             <Loading />
           </div>
