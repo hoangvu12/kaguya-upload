@@ -4,23 +4,6 @@ const withPWA = require("next-pwa");
 const { i18n } = require("./next-i18next.config");
 
 module.exports = withPWA({
-  images: {
-    domains: [
-      "s4.anilist.co",
-      "res.cloudinary.com",
-      "lh3.googleusercontent.com",
-      "platform-lookaside.fbsbx.com",
-      "i.ibb.co",
-      "thumb.tapecontent.net",
-      "emojis.slackmojis.com",
-      "pic-bstarstatic.akamaized.net",
-      "cdn.discordapp.com",
-      "artworks.thetvdb.com",
-      "image.tmdb.org",
-    ],
-    minimumCacheTTL: 604800, // a week,
-    deviceSizes: [360, 412, 480, 640, 750, 828, 1080, 1200, 1920, 2048, 3840],
-  },
   pwa: {
     dest: "public",
     buildExcludes: [
