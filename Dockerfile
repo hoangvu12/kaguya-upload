@@ -33,7 +33,7 @@ COPY --from=builder --chown=web:kaguya /app/.next/standalone ./
 COPY --from=builder --chown=web:kaguya /app/.next/static ./.next/static
 
 # Grant read and write permissions to the "web" user and "kaguya" group
-RUN chmod -R g+rwX ./public ./package.json ./.next ./standalone
+RUN chmod -R g+rwX ./public ./package.json ./.next
 
 USER web
 
