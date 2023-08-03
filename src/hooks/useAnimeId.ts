@@ -1,7 +1,7 @@
 import { DataWithExtra } from "@/types";
 import { Media } from "@/types/anilist";
 import { sendMessage } from "@/utils/events";
-import { getMediaId } from "@/utils/mediaId";
+import { getMediaId, saveMapping } from "@/utils/mediaId";
 import { UseQueryOptions, useQuery } from "react-query";
 import { toast } from "react-toastify";
 
@@ -57,6 +57,8 @@ const useAnimeId = (
 
         return defaultValue;
       }
+
+      saveMapping(anilist.id, sourceId, animeId);
 
       return { animeId, extraData };
     },
