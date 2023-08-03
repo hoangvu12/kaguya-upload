@@ -1,3 +1,20 @@
+# Install dependencies only when needed
+FROM node:16-alpine AS deps
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
+
+# Rebuild the source code only when needed
+FROM node:16-alpine AS builder
+
+WORKDIR /app
+
+COPY --from=deps /app/node_modules ./node_modules
+
+COPY . .
+
+RUN yarn build
 
 # Production image, copy all the files and run next
 FROM node:16-alpine AS runner
@@ -5,22 +22,18 @@ WORKDIR /app
 
 ENV NODE_ENV production
 
-RUN addgroup --system --gid 1001 kaguya
-RUN adduser --system --uid 1001 web
+# Add "kaguya" group and "web" user (no sudo needed)
+RUN addgroup --system --gid 1001 kaguya \
+    && adduser --system --uid 1001 web
 
-# Grant sudo permissions to the "web" user
-RUN echo "web ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-
-# Add the "web" user to the "kaguya" group
-RUN adduser web kaguya
-
+# Copy files and set appropriate ownership and permissions
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
+COPY --from=builder --chown=web:kaguya /app/.next/standalone ./
+COPY --from=builder --chown=web:kaguya /app/.next/static ./.next/static
 
-# Automatically leverage output traces to reduce image size
-# https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=builder --chown=kaguya:web /app/.next/standalone ./
-COPY --from=builder --chown=kaguya:web /app/.next/static ./.next/static
+# Grant read and write permissions to the "web" user and "kaguya" group
+RUN chmod -R g+rwX ./public ./package.json ./.next ./standalone
 
 USER web
 
