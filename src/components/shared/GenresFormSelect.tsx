@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from "react";
 import Select from "./Select";
-import TAGS from "@/tags.json";
+import TAGS from "@/tags";
 import { Props } from "react-select";
 import classNames from "classnames";
 import useConstantTranslation from "@/hooks/useConstantTranslation";

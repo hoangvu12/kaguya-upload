@@ -1,4 +1,4 @@
-import locales from "@/locales.json";
+import locales from "@/locales";
 import { useRouter } from "next/router";
 import nookies from "nookies";
 import React, { useMemo } from "react";

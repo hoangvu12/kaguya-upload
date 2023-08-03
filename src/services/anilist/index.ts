@@ -1,4 +1,3 @@
-import locales from "@/locales.json";
 import {
   AiringScheduleArgs,
   CharacterArgs,
