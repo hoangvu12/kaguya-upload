@@ -68,8 +68,6 @@ const SourceChapterSelector: React.FC<SourceChapterSelectorProps> = ({
     activeSource?.id
   );
 
-  console.log(mangaIdData);
-
   const { data: chapters, isLoading: chaptersLoading } = useChapters(
     media,
     activeSource?.id,
