@@ -9,9 +9,9 @@ export interface ReadChaptersWithMedia extends ReadChapter {
   media: Media;
 }
 
-const useRead = () => {
+const useRead = (limit = isMobile ? 10 : 20) => {
   return useQuery<ReadChaptersWithMedia[]>("read", async () => {
-    const readChapters = getReadChapters(isMobile ? 10 : 20);
+    const readChapters = getReadChapters(limit);
 
     if (!readChapters?.length) return [];
 

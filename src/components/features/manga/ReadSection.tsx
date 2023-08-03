@@ -22,7 +22,7 @@ const ReadSection = () => {
   const list = data.map((read) => read.media);
 
   return (
-    <Section title={t("recently_read")}>
+    <Section href="/recently-read" title={t("recently_read")}>
       {isMobileOnly ? (
         <List data={list}>{(node) => <Card data={node} key={node.id} />}</List>
       ) : (
