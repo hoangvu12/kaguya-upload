@@ -1,8 +1,10 @@
 import EpisodeCard from "@/components/features/anime/EpisodeCard";
 import Link from "@/components/shared/Link";
 import Swiper, { SwiperProps, SwiperSlide } from "@/components/shared/Swiper";
+import { titleTypeAtom } from "@/components/shared/TitleSwitcher";
 import { WatchedEpisodesWithMedia } from "@/hooks/useWatched";
 import { getTitle } from "@/utils/data";
+import { useAtomValue } from "jotai";
 import React from "react";
 
 interface WatchedSwiperProps extends SwiperProps {
@@ -10,6 +12,8 @@ interface WatchedSwiperProps extends SwiperProps {
 }
 
 const WatchedSwiper: React.FC<WatchedSwiperProps> = ({ data, ...props }) => {
+  const titleType = useAtomValue(titleTypeAtom);
+
   return (
     <Swiper speed={500} {...props}>
       {data.map(({ media, episode, time, sourceId }, index) => {
@@ -22,7 +26,7 @@ const WatchedSwiper: React.FC<WatchedSwiperProps> = ({ data, ...props }) => {
                     ...episode,
                     thumbnail: media.bannerImage || media.coverImage.extraLarge,
                   }}
-                  title={getTitle(media)}
+                  title={getTitle(media, titleType)}
                   duration={(media?.duration || 0) * 60}
                   watchedTime={time}
                 />

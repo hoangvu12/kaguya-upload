@@ -18,6 +18,8 @@ import { MdTagFaces } from "react-icons/md";
 import Description from "./Description";
 import Popup from "./Popup";
 import dayjs from "dayjs";
+import { titleTypeAtom } from "./TitleSwitcher";
+import { useAtomValue } from "jotai";
 
 interface CardProps {
   data: Media;
@@ -71,7 +73,10 @@ const Card: React.FC<CardProps> = (props) => {
         : "white",
     [data]
   );
-  const title = useMemo(() => getTitle(data), [data]);
+
+  const titleType = useAtomValue(titleTypeAtom);
+
+  const title = useMemo(() => getTitle(data, titleType), [data, titleType]);
 
   const description = useMemo(() => getDescription(data), [data]);
 

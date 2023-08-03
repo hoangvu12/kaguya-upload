@@ -19,6 +19,8 @@ import ListSwiperSkeleton from "../skeletons/ListSwiperSkeleton";
 import Description from "./Description";
 import Section from "./Section";
 import Skeleton, { SkeletonItem } from "./Skeleton";
+import { useAtomValue } from "jotai";
+import { titleTypeAtom } from "./TitleSwitcher";
 
 interface HomeBannerProps {
   data: Media[];
@@ -67,10 +69,12 @@ const HomeBanner: React.FC<HomeBannerProps> = ({
 const MobileHomeBanner: React.FC<HomeBannerProps> = ({ data }) => {
   const { locale } = useRouter();
 
+  const titleType = useAtomValue(titleTypeAtom);
+
   return (
     <div className="flex snap-x snap-mandatory overflow-x-auto no-scrollbar gap-2">
       {data.map((slide: Media) => {
-        const title = getTitle(slide);
+        const title = getTitle(slide, titleType);
         const nextEpisodeAiringTime = !slide.nextAiringEpisode
           ? null
           : dayjs.unix(slide.nextAiringEpisode.airingAt);
@@ -251,7 +255,12 @@ const DesktopHomeBanner: React.FC<HomeBannerProps> = ({ data }) => {
     []
   );
 
-  const title = useMemo(() => getTitle(activeSlide), [activeSlide]);
+  const titleType = useAtomValue(titleTypeAtom);
+
+  const title = useMemo(
+    () => getTitle(activeSlide, titleType),
+    [activeSlide, titleType]
+  );
   const description = useMemo(() => getDescription(activeSlide), [activeSlide]);
 
   const nextEpisodeAiringTimeDuration = useMemo(() => {

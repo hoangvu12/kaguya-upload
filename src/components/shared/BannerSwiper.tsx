@@ -4,7 +4,9 @@ import useDevice from "@/hooks/useDevice";
 import { Media } from "@/types/anilist";
 import { getTitle } from "@/utils/data";
 import { motion } from "framer-motion";
+import { useAtomValue } from "jotai";
 import React from "react";
+import { titleTypeAtom } from "./TitleSwitcher";
 
 interface BannerSwiperProps extends SwiperProps {
   data: Media[];
@@ -12,6 +14,8 @@ interface BannerSwiperProps extends SwiperProps {
 
 const BannerSwiper: React.FC<BannerSwiperProps> = ({ data, ...props }) => {
   const { isDesktop } = useDevice();
+
+  const titleType = useAtomValue(titleTypeAtom);
 
   return (
     <Swiper
@@ -44,7 +48,7 @@ const BannerSwiper: React.FC<BannerSwiperProps> = ({ data, ...props }) => {
       {data.map((anime) => (
         <SwiperSlide key={anime.id}>
           {({ isActive }) => {
-            const title = getTitle(anime);
+            const title = getTitle(anime, titleType);
 
             return (
               <motion.div

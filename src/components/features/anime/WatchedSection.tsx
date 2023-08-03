@@ -8,10 +8,13 @@ import Link from "next/link";
 import React from "react";
 import { BrowserView, MobileOnlyView } from "react-device-detect";
 import EpisodeCard from "./EpisodeCard";
+import { useAtomValue } from "jotai";
+import { titleTypeAtom } from "@/components/shared/TitleSwitcher";
 
 const WatchedSection = () => {
   const { data, isLoading, isError } = useWatched();
   const { t } = useTranslation("anime_home");
+  const titleType = useAtomValue(titleTypeAtom);
 
   if (isLoading) {
     return <WatchedSwiperSkeleton />;
@@ -68,7 +71,7 @@ const WatchedSection = () => {
                     ...episode,
                     thumbnail: media.bannerImage || media.coverImage.extraLarge,
                   }}
-                  title={getTitle(media)}
+                  title={getTitle(media, titleType)}
                   duration={(media?.duration || 0) * 60}
                   watchedTime={time}
                 />

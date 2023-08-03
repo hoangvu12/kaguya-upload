@@ -12,6 +12,8 @@ import { AiFillHeart, AiFillPlayCircle } from "react-icons/ai";
 import { MdTagFaces } from "react-icons/md";
 import Description from "./Description";
 import Skeleton, { SkeletonItem } from "./Skeleton";
+import { titleTypeAtom } from "./TitleSwitcher";
+import { useAtomValue } from "jotai";
 
 interface ShouldWatchProps {
   data: Media;
@@ -21,7 +23,9 @@ interface ShouldWatchProps {
 const ShouldWatch: React.FC<ShouldWatchProps> = ({ data, isLoading }) => {
   const { locale } = useRouter();
 
-  const title = useMemo(() => getTitle(data), [data]);
+  const titleType = useAtomValue(titleTypeAtom);
+
+  const title = useMemo(() => getTitle(data, titleType), [data, titleType]);
   const description = useMemo(() => getDescription(data), [data]);
 
   const redirectUrl = useMemo(() => createMediaDetailsUrl(data), [data]);

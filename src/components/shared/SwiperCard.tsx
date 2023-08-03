@@ -18,6 +18,8 @@ import { AiFillHeart } from "react-icons/ai";
 import { MdTagFaces } from "react-icons/md";
 import Description from "./Description";
 import dayjs from "dayjs";
+import { useAtomValue } from "jotai";
+import { titleTypeAtom } from "./TitleSwitcher";
 
 interface AnimeCardProps {
   data: Media;
@@ -68,7 +70,10 @@ const Card: React.FC<AnimeCardProps> = (props) => {
         : "white",
     [data]
   );
-  const title = useMemo(() => getTitle(data), [data]);
+
+  const titleType = useAtomValue(titleTypeAtom);
+
+  const title = useMemo(() => getTitle(data, titleType), [data, titleType]);
 
   const nextEpisodeAiringTimeDuration = useMemo(() => {
     const nextEpisodeAiringTime = !data.nextAiringEpisode

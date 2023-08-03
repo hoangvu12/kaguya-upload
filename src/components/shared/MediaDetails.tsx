@@ -11,6 +11,8 @@ import React, { useMemo } from "react";
 import { isMobileOnly } from "react-device-detect";
 import { AiFillHeart } from "react-icons/ai";
 import { MdTagFaces } from "react-icons/md";
+import { titleTypeAtom } from "./TitleSwitcher";
+import { useAtomValue } from "jotai";
 
 interface MediaDetailsProps {
   media: Media;
@@ -18,7 +20,9 @@ interface MediaDetailsProps {
 }
 
 const MediaDetails: React.FC<MediaDetailsProps> = ({ media, className }) => {
-  const title = useMemo(() => getTitle(media), [media]);
+  const titleType = useAtomValue(titleTypeAtom);
+
+  const title = useMemo(() => getTitle(media, titleType), [media, titleType]);
   const description = useMemo(() => getDescription(media), [media]);
 
   return (

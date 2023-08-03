@@ -13,6 +13,7 @@ import List from "@/components/shared/List";
 import MediaDescription from "@/components/shared/MediaDescription";
 import PlainCard from "@/components/shared/PlainCard";
 import Section from "@/components/shared/Section";
+import { titleTypeAtom } from "@/components/shared/TitleSwitcher";
 import { REVALIDATE_TIME } from "@/constants";
 import withRedirect from "@/hocs/withRedirect";
 import dayjs from "@/lib/dayjs";
@@ -24,6 +25,7 @@ import {
   stringToSlug,
 } from "@/utils";
 import { convert, getDescription, getTitle } from "@/utils/data";
+import { useAtomValue } from "jotai";
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
@@ -54,7 +56,9 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
     return dayjs.unix(nextAiringSchedule.airingAt).locale(locale).fromNow();
   }, [nextAiringSchedule?.airingAt, locale]);
 
-  const title = useMemo(() => getTitle(anime), [anime]);
+  const titleType = useAtomValue(titleTypeAtom);
+
+  const title = useMemo(() => getTitle(anime, titleType), [anime, titleType]);
   const description = useMemo(() => getDescription(anime), [anime]);
 
   const handleWatchClick = () => {

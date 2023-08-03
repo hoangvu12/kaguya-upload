@@ -35,6 +35,7 @@ import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 import { toast } from "react-toastify";
 import EpisodeSelector from "./EpisodeSelector";
 import ErrorMessage from "./ErrorMessage";
+import { titleTypeAtom } from "@/components/shared/TitleSwitcher";
 
 const WatchPlayer = dynamic(
   () => import("@/components/features/anime/WatchPlayer"),
@@ -81,6 +82,8 @@ const WatchPage: NextPage<WatchPageProps> = ({
   const saveWatchedMutation = useSaveWatchedData();
   const lastEpisodeServer = useRef<VideoServer>(null);
   const lastEpisodeServers = useRef<VideoServer[]>([]);
+
+  const titleType = useAtomValue(titleTypeAtom);
 
   const { t } = useTranslation("anime_watch");
 
@@ -388,7 +391,7 @@ const WatchPage: NextPage<WatchPageProps> = ({
   //   refetchWatchedData();
   // }, [currentEpisode.slug, refetchWatchedData]);
 
-  const title = useMemo(() => getTitle(anime), [anime]);
+  const title = useMemo(() => getTitle(anime, titleType), [anime, titleType]);
   const description = useMemo(() => getDescription(anime), [anime]);
 
   const sources = useMemo(

@@ -12,6 +12,7 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import PWAInstallPrompt from "../features/pwa/PWAInstallPrompt";
 import LanguageSwitcher from "../shared/LanguageSwitcher";
 import Section from "../shared/Section";
+import TitleSwitcher from "../shared/TitleSwitcher";
 
 const routes = [
   {
@@ -134,6 +135,7 @@ const Header = () => {
       </div>
 
       <div className="flex items-center space-x-4 ml-auto">
+        <TitleSwitcher />
         <PWAInstallPrompt />
         <LanguageSwitcher />
 

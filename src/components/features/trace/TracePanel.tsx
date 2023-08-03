@@ -15,6 +15,8 @@ import { AiFillHeart } from "react-icons/ai";
 import { MdTagFaces } from "react-icons/md";
 import { ImageType } from "react-images-uploading";
 import TraceCard from "./TraceCard";
+import { useAtomValue } from "jotai";
+import { titleTypeAtom } from "@/components/shared/TitleSwitcher";
 
 interface TracePanelProps {
   data: TraceImageResponse;
@@ -30,8 +32,13 @@ const TracePanel: React.FC<TracePanelProps> = ({ data, image }) => {
     setCardIndex(index);
   }, []);
 
+  const titleType = useAtomValue(titleTypeAtom);
+
   const card = useMemo(() => data.result[cardIndex], [cardIndex, data.result]);
-  const title = useMemo(() => getTitle(card.anime), [card.anime]);
+  const title = useMemo(
+    () => getTitle(card.anime, titleType),
+    [card.anime, titleType]
+  );
   const description = useMemo(() => getDescription(card.anime), [card.anime]);
 
   return (

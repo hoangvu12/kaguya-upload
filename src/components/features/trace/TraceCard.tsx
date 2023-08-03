@@ -1,7 +1,9 @@
+import { titleTypeAtom } from "@/components/shared/TitleSwitcher";
 import { TraceImageResult } from "@/hooks/useTraceImage";
 import { parseTime } from "@/utils";
 import { getTitle } from "@/utils/data";
 import classNames from "classnames";
+import { useAtomValue } from "jotai";
 import { useTranslation } from "next-i18next";
 import React from "react";
 
@@ -18,6 +20,8 @@ const TraceCard: React.FC<TraceCardProps> = ({
 }) => {
   const { t } = useTranslation("trace");
 
+  const titleType = useAtomValue(titleTypeAtom);
+
   return (
     <div
       className={classNames(
@@ -27,7 +31,7 @@ const TraceCard: React.FC<TraceCardProps> = ({
       )}
       {...props}
     >
-      <p className="text-lg font-semibold">{getTitle(data.anime)}</p>
+      <p className="text-lg font-semibold">{getTitle(data.anime, titleType)}</p>
 
       <div className="grid grid-cols-10">
         <div className="col-span-5 flex flex-col justify-between">

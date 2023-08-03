@@ -8,6 +8,8 @@ import { useRouter } from "next/router";
 import React, { useMemo } from "react";
 import DotList from "./DotList";
 import PlainCard from "./PlainCard";
+import { useAtomValue } from "jotai";
+import { titleTypeAtom } from "./TitleSwitcher";
 
 interface HorizontalCardProps extends React.HTMLAttributes<HTMLDivElement> {
   data: Media;
@@ -28,8 +30,9 @@ const HorizontalCard = ({
 }: HorizontalCardProps) => {
   const { locale } = useRouter();
   const { t } = useTranslation("common");
+  const titleType = useAtomValue(titleTypeAtom);
 
-  const title = useMemo(() => getTitle(data), [data]);
+  const title = useMemo(() => getTitle(data, titleType), [data, titleType]);
 
   const sizeClassName = useMemo(() => {
     if (size === "sm") {

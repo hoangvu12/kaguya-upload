@@ -17,6 +17,7 @@ id
 type
 title {
   userPreferred
+  english
 }
 coverImage {
   extraLarge
@@ -512,6 +513,7 @@ media {
   id
   title {
     userPreferred
+    english
   }
   coverImage {
     extraLarge

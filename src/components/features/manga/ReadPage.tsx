@@ -3,6 +3,7 @@ import Button from "@/components/shared/Button";
 import Head from "@/components/shared/Head";
 import Loading from "@/components/shared/Loading";
 import Portal from "@/components/shared/Portal";
+import { titleTypeAtom } from "@/components/shared/TitleSwitcher";
 import { ReadContextProvider } from "@/contexts/ReadContext";
 import { ReadSettingsContextProvider } from "@/contexts/ReadSettingsContext";
 import useFetchImages from "@/hooks/useFetchImages";
@@ -12,6 +13,7 @@ import { Media } from "@/types/anilist";
 import { Chapter } from "@/types/core";
 import { parseNumberFromString } from "@/utils";
 import { getDescription, getTitle, sortMediaUnit } from "@/utils/data";
+import { useAtomValue } from "jotai";
 import { NextPage } from "next";
 import { useTranslation } from "next-i18next";
 import dynamic from "next/dynamic";
@@ -63,7 +65,9 @@ const ReadPage: NextPage<ReadPageProps> = ({
     isError: isSavedDataError,
   } = useReadChapter(Number(mangaId));
 
-  const title = useMemo(() => getTitle(manga), [manga]);
+  const titleType = useAtomValue(titleTypeAtom);
+
+  const title = useMemo(() => getTitle(manga, titleType), [manga, titleType]);
   const description = useMemo(() => getDescription(manga), [manga]);
 
   const currentChapter = useMemo(() => {

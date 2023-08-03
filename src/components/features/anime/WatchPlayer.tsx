@@ -31,6 +31,7 @@ import Overlay from "./Player/Overlay";
 import ProgressSlider from "./Player/ProgressSlider";
 import TimestampSkipButton from "./Player/TimestampSkipButton";
 import EpisodeSelector from "./EpisodeSelector";
+import { titleTypeAtom } from "@/components/shared/TitleSwitcher";
 
 export interface WatchPlayerProps extends PlayerProps {
   videoRef?: React.ForwardedRef<HTMLVideoElement>;
@@ -220,7 +221,9 @@ const PlayerOverlay = React.memo(() => {
     fallback: currentEpisode.title,
   });
 
-  const title = getTitle(anime);
+  const titleType = useAtomValue(titleTypeAtom);
+
+  const title = getTitle(anime, titleType);
 
   return (
     <Overlay>
@@ -311,8 +314,9 @@ const PlayerMobileOverlay = React.memo(() => {
   const isBackground = useAtomValue(isBackgroundAtom);
   const anime = useAtomValue(animeAtom);
   const currentEpisode = useAtomValue(currentEpisodeAtom);
+  const titleType = useAtomValue(titleTypeAtom);
 
-  const title = getTitle(anime);
+  const title = getTitle(anime, titleType);
   const episodeTitle = getEpisodeTitle(currentEpisode.translations, {
     locale,
     fallback: currentEpisode.title,

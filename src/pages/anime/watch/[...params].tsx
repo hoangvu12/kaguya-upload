@@ -3,6 +3,7 @@ import Button from "@/components/shared/Button";
 import ExtensionInstallAlert from "@/components/shared/ExtensionInstallAlert";
 import Head from "@/components/shared/Head";
 import Loading from "@/components/shared/Loading";
+import { titleTypeAtom } from "@/components/shared/TitleSwitcher";
 import { REVALIDATE_TIME } from "@/constants";
 import useAnimeId from "@/hooks/useAnimeId";
 import useEpisodes from "@/hooks/useEpisodes";
@@ -10,6 +11,7 @@ import useHistory from "@/hooks/useHistory";
 import { getMediaDetails } from "@/services/anilist";
 import { Media, MediaType } from "@/types/anilist";
 import { getDescription, getTitle } from "@/utils/data";
+import { useAtomValue } from "jotai";
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { useTranslation } from "next-i18next";
 import React, { useMemo } from "react";
@@ -34,8 +36,9 @@ const WatchPageContainer: NextPage<WatchPageContainerProps> = ({
   );
   const { back } = useHistory();
   const { t } = useTranslation("anime_watch");
+  const titleType = useAtomValue(titleTypeAtom);
 
-  const title = useMemo(() => getTitle(media), [media]);
+  const title = useMemo(() => getTitle(media, titleType), [media, titleType]);
   const description = useMemo(() => getDescription(media), [media]);
 
   const hasEpisodes = useMemo(() => episodes?.length > 0, [episodes]);

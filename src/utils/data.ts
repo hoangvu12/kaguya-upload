@@ -10,6 +10,7 @@ import {
   Translation as MediaUnitTranslation,
 } from "@/types/core";
 import { parseNumbersFromString } from ".";
+import { TitleType } from "@/components/shared/TitleSwitcher";
 
 type Translate = { readonly value: string; readonly label: string } & Record<
   string,
@@ -106,7 +107,11 @@ export const convert = (
   return constant[index].label;
 };
 
-export const getTitle = (data: Media) => {
+export const getTitle = (data: Media, titleType?: TitleType) => {
+  if (titleType === TitleType.English) {
+    return data?.title?.english || data?.title?.userPreferred;
+  }
+
   return data?.title?.userPreferred;
 };
 

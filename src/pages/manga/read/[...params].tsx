@@ -14,6 +14,8 @@ import { useRouter } from "next/router";
 import React, { useMemo } from "react";
 import ExtensionInstallAlert from "@/components/shared/ExtensionInstallAlert";
 import useMangaId from "@/hooks/useMangaId";
+import { useAtomValue } from "jotai";
+import { titleTypeAtom } from "@/components/shared/TitleSwitcher";
 
 interface ReadPageContainerProps {
   media: Media;
@@ -36,8 +38,9 @@ const ReadPageContainer: NextPage<ReadPageContainerProps> = ({
   );
   const { back } = useHistory();
   const { t } = useTranslation("manga_read");
+  const titleType = useAtomValue(titleTypeAtom);
 
-  const title = useMemo(() => getTitle(media), [media]);
+  const title = useMemo(() => getTitle(media, titleType), [media, titleType]);
   const description = useMemo(() => getDescription(media), [media]);
 
   const hasChapters = useMemo(() => chapters?.length > 0, [chapters]);

@@ -2,6 +2,7 @@ import ButtonTooltip from "@/components/shared/ButtonTooltip";
 import CircleButton from "@/components/shared/CircleButton";
 import Input from "@/components/shared/Input";
 import Kbd from "@/components/shared/Kbd";
+import { titleTypeAtom } from "@/components/shared/TitleSwitcher";
 import {
   chaptersAtom,
   currentChapterAtom,
@@ -79,7 +80,9 @@ const Sidebar = () => {
     setState((prev) => ({ ...prev, isSidebarOpen: isOpen }));
   };
 
-  const title = useMemo(() => getTitle(manga), [manga]);
+  const titleType = useAtomValue(titleTypeAtom);
+
+  const title = useMemo(() => getTitle(manga, titleType), [manga, titleType]);
 
   const filteredChapters = useMemo(() => {
     return chapters.filter(
