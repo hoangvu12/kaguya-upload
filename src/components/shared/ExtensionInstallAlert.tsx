@@ -26,25 +26,25 @@ const ExtensionInstallAlert = () => {
         Extension is not installed.{" "}
       </p>
 
-      <p className="text-xl mb-4">
+      <p className="text-xl text-center mb-4">
         To ensure seamless website functionality, the installation of the
         extension is now required.
       </p>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-wrap justify-center">
         <a
           target="_blank"
-          href="https://github.com/hoangvu12/kaguya-extension/releases/latest"
+          href="https://chrome.google.com/webstore/detail/kaguya/jhinkdokgbijplmedcpkjdbcmjgockgc"
           rel="noreferrer"
         >
           <Button primary outline LeftIcon={BrowserIcon}>
-            Install the extension
+            Install from Chrome Web Store
           </Button>
         </a>
 
         <Link href="/extension-install">
           <a>
-            <Button outline className="hover:bg-white/20">
+            <Button secondary className="underline underline-offset-4">
               Learn more
             </Button>
           </a>

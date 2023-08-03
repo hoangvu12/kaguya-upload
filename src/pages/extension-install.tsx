@@ -25,15 +25,24 @@ const ExtensionInstallPage = () => {
       </p>
 
       <p>
-        To get started, simply follow this{" "}
+        To begin, you have two options: you can either{" "}
+        <a
+          target="_blank"
+          href="https://chrome.google.com/webstore/detail/kaguya/jhinkdokgbijplmedcpkjdbcmjgockgc"
+          rel="noreferrer"
+        >
+          install
+        </a>{" "}
+        the extension directly from the Chrome Web Store, or you can follow the
+        manual installation instructions provided in this{" "}
         <a
           target="_blank"
           rel="noreferrer"
           href="https://github.com/hoangvu12/kaguya-extension/#how-to-install"
         >
-          instruction
-        </a>
-        .
+          link
+        </a>{" "}
+        on GitHub.
       </p>
 
       <p>
