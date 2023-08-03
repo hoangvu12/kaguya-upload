@@ -25,7 +25,17 @@ const WatchedSection = () => {
   }
 
   return (
-    <Section title={t("recently_watched")}>
+    <Section
+      href="/recently-watched"
+      className="relative"
+      title={t("recently_watched")}
+    >
+      {/* <Link href={"/recently-watched"}>
+        <a className="text-lg font-semibold absolute -top-0 right-0 p-[inherit] hover:underline hover:underline-offset-4 mr-32">
+          See all
+        </a>
+      </Link> */}
+
       <BrowserView renderWithFragment>
         <WatchedSwiper
           data={data}

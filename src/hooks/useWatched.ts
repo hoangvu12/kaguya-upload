@@ -9,9 +9,9 @@ export interface WatchedEpisodesWithMedia extends WatchedEpisode {
   media: Media;
 }
 
-const useWatched = () => {
+const useWatched = (limit = isMobile ? 10 : 20) => {
   return useQuery<WatchedEpisodesWithMedia[]>("watched", async () => {
-    const watchedEpisodes = getWatchedEpisodes(isMobile ? 10 : 20);
+    const watchedEpisodes = getWatchedEpisodes(limit);
 
     if (!watchedEpisodes?.length) return [];
 
