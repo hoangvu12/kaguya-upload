@@ -51,7 +51,7 @@ const BottomSheet = forwardRef<
     <div
       ref={bottomSheetRef}
       className={classNames(
-        "z-[9999] fixed inset-0 flex items-end justify-center",
+        "w-full z-[9999] fixed inset-0 flex items-end justify-center",
         !isOpen && "pointer-events-none"
       )}
     >
@@ -75,7 +75,7 @@ const BottomSheet = forwardRef<
             animate="animate"
             exit="exit"
             initial="initial"
-            className="relative z-[9999] max-h-[70vh] overflow-y-auto no-scrollbar"
+            className="w-full relative z-[9999] max-h-[70vh] overflow-y-auto no-scrollbar"
           >
             <div
               className="bg-background-800 rounded-t-3xl overflow-y-auto shadow-xl transform transition-all w-full px-4 py-6"
