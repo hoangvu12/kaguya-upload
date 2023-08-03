@@ -100,12 +100,14 @@ const WrongTitleDesktop: React.FC<WrongTitleProps> = ({
           LeftIcon={AiOutlineSearch}
           onChange={handleInputChange}
           defaultValue={null}
-          placeholder={anilist.title.english}
+          placeholder={anilist.title.english || anilist.title.romaji}
         />
 
         <h1 className="font-semibold text-2xl my-8">
           Search result for:{" "}
-          <i className="italic">{searchQuery || anilist.title.english}</i>
+          <i className="italic">
+            {searchQuery || anilist.title.english || anilist.title.romaji}
+          </i>
         </h1>
 
         {isLoading ? (
@@ -202,12 +204,14 @@ const WrongTitleMobile: React.FC<WrongTitleProps> = ({
           LeftIcon={AiOutlineSearch}
           onChange={handleInputChange}
           defaultValue={null}
-          placeholder={anilist.title.english}
+          placeholder={anilist.title.english || anilist.title.romaji}
         />
 
-        <h1 className="font-semibold text-2xl mb-8">
+        <h1 className="font-semibold text-2xl my-8">
           Search result for:{" "}
-          <i className="italic">{searchQuery || anilist.title.english}</i>
+          <i className="italic">
+            {searchQuery || anilist.title.english || anilist.title.romaji}
+          </i>
         </h1>
 
         {isLoading ? (
