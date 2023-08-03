@@ -19,5 +19,6 @@ module.exports = withPWA({
   i18n,
   experimental: {
     nextScriptWorkers: true,
+    outputStandalone: true,
   },
 });
