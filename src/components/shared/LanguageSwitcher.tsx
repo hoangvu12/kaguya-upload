@@ -22,10 +22,11 @@ const LanguageSwitcher = () => {
     nookies.set(null, "NEXT_LOCALE", lang, { path: "/" });
   };
 
-  const currentLocale = useMemo(
-    () => locales.find(({ locale }) => router.locale === locale),
-    [router.locale]
-  );
+  const currentLocale = useMemo(() => {
+    const locale = locales.find(({ locale }) => router.locale === locale);
+
+    return locale || locales.find(({ locale }) => locale === "en");
+  }, [router.locale]);
 
   return (
     <Popup
