@@ -135,7 +135,7 @@ const EpisodeButton: React.FC<EpisodeButtonProps> = ({
   return (
     <div
       className={classNames(
-        "relative rounded-md bg-background-700 col-span-1 aspect-w-2 aspect-h-1 group",
+        "relative rounded-md bg-background-700 col-span-1 aspect-w-2 aspect-h-1 group/button",
         episode.id === activeEpisode?.id
           ? "text-primary-300"
           : watchedEpisodeNumber >= episodeNumber && "text-white/70"
@@ -143,7 +143,7 @@ const EpisodeButton: React.FC<EpisodeButtonProps> = ({
     >
       <div
         title={episode.title}
-        className="flex items-center justify-center w-full h-full group-hover:bg-white/10 rounded-md transition duration-300"
+        className="flex items-center justify-center w-full h-full group-hover/button:bg-white/10 rounded-md transition duration-300"
       >
         <p>{episode.number}</p>
       </div>
