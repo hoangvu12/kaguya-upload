@@ -35,8 +35,11 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
   }, [watchedTime, duration]);
 
   const episodeTitle = useMemo(() => {
-    if (!episode.translations?.length) {
-      return getEpisodeTitle(episode.translations, { locale });
+    if (episode.translations?.length) {
+      return getEpisodeTitle(episode.translations, {
+        locale,
+        fallback: episode.title,
+      });
     }
 
     return episode.title;
@@ -58,7 +61,7 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
       displayTitle += ` - ${finalEpisodeTitle}`;
     }
 
-    return displayTitle;
+    return displayTitle || finalEpisodeTitle;
   }, [episode.title, episodeTitle, title]);
 
   return (

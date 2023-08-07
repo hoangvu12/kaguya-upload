@@ -147,6 +147,8 @@ export const getSeason = async (
   try {
     const filterSeason = (seasons: Season[], key: keyof typeof date) => {
       return seasons.filter((season) => {
+        if (!season?.air_date) return false;
+
         // 2021-01-11
         let [seasonYearString, seasonMonthString, seasonDayString] =
           season.air_date.split("-");
@@ -279,6 +281,125 @@ export const getMediaTranslations = async (
 
     return translations || [];
   } catch (err) {
+    return [];
+  }
+};
+
+export const getTMDBEpisodes = async (
+  tmdbId: number,
+  seasonNumber: number,
+  language = "en"
+) => {
+  const { data } = await client.get<any>(
+    `/tv/${tmdbId}/season/${seasonNumber}`,
+    {
+      params: {
+        language,
+      },
+    }
+  );
+
+  if (!data?.episodes?.length) return [];
+
+  return data.episodes;
+};
+
+export const getEpisodes = async (
+  tmdbId: number,
+  seasonNumber: number,
+  language = "en"
+) => {
+  try {
+    const episodes = await (async () => {
+      const promises = [];
+      const languageEpisodesPromise = getTMDBEpisodes(
+        tmdbId,
+        seasonNumber,
+        language
+      );
+
+      promises.push(languageEpisodesPromise);
+
+      // If the requested language is not English, we will fetch english episodes and use them as fallback.
+      if (language !== "en") {
+        const fallbackEpisodesPromise = getTMDBEpisodes(
+          tmdbId,
+          seasonNumber,
+          "en"
+        );
+
+        promises.push(fallbackEpisodesPromise);
+      } else {
+        promises.push(Promise.resolve([]));
+      }
+
+      const [languageEpisodes = [], fallbackEpisodes = []] = await Promise.all(
+        promises
+      );
+
+      const episodes = languageEpisodes.map((languageEpisode, index) => {
+        const fallbackEpisode = fallbackEpisodes[index];
+
+        const name = !languageEpisode.name?.startsWith("Episode")
+          ? languageEpisode.name
+          : fallbackEpisode?.name || languageEpisode.name;
+
+        const overview = languageEpisode.overview
+          ? languageEpisode.overview
+          : fallbackEpisode?.overview || languageEpisode.overview;
+
+        return {
+          ...languageEpisode,
+          name: name,
+          overview: overview,
+          locale: language,
+        };
+      });
+
+      return episodes;
+    })();
+
+    const validEpisodes = episodes.filter(
+      (episode) => !episode.name?.startsWith("Episode")
+    );
+
+    return validEpisodes.map((episode) => ({
+      title: episode.name,
+      description: episode.overview,
+      image: episode.still_path
+        ? "https://image.tmdb.org/t/p/w500" + episode.still_path
+        : null,
+      episodeNumber: episode.episode_number,
+      locale: episode.locale,
+    }));
+  } catch (err) {
+    console.error("getEpisodes tmdb", err);
+
+    return [];
+  }
+};
+
+export const getEpisodeInfo = async (anilist: Media, language = "en") => {
+  try {
+    const tmdbId = await getTMDBId(anilist);
+
+    if (!tmdbId) return [];
+
+    const seasons = await getSeasons(tmdbId);
+    const season = await getSeason(
+      seasons,
+      anilist.startDate,
+      anilist.episodes
+    );
+
+    if (!season?.season_number) return [];
+
+    const episodes = await getEpisodes(tmdbId, season?.season_number, language);
+
+    return episodes;
+  } catch (err) {
+    console.error("get episode info tmdb", err);
+
     return [];
   }
 };

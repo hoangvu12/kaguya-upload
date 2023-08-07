@@ -23,6 +23,7 @@ import { Mousewheel, SwiperOptions } from "swiper";
 import EpisodeCard from "./EpisodeCard";
 import { LinkProps } from "next/link";
 import Swiper from "swiper";
+import { getEpisodeTitle } from "@/utils/data";
 
 export interface EpisodeSelectorProps {
   episodes: Episode[];
@@ -90,6 +91,15 @@ const EpisodeButton: React.FC<EpisodeButtonProps> = ({
   activeEpisode,
   watchedEpisode,
 }) => {
+  const { locale } = useRouter();
+
+  const episodeTitle = useMemo(() => {
+    return getEpisodeTitle(episode.translations, {
+      locale,
+      fallback: episode.title,
+    });
+  }, [episode.title, episode.translations, locale]);
+
   const watchedEpisodeNumber = useMemo(
     () =>
       watchedEpisode?.episode?.number
@@ -134,6 +144,7 @@ const EpisodeButton: React.FC<EpisodeButtonProps> = ({
 
   return (
     <div
+      title={episodeTitle}
       className={classNames(
         "relative rounded-md bg-background-700 col-span-1 aspect-w-2 aspect-h-1 group/button",
         episode.id === activeEpisode?.id
@@ -141,10 +152,7 @@ const EpisodeButton: React.FC<EpisodeButtonProps> = ({
           : watchedEpisodeNumber >= episodeNumber && "text-white/70"
       )}
     >
-      <div
-        title={episode.title}
-        className="flex items-center justify-center w-full h-full group-hover/button:bg-white/10 rounded-md transition duration-300"
-      >
+      <div className="flex items-center justify-center w-full h-full group-hover/button:bg-white/10 rounded-md transition duration-300">
         <p>{episode.number}</p>
       </div>
 
@@ -179,7 +187,7 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = ({
   const [showType, setShowType] = useState<EpisodeShowType>(() => {
     if (isMobileOnly) return EpisodeShowType.Grid;
 
-    if (episodes.some((episode) => episode.thumbnail && episode.title))
+    if (episodes.some((episode) => episode.thumbnail))
       return EpisodeShowType.Thumbnail;
 
     return EpisodeShowType.Grid;

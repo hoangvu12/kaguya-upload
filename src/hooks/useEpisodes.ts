@@ -1,8 +1,11 @@
 import { DataWithExtra } from "@/types";
 import { Media } from "@/types/anilist";
 import { Episode } from "@/types/core";
+import { parseNumberFromString } from "@/utils";
 import { sortMediaUnit } from "@/utils/data";
 import { sendMessage } from "@/utils/events";
+import { getEpisodeInfo, getEpisodes } from "@/utils/tmdb";
+import { useRouter } from "next/router";
 import { UseQueryOptions, useQuery } from "react-query";
 import { toast } from "react-toastify";
 
@@ -30,8 +33,10 @@ const useEpisodes = (
     "queryKey" | "queryFn"
   >
 ) => {
+  const { locale } = useRouter();
+
   return useQuery(
-    ["episodes", anilist.id, sourceId, animeId],
+    ["episodes", anilist.id, sourceId, animeId, locale],
     async () => {
       console.log("[web page] fetching episodes");
 
@@ -53,9 +58,27 @@ const useEpisodes = (
 
       toast.dismiss(toastId);
 
+      const tmdbEpisodes = await getEpisodeInfo(anilist, locale);
+
       const composedEpisodes = sortMediaUnit(episodes) || defaultValue;
 
-      return composedEpisodes;
+      const episodesWithTranslations: Episode[] = composedEpisodes.map(
+        (composedEpisode) => {
+          const translation = tmdbEpisodes.find(
+            (episode) =>
+              episode.episodeNumber ===
+              parseNumberFromString(composedEpisode.number, 9999)
+          );
+
+          return {
+            ...composedEpisode,
+            translations: [translation],
+            thumbnail: translation?.image,
+          };
+        }
+      );
+
+      return episodesWithTranslations;
     },
     {
       onError: (err) => {
