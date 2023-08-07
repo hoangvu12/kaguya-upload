@@ -10,11 +10,13 @@ import { BrowserView, MobileOnlyView } from "react-device-detect";
 import EpisodeCard from "./EpisodeCard";
 import { useAtomValue } from "jotai";
 import { titleTypeAtom } from "@/components/shared/TitleSwitcher";
+import { useRouter } from "next/router";
 
 const WatchedSection = () => {
   const { data, isLoading, isError } = useWatched();
   const { t } = useTranslation("anime_home");
   const titleType = useAtomValue(titleTypeAtom);
+  const { locale } = useRouter();
 
   if (isLoading) {
     return <WatchedSwiperSkeleton />;
@@ -30,12 +32,6 @@ const WatchedSection = () => {
       className="relative"
       title={t("recently_watched")}
     >
-      {/* <Link href={"/recently-watched"}>
-        <a className="text-lg font-semibold absolute -top-0 right-0 p-[inherit] hover:underline hover:underline-offset-4 mr-32">
-          See all
-        </a>
-      </Link> */}
-
       <BrowserView renderWithFragment>
         <WatchedSwiper
           data={data}
@@ -81,7 +77,7 @@ const WatchedSection = () => {
                     ...episode,
                     thumbnail: media.bannerImage || media.coverImage.extraLarge,
                   }}
-                  title={getTitle(media, titleType)}
+                  title={getTitle(media, { titleType, locale })}
                   duration={(media?.duration || 0) * 60}
                   watchedTime={time}
                 />

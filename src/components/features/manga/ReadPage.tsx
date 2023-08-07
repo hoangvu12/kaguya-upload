@@ -67,8 +67,14 @@ const ReadPage: NextPage<ReadPageProps> = ({
 
   const titleType = useAtomValue(titleTypeAtom);
 
-  const title = useMemo(() => getTitle(manga, titleType), [manga, titleType]);
-  const description = useMemo(() => getDescription(manga), [manga]);
+  const title = useMemo(
+    () => getTitle(manga, { titleType, locale: router.locale }),
+    [manga, titleType, router.locale]
+  );
+  const description = useMemo(
+    () => getDescription(manga, { locale: router.locale }),
+    [manga, router.locale]
+  );
 
   const currentChapter = useMemo(() => {
     const chapter = chapters.find((chapter) => chapter.id === chapterId);

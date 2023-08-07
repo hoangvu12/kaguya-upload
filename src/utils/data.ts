@@ -107,16 +107,40 @@ export const convert = (
   return constant[index].label;
 };
 
-export const getTitle = (data: Media, titleType?: TitleType) => {
-  if (titleType === TitleType.English) {
-    return data?.title?.english || data?.title?.userPreferred;
+export const getTitle = (
+  data: Media,
+  { titleType, locale }: { titleType?: TitleType; locale?: string } = {
+    titleType: TitleType.ORIGINAL,
+    locale: "en",
+  }
+) => {
+  if (titleType === TitleType.Japanese && data?.title?.romaji) {
+    return data?.title?.romaji;
   }
 
-  return data?.title?.userPreferred;
+  if (locale === "en") return data?.title?.english;
+
+  const translation = data?.translations?.find(
+    (translation) => translation.locale === locale
+  );
+
+  return translation?.title || data.title?.english || data.title?.userPreferred;
 };
 
-export const getDescription = (data: Media) => {
-  return data?.description;
+export const getDescription = (
+  data: Media,
+
+  { locale }: { locale?: string } = {
+    locale: "en",
+  }
+) => {
+  if (locale === "en") return data?.description;
+
+  const translation = data?.translations?.find(
+    (translation) => translation.locale === locale
+  );
+
+  return translation?.description || data?.description;
 };
 
 export const getEpisodeTitle = (

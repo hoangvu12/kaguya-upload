@@ -5,6 +5,7 @@ import { getTitle } from "@/utils/data";
 import classNames from "classnames";
 import { useAtomValue } from "jotai";
 import { useTranslation } from "next-i18next";
+import { useRouter } from "next/router";
 import React from "react";
 
 interface TraceCardProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -19,6 +20,7 @@ const TraceCard: React.FC<TraceCardProps> = ({
   ...props
 }) => {
   const { t } = useTranslation("trace");
+  const router = useRouter();
 
   const titleType = useAtomValue(titleTypeAtom);
 
@@ -31,7 +33,9 @@ const TraceCard: React.FC<TraceCardProps> = ({
       )}
       {...props}
     >
-      <p className="text-lg font-semibold">{getTitle(data.anime, titleType)}</p>
+      <p className="text-lg font-semibold">
+        {getTitle(data.anime, { titleType, locale: router.locale })}
+      </p>
 
       <div className="grid grid-cols-10">
         <div className="col-span-5 flex flex-col justify-between">

@@ -73,7 +73,10 @@ const Card: React.FC<AnimeCardProps> = (props) => {
 
   const titleType = useAtomValue(titleTypeAtom);
 
-  const title = useMemo(() => getTitle(data, titleType), [data, titleType]);
+  const title = useMemo(
+    () => getTitle(data, { titleType, locale: router.locale }),
+    [data, titleType, router.locale]
+  );
 
   const nextEpisodeAiringTimeDuration = useMemo(() => {
     const nextEpisodeAiringTime = !data.nextAiringEpisode

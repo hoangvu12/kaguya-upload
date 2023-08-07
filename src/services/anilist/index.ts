@@ -2,6 +2,7 @@ import {
   AiringScheduleArgs,
   CharacterArgs,
   MediaArgs,
+  MediaType,
   PageArgs,
   RecommendationArgs,
   StaffArgs,
@@ -26,6 +27,7 @@ import {
 } from "./queries";
 
 import axios from "axios";
+import { getMediaTranslations } from "@/utils/tmdb";
 
 const GRAPHQL_URL = "https://graphql.anilist.co";
 
@@ -75,6 +77,12 @@ export const getMediaDetails = async (
   );
 
   const media = response?.Media;
+
+  if (media.type === MediaType.Anime) {
+    const translations = await getMediaTranslations(media);
+
+    media.translations = translations;
+  }
 
   return media;
 };

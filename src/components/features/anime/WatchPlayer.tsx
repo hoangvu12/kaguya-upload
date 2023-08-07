@@ -223,7 +223,7 @@ const PlayerOverlay = React.memo(() => {
 
   const titleType = useAtomValue(titleTypeAtom);
 
-  const title = getTitle(anime, titleType);
+  const title = getTitle(anime, { titleType, locale });
 
   return (
     <Overlay>
@@ -316,7 +316,7 @@ const PlayerMobileOverlay = React.memo(() => {
   const currentEpisode = useAtomValue(currentEpisodeAtom);
   const titleType = useAtomValue(titleTypeAtom);
 
-  const title = getTitle(anime, titleType);
+  const title = getTitle(anime, { titleType, locale });
   const episodeTitle = getEpisodeTitle(currentEpisode.translations, {
     locale,
     fallback: currentEpisode.title,

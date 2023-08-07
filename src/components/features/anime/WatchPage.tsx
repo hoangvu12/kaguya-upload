@@ -391,8 +391,14 @@ const WatchPage: NextPage<WatchPageProps> = ({
   //   refetchWatchedData();
   // }, [currentEpisode.slug, refetchWatchedData]);
 
-  const title = useMemo(() => getTitle(anime, titleType), [anime, titleType]);
-  const description = useMemo(() => getDescription(anime), [anime]);
+  const title = useMemo(
+    () => getTitle(anime, { titleType, locale: router.locale }),
+    [anime, titleType, router.locale]
+  );
+  const description = useMemo(
+    () => getDescription(anime, { locale: router.locale }),
+    [anime, router.locale]
+  );
 
   const sources = useMemo(
     () => (!data?.videos?.length ? blankVideo : data.videos),

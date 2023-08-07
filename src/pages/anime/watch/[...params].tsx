@@ -14,6 +14,7 @@ import { getDescription, getTitle } from "@/utils/data";
 import { useAtomValue } from "jotai";
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { useTranslation } from "next-i18next";
+import { useRouter } from "next/router";
 import React, { useMemo } from "react";
 
 interface WatchPageContainerProps {
@@ -37,9 +38,16 @@ const WatchPageContainer: NextPage<WatchPageContainerProps> = ({
   const { back } = useHistory();
   const { t } = useTranslation("anime_watch");
   const titleType = useAtomValue(titleTypeAtom);
+  const { locale } = useRouter();
 
-  const title = useMemo(() => getTitle(media, titleType), [media, titleType]);
-  const description = useMemo(() => getDescription(media), [media]);
+  const title = useMemo(
+    () => getTitle(media, { titleType, locale }),
+    [media, titleType, locale]
+  );
+  const description = useMemo(
+    () => getDescription(media, { locale }),
+    [media, locale]
+  );
 
   const hasEpisodes = useMemo(() => episodes?.length > 0, [episodes]);
 

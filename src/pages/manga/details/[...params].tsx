@@ -35,13 +35,17 @@ interface DetailsPageProps {
 const DetailsPage: NextPage<DetailsPageProps> = ({ manga }) => {
   const { locale } = useRouter();
   const { t } = useTranslation("manga_details");
-  // const { data: chapters, isLoading } = useChapters(manga.id);
-  // const { data: readData, isLoading: readLoading } = useSavedRead(manga.id);
   const chapterSelectorRef = useRef<HTMLDivElement>(null);
   const titleType = useAtomValue(titleTypeAtom);
 
-  const title = useMemo(() => getTitle(manga, titleType), [manga, titleType]);
-  const description = useMemo(() => getDescription(manga), [manga]);
+  const title = useMemo(
+    () => getTitle(manga, { titleType, locale }),
+    [manga, titleType, locale]
+  );
+  const description = useMemo(
+    () => getDescription(manga, { locale }),
+    [manga, locale]
+  );
 
   const handleReadClick = () => {
     if (manga.status === MediaStatus.Not_yet_released) {

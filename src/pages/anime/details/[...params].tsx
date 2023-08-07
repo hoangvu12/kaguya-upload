@@ -58,8 +58,14 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
 
   const titleType = useAtomValue(titleTypeAtom);
 
-  const title = useMemo(() => getTitle(anime, titleType), [anime, titleType]);
-  const description = useMemo(() => getDescription(anime), [anime]);
+  const title = useMemo(
+    () => getTitle(anime, { titleType, locale }),
+    [anime, titleType, locale]
+  );
+  const description = useMemo(
+    () => getDescription(anime, { locale }),
+    [anime, locale]
+  );
 
   const handleWatchClick = () => {
     if (anime.status === MediaStatus.Not_yet_released) {

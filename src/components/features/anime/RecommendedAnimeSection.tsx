@@ -7,10 +7,15 @@ import { WatchedEpisodesWithMedia } from "@/hooks/useWatched";
 import { getTitle } from "@/utils/data";
 import { useAtomValue } from "jotai";
 import { useTranslation } from "next-i18next";
+import { useRouter } from "next/router";
 import React from "react";
 
-const composeData = (data: WatchedEpisodesWithMedia, titleType: TitleType) => {
-  const title = getTitle(data.media, titleType);
+const composeData = (
+  data: WatchedEpisodesWithMedia,
+  titleType: TitleType,
+  locale: string
+) => {
+  const title = getTitle(data.media, { titleType, locale });
 
   const recommendations = data.media?.recommendations?.nodes.map((node) => {
     return node.mediaRecommendation;
@@ -26,6 +31,7 @@ const RecommendedAnimeSection = () => {
   const { data, isError, isLoading } = useAnimeRecommendedList();
   const { t } = useTranslation("anime_home");
   const titleType = useAtomValue(titleTypeAtom);
+  const { locale } = useRouter();
 
   if (isLoading) {
     return <ListSwiperSkeleton />;
@@ -35,7 +41,7 @@ const RecommendedAnimeSection = () => {
     return null;
   }
 
-  const composedData = composeData(data, titleType);
+  const composedData = composeData(data, titleType, locale);
 
   return composedData?.list?.length ? (
     <Section title={`${t("because_you_watched")} "${composedData.title}"`}>

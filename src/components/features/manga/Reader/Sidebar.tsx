@@ -25,6 +25,7 @@ import classNames from "classnames";
 import { Variants, motion } from "framer-motion";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useTranslation } from "next-i18next";
+import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import { BrowserView, MobileView, isMobileOnly } from "react-device-detect";
 import { AiOutlineSearch } from "react-icons/ai";
@@ -61,6 +62,7 @@ const transition = [0.33, 1, 0.68, 1];
 
 const Sidebar = () => {
   const { back } = useHistory();
+  const router = useRouter();
 
   const isSidebarOpen = useAtomValue(isSidebarOpenAtom);
   const setState = useSetAtom(readPanelStateAtom);
@@ -82,7 +84,10 @@ const Sidebar = () => {
 
   const titleType = useAtomValue(titleTypeAtom);
 
-  const title = useMemo(() => getTitle(manga, titleType), [manga, titleType]);
+  const title = useMemo(
+    () => getTitle(manga, { titleType, locale: router.locale }),
+    [manga, titleType, router.locale]
+  );
 
   const filteredChapters = useMemo(() => {
     return chapters.filter(

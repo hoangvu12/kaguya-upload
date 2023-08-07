@@ -1,18 +1,20 @@
 import classNames from "classnames";
 import { atom, useAtom } from "jotai";
+import { useRouter } from "next/router";
 import { useEffect } from "react";
 
 export enum TitleType {
-  English = "english",
+  ORIGINAL = "original",
   Japanese = "japanese",
 }
 
-export const titleTypeAtom = atom(TitleType.English);
+export const titleTypeAtom = atom(TitleType.ORIGINAL);
 
 const LOCALSTORAGE_KEY = "kaguya.title_type";
 
 const TitleSwitcher = () => {
   const [titleType, setTitleType] = useAtom(titleTypeAtom);
+  const { locale } = useRouter();
 
   const handleSetTitleType = (titleType: TitleType) => () => {
     setTitleType(titleType);
@@ -26,25 +28,25 @@ const TitleSwitcher = () => {
     let titleType = savedTitleType as TitleType;
 
     if (
-      savedTitleType !== TitleType.English &&
+      savedTitleType !== TitleType.ORIGINAL &&
       savedTitleType !== TitleType.Japanese
     ) {
-      titleType = TitleType.English;
+      titleType = TitleType.ORIGINAL;
     }
 
     setTitleType(titleType);
-  }, []);
+  }, [setTitleType]);
 
   return (
     <div className="flex rounded-full bg-background-900">
       <button
         className={classNames(
           "px-2 py-1 rounded-full",
-          titleType === TitleType.English && "bg-primary-600"
+          titleType === TitleType.ORIGINAL && "bg-primary-600"
         )}
-        onClick={handleSetTitleType(TitleType.English)}
+        onClick={handleSetTitleType(TitleType.ORIGINAL)}
       >
-        EN
+        {locale.toUpperCase()}
       </button>
       <button
         className={classNames(

@@ -74,7 +74,7 @@ const MobileHomeBanner: React.FC<HomeBannerProps> = ({ data }) => {
   return (
     <div className="flex snap-x snap-mandatory overflow-x-auto no-scrollbar gap-2">
       {data.map((slide: Media) => {
-        const title = getTitle(slide, titleType);
+        const title = getTitle(slide, { titleType, locale });
         const nextEpisodeAiringTime = !slide.nextAiringEpisode
           ? null
           : dayjs.unix(slide.nextAiringEpisode.airingAt);
@@ -258,10 +258,13 @@ const DesktopHomeBanner: React.FC<HomeBannerProps> = ({ data }) => {
   const titleType = useAtomValue(titleTypeAtom);
 
   const title = useMemo(
-    () => getTitle(activeSlide, titleType),
-    [activeSlide, titleType]
+    () => getTitle(activeSlide, { titleType, locale }),
+    [activeSlide, titleType, locale]
   );
-  const description = useMemo(() => getDescription(activeSlide), [activeSlide]);
+  const description = useMemo(
+    () => getDescription(activeSlide, { locale }),
+    [activeSlide, locale]
+  );
 
   const nextEpisodeAiringTimeDuration = useMemo(() => {
     const nextEpisodeAiringTime = !activeSlide.nextAiringEpisode

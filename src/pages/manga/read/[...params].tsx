@@ -39,9 +39,16 @@ const ReadPageContainer: NextPage<ReadPageContainerProps> = ({
   const { back } = useHistory();
   const { t } = useTranslation("manga_read");
   const titleType = useAtomValue(titleTypeAtom);
+  const { locale } = useRouter();
 
-  const title = useMemo(() => getTitle(media, titleType), [media, titleType]);
-  const description = useMemo(() => getDescription(media), [media]);
+  const title = useMemo(
+    () => getTitle(media, { titleType, locale }),
+    [media, titleType, locale]
+  );
+  const description = useMemo(
+    () => getDescription(media, { locale }),
+    [media, locale]
+  );
 
   const hasChapters = useMemo(() => chapters?.length > 0, [chapters]);
 

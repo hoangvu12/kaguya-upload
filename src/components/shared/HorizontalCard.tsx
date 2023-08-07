@@ -32,7 +32,10 @@ const HorizontalCard = ({
   const { t } = useTranslation("common");
   const titleType = useAtomValue(titleTypeAtom);
 
-  const title = useMemo(() => getTitle(data, titleType), [data, titleType]);
+  const title = useMemo(
+    () => getTitle(data, { titleType, locale }),
+    [data, titleType, locale]
+  );
 
   const sizeClassName = useMemo(() => {
     if (size === "sm") {

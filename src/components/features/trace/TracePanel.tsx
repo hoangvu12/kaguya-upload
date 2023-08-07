@@ -36,10 +36,13 @@ const TracePanel: React.FC<TracePanelProps> = ({ data, image }) => {
 
   const card = useMemo(() => data.result[cardIndex], [cardIndex, data.result]);
   const title = useMemo(
-    () => getTitle(card.anime, titleType),
-    [card.anime, titleType]
+    () => getTitle(card.anime, { titleType, locale }),
+    [card.anime, titleType, locale]
   );
-  const description = useMemo(() => getDescription(card.anime), [card.anime]);
+  const description = useMemo(
+    () => getDescription(card.anime, { locale }),
+    [card.anime, locale]
+  );
 
   return (
     <div className="flex w-full flex-col gap-8 md:flex-row">

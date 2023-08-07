@@ -7,10 +7,15 @@ import { ReadChaptersWithMedia } from "@/hooks/useRead";
 import { getTitle } from "@/utils/data";
 import { useAtomValue } from "jotai";
 import { useTranslation } from "next-i18next";
+import { useRouter } from "next/router";
 import React from "react";
 
-const composeData = (data: ReadChaptersWithMedia, titleType: TitleType) => {
-  const title = getTitle(data.media, titleType);
+const composeData = (
+  data: ReadChaptersWithMedia,
+  titleType: TitleType,
+  locale: string
+) => {
+  const title = getTitle(data.media, { titleType, locale });
 
   const recommendations = data.media?.recommendations?.nodes.map((node) => {
     return node.mediaRecommendation;
@@ -26,6 +31,7 @@ const RecommendedMangaSection = () => {
   const { data, isError, isLoading } = useMangaRecommendedList();
   const { t } = useTranslation("manga_home");
   const titleType = useAtomValue(titleTypeAtom);
+  const router = useRouter();
 
   if (isLoading) {
     return <ListSwiperSkeleton />;
@@ -35,7 +41,7 @@ const RecommendedMangaSection = () => {
     return null;
   }
 
-  const composedData = composeData(data, titleType);
+  const composedData = composeData(data, titleType, router.locale);
 
   return composedData?.list?.length ? (
     <Section title={`${t("because_you_read")} "${composedData.title}"`}>

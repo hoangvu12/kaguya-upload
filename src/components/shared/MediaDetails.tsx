@@ -13,6 +13,7 @@ import { AiFillHeart } from "react-icons/ai";
 import { MdTagFaces } from "react-icons/md";
 import { titleTypeAtom } from "./TitleSwitcher";
 import { useAtomValue } from "jotai";
+import { useRouter } from "next/router";
 
 interface MediaDetailsProps {
   media: Media;
@@ -21,9 +22,16 @@ interface MediaDetailsProps {
 
 const MediaDetails: React.FC<MediaDetailsProps> = ({ media, className }) => {
   const titleType = useAtomValue(titleTypeAtom);
+  const { locale } = useRouter();
 
-  const title = useMemo(() => getTitle(media, titleType), [media, titleType]);
-  const description = useMemo(() => getDescription(media), [media]);
+  const title = useMemo(
+    () => getTitle(media, { titleType, locale }),
+    [media, titleType, locale]
+  );
+  const description = useMemo(
+    () => getDescription(media, { locale }),
+    [media, locale]
+  );
 
   return (
     <div

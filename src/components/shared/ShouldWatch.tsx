@@ -25,8 +25,14 @@ const ShouldWatch: React.FC<ShouldWatchProps> = ({ data, isLoading }) => {
 
   const titleType = useAtomValue(titleTypeAtom);
 
-  const title = useMemo(() => getTitle(data, titleType), [data, titleType]);
-  const description = useMemo(() => getDescription(data), [data]);
+  const title = useMemo(
+    () => getTitle(data, { titleType, locale }),
+    [data, titleType, locale]
+  );
+  const description = useMemo(
+    () => getDescription(data, { locale }),
+    [data, locale]
+  );
 
   const redirectUrl = useMemo(() => createMediaDetailsUrl(data), [data]);
 
