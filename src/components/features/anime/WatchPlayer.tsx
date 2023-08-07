@@ -373,7 +373,8 @@ const PlayerMobileOverlay = React.memo(() => {
               <React.Fragment>
                 <div className="absolute top-4 left-16 space-y-1 w-96 max-w-[70vw]">
                   <p className="font-semibold text-bas line-clamp-1">
-                    {currentEpisode.title} {episodeTitle && `- ${episodeTitle}`}
+                    {currentEpisode.number}{" "}
+                    {episodeTitle && `- ${episodeTitle}`}
                   </p>
 
                   <p className="text-gray-300 text-sm line-clamp-1">{title}</p>
