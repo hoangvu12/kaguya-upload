@@ -13,6 +13,7 @@ interface EpisodeCardProps {
   watchedTime?: number;
   duration?: number;
   media?: Media;
+  displayMediaTitle?: boolean;
 }
 
 const EpisodeCard: React.FC<EpisodeCardProps> = ({
@@ -22,6 +23,7 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
   watchedTime,
   duration = 0,
   media,
+  displayMediaTitle = true,
   ...props
 }) => {
   const { locale } = useRouter();
@@ -49,23 +51,9 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
     return getEpisodeDescription(episode.translations, { locale });
   }, [episode.translations, locale]);
 
-  const episodeDisplayTitle = useMemo(() => {
-    let displayTitle = episode.title;
-
-    const finalEpisodeTitle = episodeTitle || title;
-
-    const isSourceTitleSameAsTranslationTitle =
-      finalEpisodeTitle === displayTitle;
-
-    if (finalEpisodeTitle && isSourceTitleSameAsTranslationTitle) {
-      displayTitle += ` - ${finalEpisodeTitle}`;
-    }
-
-    return displayTitle || finalEpisodeTitle;
-  }, [episode.title, episodeTitle, title]);
-
   return (
     <div
+      title={episodeTitle}
       className="group relative h-40 w-full hover:bg-white/20 cursor-pointer"
       {...props}
     >
@@ -77,7 +65,7 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
           "/error.png"
         }
         layout="fill"
-        alt={episodeDisplayTitle || title}
+        alt={episodeTitle}
         objectFit="cover"
         className="group-hover:scale-105 transition duration-300 rounded-md"
       />
@@ -95,7 +83,7 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
             isActive && "text-primary-300"
           )}
         >
-          {episodeDisplayTitle || title}
+          {displayMediaTitle ? title : episodeTitle}
         </p>
 
         {episodeDescription && (

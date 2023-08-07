@@ -1,10 +1,9 @@
-import { DataWithExtra } from "@/types";
 import { Media } from "@/types/anilist";
 import { Episode } from "@/types/core";
 import { parseNumberFromString } from "@/utils";
 import { sortMediaUnit } from "@/utils/data";
 import { sendMessage } from "@/utils/events";
-import { getEpisodeInfo, getEpisodes } from "@/utils/tmdb";
+import { getEpisodeInfo } from "@/utils/tmdb";
 import { useRouter } from "next/router";
 import { UseQueryOptions, useQuery } from "react-query";
 import { toast } from "react-toastify";
@@ -58,9 +57,13 @@ const useEpisodes = (
 
       toast.dismiss(toastId);
 
+      const composedEpisodes = sortMediaUnit(episodes) || defaultValue;
+
       const tmdbEpisodes = await getEpisodeInfo(anilist, locale);
 
-      const composedEpisodes = sortMediaUnit(episodes) || defaultValue;
+      if (!tmdbEpisodes?.length) {
+        return composedEpisodes;
+      }
 
       const episodesWithTranslations: Episode[] = composedEpisodes.map(
         (composedEpisode) => {
@@ -69,6 +72,8 @@ const useEpisodes = (
               episode.episodeNumber ===
               parseNumberFromString(composedEpisode.number, 9999)
           );
+
+          if (!translation) return composedEpisode;
 
           return {
             ...composedEpisode,

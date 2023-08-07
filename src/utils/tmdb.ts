@@ -363,7 +363,7 @@ export const getEpisodes = async (
       (episode) => !episode.name?.startsWith("Episode")
     );
 
-    return validEpisodes.map((episode) => ({
+    const composedEpisodes = validEpisodes.map((episode) => ({
       title: episode.name,
       description: episode.overview,
       image: episode.still_path
@@ -372,6 +372,10 @@ export const getEpisodes = async (
       episodeNumber: episode.episode_number,
       locale: episode.locale,
     }));
+
+    console.log(composedEpisodes);
+
+    return composedEpisodes;
   } catch (err) {
     console.error("getEpisodes tmdb", err);
 

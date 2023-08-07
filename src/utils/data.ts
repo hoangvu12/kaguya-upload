@@ -152,6 +152,8 @@ export const getEpisodeTitle = (
 ) => {
   if (!translations?.length) return options.fallback;
 
+  console.log(translations);
+
   const translation = translations.find(
     (translation) => translation.locale === options.locale
   );
@@ -168,6 +170,8 @@ export const getEpisodeDescription = (
   }
 ) => {
   if (!translations?.length) return options.fallback;
+
+  console.log(translations);
 
   const translation = translations.find(
     (translation) => translation.locale === options.locale

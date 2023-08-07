@@ -523,6 +523,7 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = ({
                       media={media}
                       duration={media.duration * 60}
                       isActive={episode.id === activeEpisode?.id}
+                      displayMediaTitle={false}
                     />
                   )}
                 </a>
