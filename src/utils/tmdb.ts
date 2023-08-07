@@ -105,11 +105,9 @@ const client = axios.create({
 export const getTMDBId = async (media: Media) => {
   const mapping = await getMapping("anilist_id", media.id);
 
-  if ("themoviedb_id" in mapping) {
-    return mapping.themoviedb_id;
-  }
+  if (mapping?.themoviedb_id) return mapping.themoviedb_id;
 
-  if ("thetvdb_id" in mapping) {
+  if (mapping?.thetvdb_id) {
     const { data } = await client.get<any>(`/find/${mapping.thetvdb_id}`, {
       params: {
         external_source: "tvdb_id",
