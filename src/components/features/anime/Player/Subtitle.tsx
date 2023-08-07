@@ -51,6 +51,8 @@ const Subtitle = () => {
   );
 
   useEffect(() => {
+    if (!videoEl) return;
+
     if (!subtitle?.file) return;
 
     if (subtitlesOctopusRef.current) {
@@ -66,9 +68,10 @@ const Subtitle = () => {
       const options = {
         video: videoEl,
         subUrl: subtitle.file,
-        // fonts: fonts?.map((font) => font?.file),
-        workerUrl: "/subtitles-octopus-worker.js",
-        legacyWorkerUrl: "/subtitles-octopus-worker-legacy.js",
+        workerUrl: "/_next/static/subtitles-octopus-worker.js",
+        legacyWorkerUrl: "/_next/static/subtitles-octopus-worker-legacy.js",
+        fallbackFont: "/Montserrat-SemiBold.ttf",
+        renderMode: "wasm-blend",
       };
 
       const instance = new SubtitlesOctopus(options);
@@ -81,16 +84,12 @@ const Subtitle = () => {
       return;
     }
 
-    console.log(subtitle);
-
     if (
       subtitle.format === SubtitleFormat.SRT ||
       subtitle.format === SubtitleFormat.VTT ||
       subtitle.file.includes(".vtt") ||
       subtitle.file.includes(".srt")
     ) {
-      console.log("getting subtitle");
-
       const getSubtitle = async () => {
         setIsLoading(true);
 
