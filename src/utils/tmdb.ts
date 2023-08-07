@@ -226,52 +226,59 @@ export const search = async (keyword: string, type: "movie" | "tv") => {
 export const getMediaTranslations = async (
   media: Media
 ): Promise<Translation[]> => {
-  const type = media.format === MediaFormat.Movie ? "movie" : "tv";
+  try {
+    const type = media.format === MediaFormat.Movie ? "movie" : "tv";
 
-  const id = await getTMDBId(media);
+    const id = await getTMDBId(media);
 
-  const { data } = await client.get<TMDBTranlations.Response>(
-    `/${type}/${id}/translations`
-  );
+    if (!id) return [];
 
-  const overallMediaTranslation = removeArrayOfObjectDup(
-    data.translations.map((trans) => ({
-      locale: trans.iso_639_1,
-      description: trans.data.overview,
-      title: trans.data.title || trans.data.name || null,
-    })),
-    "locale"
-  );
-
-  if (type === "movie") return overallMediaTranslation;
-
-  const seasons = await getSeasons(id);
-  const season = await getSeason(seasons, media.startDate, media.episodes);
-
-  if (!season?.season_number) return overallMediaTranslation;
-
-  const seasonTranslations = await getSeasonTranslations(id, season);
-
-  const translations = overallMediaTranslation.map((translation) => {
-    const seasonTranslation = seasonTranslations.find(
-      (seasonTranslation) => seasonTranslation.iso_639_1 === translation.locale
+    const { data } = await client.get<TMDBTranlations.Response>(
+      `/${type}/${id}/translations`
     );
 
-    const shouldAddSeasonSuffix = seasons?.length > 1;
+    const overallMediaTranslation = removeArrayOfObjectDup(
+      data.translations.map((trans) => ({
+        locale: trans.iso_639_1,
+        description: trans.data.overview,
+        title: trans.data.title || trans.data.name || null,
+      })),
+      "locale"
+    );
 
-    const title = translation.title
-      ? `${translation.title} ${
-          shouldAddSeasonSuffix ? `(${season?.season_number})` : ""
-        }`
-      : null;
+    if (type === "movie") return overallMediaTranslation;
 
-    return {
-      locale: translation.locale,
-      description:
-        seasonTranslation?.data?.overview || translation.description || null,
-      title: seasonTranslation?.data?.title || title,
-    };
-  });
+    const seasons = await getSeasons(id);
+    const season = await getSeason(seasons, media.startDate, media.episodes);
 
-  return translations || [];
+    if (!season?.season_number) return overallMediaTranslation;
+
+    const seasonTranslations = await getSeasonTranslations(id, season);
+
+    const translations = overallMediaTranslation.map((translation) => {
+      const seasonTranslation = seasonTranslations.find(
+        (seasonTranslation) =>
+          seasonTranslation.iso_639_1 === translation.locale
+      );
+
+      const shouldAddSeasonSuffix = seasons?.length > 1;
+
+      const title = translation.title
+        ? `${translation.title} ${
+            shouldAddSeasonSuffix ? `(${season?.season_number})` : ""
+          }`
+        : null;
+
+      return {
+        locale: translation.locale,
+        description:
+          seasonTranslation?.data?.overview || translation.description || null,
+        title: seasonTranslation?.data?.title || title,
+      };
+    });
+
+    return translations || [];
+  } catch (err) {
+    return [];
+  }
 };
