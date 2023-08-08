@@ -25,12 +25,26 @@ const sourceToOption = (source: Source) => {
 const SourceChapterSelector: React.FC<SourceChapterSelectorProps> = ({
   media,
 }) => {
+  const isNSFW = useMemo(() => media.isAdult, [media?.isAdult]);
+
   const [videoContainer, setVideoContainer] = useState<HTMLElement>();
   const containerEl = useRef<HTMLDivElement>(null);
 
   const { asPath, locale } = useRouter();
 
   const { data: sources, isLoading, isError } = useSources(SourceType.Manga);
+
+  const nsfwSources = useMemo(() => {
+    if (!sources?.length) return [];
+
+    return sources.filter((source) => source.isNSFW);
+  }, [sources]);
+
+  const nonNSFWSources = useMemo(() => {
+    if (!sources?.length) return [];
+
+    return sources.filter((source) => !source.isNSFW);
+  }, [sources]);
 
   const languages = useMemo(() => {
     if (!sources?.length) return [];
@@ -54,10 +68,15 @@ const SourceChapterSelector: React.FC<SourceChapterSelectorProps> = ({
     if (!sources?.length) return [];
     if (!activeLanguage) return [];
 
-    return sources.filter((source) =>
+    // If NSFW then put NSFW sources on top
+    const typeSources = isNSFW
+      ? [...nsfwSources, ...nonNSFWSources]
+      : nonNSFWSources;
+
+    return typeSources.filter((source) =>
       source.languages.includes(activeLanguage)
     );
-  }, [activeLanguage, sources]);
+  }, [activeLanguage, isNSFW, nonNSFWSources, nsfwSources, sources?.length]);
 
   const [activeSource, setActiveSource] = useState<Source>(
     languageSources?.[0]
