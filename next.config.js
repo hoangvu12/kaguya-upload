@@ -36,7 +36,6 @@ module.exports = withPlausibleProxy({
     },
     i18n,
     experimental: {
-      nextScriptWorkers: true,
       outputStandalone: true,
     },
   })
