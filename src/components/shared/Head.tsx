@@ -28,9 +28,6 @@ const Head: React.FC<HeadProps> = (props) => {
       <link rel="preconnect" href="https://fonts.googleapis.com/" />
       <link rel="dns-prefetch" href="https://fonts.googleapis.com/" />
 
-      <link rel="preconnect" href="https://www.google-analytics.com" />
-      <link rel="dns-prefetch" href="https://www.google-analytics.com" />
-
       <meta name="title" content={title} />
       <meta name="description" content={description} />
 

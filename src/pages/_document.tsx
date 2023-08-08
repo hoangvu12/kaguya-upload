@@ -1,4 +1,3 @@
-import { GA_TRACKING_ID } from "@/lib/gtag";
 import Document, { Html, Head, Main, NextScript } from "next/document";
 
 class MyDocument extends Document {
@@ -9,41 +8,6 @@ class MyDocument extends Document {
           <meta httpEquiv="Cache-Control" content="max-age=200" />
           <link rel="shortcut icon" href="/favicon.ico" />
           <link rel="icon" href="/favicon.ico" type="image/ico" />
-
-          {/* <script
-            data-partytown-config
-            dangerouslySetInnerHTML={{
-              __html: `
-                partytown = {
-                  lib: "/_next/static/~partytown/",
-                  forward: ["gtag", "dataLayer.push"]
-                };
-              `,
-            }}
-          /> */}
-
-          <script
-            async
-            src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
-          />
-          <script
-            // eslint-disable-next-line react/no-danger
-            dangerouslySetInnerHTML={{
-              __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', '${GA_TRACKING_ID}', {
-                page_path: window.location.pathname,
-              });
-            `,
-            }}
-          />
-
-          <meta
-            name="exoclick-site-verification"
-            content="993454f71337139b039882b0e72c7ed8"
-          />
         </Head>
         <body>
           <Main />

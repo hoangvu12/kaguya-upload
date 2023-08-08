@@ -4,18 +4,16 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npm run partytown && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "dev:ts": "yarn dev && yarn ts:watch",
     "ts": "tsc --noEmit --incremental",
     "ts:watch": "yarn ts --watch",
-    "partytown": "partytown copylib public/~partytown",
     "find:unused": "next-unused",
     "generate-sitemap": "node generate-sitemap.js"
   },
   "dependencies": {
-    "@builder.io/partytown": "^0.7.3",
     "@popperjs/core": "^2.10.2",
     "@tailwindcss/aspect-ratio": "^0.4.0",
     "@tailwindcss/line-clamp": "^0.3.1",
@@ -35,6 +33,7 @@
     "netplayer": "^1.6.4",
     "next": "12.1.6",
     "next-i18next": "^11.0.0",
+    "next-plausible": "^3.10.1",
     "next-pwa": "^5.4.4",
     "nookies": "^2.5.2",
     "nprogress": "^0.2.0",

@@ -2,12 +2,12 @@ import IosAlert from "@/components/features/others/IosAlert";
 import BaseLayout from "@/components/layouts/BaseLayout";
 import { AppErrorFallback } from "@/components/shared/AppErrorFallback";
 import GlobalPlayerContextProvider from "@/contexts/GlobalPlayerContext";
-import { pageview } from "@/lib/gtag";
 import "@/styles/index.css";
 import { logError } from "@/utils/error";
 import { Provider } from "jotai";
 import { appWithTranslation } from "next-i18next";
 import nextI18nextConfig from "next-i18next.config";
+import PlausibleProvider from "next-plausible";
 import { AppProps } from "next/app";
 import Router from "next/router";
 import NProgress from "nprogress";
@@ -120,20 +120,8 @@ interface WorkaroundAppProps extends AppProps {
   err: any;
 }
 
-function App({ Component, pageProps, router, err }: WorkaroundAppProps) {
+function App({ Component, pageProps, err }: WorkaroundAppProps) {
   const [errorInfo, setErrorInfo] = useState<React.ErrorInfo>(null);
-
-  useEffect(() => {
-    const handleRouteChange = (url: string) => {
-      pageview(url);
-    };
-
-    router.events.on("routeChangeComplete", handleRouteChange);
-
-    return () => {
-      router.events.off("routeChangeComplete", handleRouteChange);
-    };
-  }, [router.asPath, router.events]);
 
   useEffect(() => {
     const handleResponse = (e: CustomEvent) => {
@@ -154,7 +142,12 @@ function App({ Component, pageProps, router, err }: WorkaroundAppProps) {
     Component.getLayout || ((page) => <BaseLayout>{page}</BaseLayout>);
 
   return (
-    <React.Fragment>
+    <PlausibleProvider
+      domain="kaguya.app"
+      selfHosted
+      customDomain="https://analytics.kaguya.app"
+      trackLocalhost
+    >
       {/* A placeholder to integrate MAL-Sync (https://github.com/MALSync/MALSync)*/}
       <script id="syncData" type="application/json"></script>
 
@@ -194,7 +187,7 @@ function App({ Component, pageProps, router, err }: WorkaroundAppProps) {
           {process.env.NODE_ENV === "development" && <ReactQueryDevtools />}
         </QueryClientProvider>
       </Provider>
-    </React.Fragment>
+    </PlausibleProvider>
   );
 }
 
