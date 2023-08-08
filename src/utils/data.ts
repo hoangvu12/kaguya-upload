@@ -115,10 +115,11 @@ export const getTitle = (
   }
 ) => {
   if (titleType === TitleType.Japanese && data?.title?.romaji) {
-    return data?.title?.romaji;
+    return data?.title?.romaji || data?.title?.userPreferred;
   }
 
-  if (locale === "en") return data?.title?.english;
+  if (locale === "en")
+    return data?.title?.english || data?.title?.userPreferred;
 
   const translation = data?.translations?.find(
     (translation) => translation.locale === locale
@@ -151,8 +152,6 @@ export const getEpisodeTitle = (
   }
 ) => {
   if (!translations?.length) return options.fallback;
-
-  console.log(translations);
 
   const translation = translations.find(
     (translation) => translation.locale === options.locale
