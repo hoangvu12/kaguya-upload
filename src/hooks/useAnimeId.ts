@@ -58,7 +58,7 @@ const useAnimeId = (
         return defaultValue;
       }
 
-      saveMapping(anilist.id, sourceId, animeId);
+      saveMapping(anilist.id, sourceId, animeId, extraData);
 
       return { animeId, extraData };
     },
