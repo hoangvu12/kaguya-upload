@@ -1,17 +1,16 @@
 import Loading from "@/components/shared/Loading";
-import Popup from "@/components/shared/Popup";
 import Select from "@/components/shared/Select";
+import WrongTitle from "@/components/shared/WrongTitle";
+import useAnimeId from "@/hooks/useAnimeId";
 import useEpisodes from "@/hooks/useEpisodes";
 import useSources, { SourceType } from "@/hooks/useSources";
+import useWatchedEpisode from "@/hooks/useWatchedEpisode";
 import { Media, MediaType } from "@/types/anilist";
 import { Source } from "@/types/core";
+import ISO6391 from "iso-639-1";
 import { useRouter } from "next/router";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import EpisodeSelector, { EpisodeSelectorProps } from "./EpisodeSelector";
-import useWatchedEpisode from "@/hooks/useWatchedEpisode";
-import ISO6391 from "iso-639-1";
-import WrongTitle from "@/components/shared/WrongTitle";
-import useAnimeId from "@/hooks/useAnimeId";
 
 interface SourceEpisodeSelectorProps extends Partial<EpisodeSelectorProps> {
   media: Media;
@@ -27,12 +26,26 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
   media,
   ...props
 }) => {
+  const isNSFW = useMemo(() => media.isAdult, [media?.isAdult]);
+
   const [videoContainer, setVideoContainer] = useState<HTMLElement>();
   const containerEl = useRef<HTMLDivElement>(null);
 
   const { asPath, locale } = useRouter();
 
   const { data: sources, isLoading, isError } = useSources(SourceType.Anime);
+
+  const nsfwSources = useMemo(() => {
+    if (!sources?.length) return [];
+
+    return sources.filter((source) => source.isNSFW);
+  }, [sources]);
+
+  const nonNSFWSources = useMemo(() => {
+    if (!sources?.length) return [];
+
+    return sources.filter((source) => !source.isNSFW);
+  }, [sources]);
 
   const languages = useMemo(() => {
     if (!sources?.length) return [];
@@ -56,10 +69,15 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
     if (!sources?.length) return [];
     if (!activeLanguage) return [];
 
-    return sources.filter((source) =>
+    // If NSFW then put NSFW sources on top
+    const typeSources = isNSFW
+      ? [...nsfwSources, ...nonNSFWSources]
+      : nonNSFWSources;
+
+    return typeSources.filter((source) =>
       source.languages.includes(activeLanguage)
     );
-  }, [activeLanguage, sources]);
+  }, [activeLanguage, isNSFW, nonNSFWSources, nsfwSources, sources]);
 
   const [activeSource, setActiveSource] = useState<Source>(
     languageSources?.[0]
