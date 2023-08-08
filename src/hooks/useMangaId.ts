@@ -58,7 +58,7 @@ const useMangaId = (
         return defaultValue;
       }
 
-      saveMapping(anilist.id, sourceId, mangaId);
+      saveMapping(anilist.id, sourceId, mangaId, extraData);
 
       return { mangaId: mangaId, extraData };
     },
