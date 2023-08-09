@@ -77,8 +77,10 @@ const useEpisodes = (
 
           return {
             ...composedEpisode,
-            translations: [translation],
-            thumbnail: translation?.image,
+            thumbnail: composedEpisode.thumbnail || translation?.image,
+            title: composedEpisode.title || translation?.title,
+            description:
+              composedEpisode.description || translation?.description,
           };
         }
       );

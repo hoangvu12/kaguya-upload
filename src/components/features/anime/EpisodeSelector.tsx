@@ -8,6 +8,7 @@ import { Media } from "@/types/anilist";
 import { Episode, WatchedEpisode } from "@/types/core";
 import { chunk, groupBy, parseNumberFromString } from "@/utils";
 import classNames from "classnames";
+import { LinkProps } from "next/link";
 import { useRouter } from "next/router";
 import React, {
   useCallback,
@@ -19,11 +20,8 @@ import React, {
 import { isMobileOnly } from "react-device-detect";
 import { HiOutlineViewGrid } from "react-icons/hi";
 import { IoMdImage } from "react-icons/io";
-import { Mousewheel, SwiperOptions } from "swiper";
+import Swiper, { Mousewheel, SwiperOptions } from "swiper";
 import EpisodeCard from "./EpisodeCard";
-import { LinkProps } from "next/link";
-import Swiper from "swiper";
-import { getEpisodeTitle } from "@/utils/data";
 
 export interface EpisodeSelectorProps {
   episodes: Episode[];
@@ -91,14 +89,9 @@ const EpisodeButton: React.FC<EpisodeButtonProps> = ({
   activeEpisode,
   watchedEpisode,
 }) => {
-  const { locale } = useRouter();
-
   const episodeTitle = useMemo(() => {
-    return getEpisodeTitle(episode.translations, {
-      locale,
-      fallback: episode.title,
-    });
-  }, [episode.title, episode.translations, locale]);
+    return episode.title;
+  }, [episode.title]);
 
   const watchedEpisodeNumber = useMemo(
     () =>

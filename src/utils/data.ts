@@ -144,43 +144,6 @@ export const getDescription = (
   return translation?.description || data?.description;
 };
 
-export const getEpisodeTitle = (
-  translations: MediaUnitTranslation[],
-  options: { locale?: string; fallback?: string } = {
-    locale: "en",
-    fallback: null,
-  }
-) => {
-  if (!translations?.length) return options.fallback;
-
-  const translation = translations.find(
-    (translation) => translation.locale === options.locale
-  );
-
-  if (translation) return translation.title;
-
-  return options.fallback;
-};
-export const getEpisodeDescription = (
-  translations: MediaUnitTranslation[],
-  options: { locale?: string; fallback?: string } = {
-    locale: "en",
-    fallback: null,
-  }
-) => {
-  if (!translations?.length) return options.fallback;
-
-  console.log(translations);
-
-  const translation = translations.find(
-    (translation) => translation.locale === options.locale
-  );
-
-  if (translation) return translation.description;
-
-  return options.fallback;
-};
-
 export const sortMediaUnit = <T extends Chapter | Episode>(data: T[]) => {
   return data.sort((a, b) => {
     const aNumber = parseNumbersFromString(a.number, 9999)?.[0];

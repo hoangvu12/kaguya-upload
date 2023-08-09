@@ -1,4 +1,5 @@
 import Portal from "@/components/shared/Portal";
+import { titleTypeAtom } from "@/components/shared/TitleSwitcher";
 import {
   currentServerAtom,
   isBackgroundAtom,
@@ -8,7 +9,7 @@ import {
 import useHistory from "@/hooks/useHistory";
 import useWindowSize from "@/hooks/useWindowSize";
 import { parseNumberFromString } from "@/utils";
-import { getEpisodeTitle, getTitle } from "@/utils/data";
+import { getTitle } from "@/utils/data";
 import classNames from "classnames";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { selectAtom } from "jotai/utils";
@@ -17,6 +18,7 @@ import { useRouter } from "next/router";
 import React, { useMemo, useState } from "react";
 import { AiOutlineClose, AiOutlineExpandAlt } from "react-icons/ai";
 import { BsArrowLeft } from "react-icons/bs";
+import EpisodeSelector from "./EpisodeSelector";
 import Player, { PlayerProps } from "./Player";
 import Controls from "./Player/Controls";
 import DesktopServerSelector from "./Player/DesktopServerSelector";
@@ -30,8 +32,6 @@ import NextEpisodeButton from "./Player/NextEpisodeButton";
 import Overlay from "./Player/Overlay";
 import ProgressSlider from "./Player/ProgressSlider";
 import TimestampSkipButton from "./Player/TimestampSkipButton";
-import EpisodeSelector from "./EpisodeSelector";
-import { titleTypeAtom } from "@/components/shared/TitleSwitcher";
 
 export interface WatchPlayerProps extends PlayerProps {
   videoRef?: React.ForwardedRef<HTMLVideoElement>;
@@ -216,10 +216,7 @@ const PlayerOverlay = React.memo(() => {
   const currentEpisode = useAtomValue(currentEpisodeAtom);
   const sourceId = useAtomValue(sourceIdAtom);
 
-  const episodeTitle = getEpisodeTitle(currentEpisode.translations, {
-    locale,
-    fallback: currentEpisode.title,
-  });
+  const episodeTitle = currentEpisode.title;
 
   const titleType = useAtomValue(titleTypeAtom);
 
@@ -317,10 +314,7 @@ const PlayerMobileOverlay = React.memo(() => {
   const titleType = useAtomValue(titleTypeAtom);
 
   const title = getTitle(anime, { titleType, locale });
-  const episodeTitle = getEpisodeTitle(currentEpisode.translations, {
-    locale,
-    fallback: currentEpisode.title,
-  });
+  const episodeTitle = currentEpisode.title;
 
   const sourceId = useAtomValue(sourceIdAtom);
 

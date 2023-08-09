@@ -21,7 +21,6 @@ export interface Chapter {
   id: string;
   title?: string;
   extra?: Record<string, string>;
-  translations?: Translation[];
   section?: string;
 }
 
@@ -34,7 +33,6 @@ export interface Episode {
   thumbnail?: string;
   extra?: Record<string, string>;
   section?: string;
-  translations?: Translation[];
 }
 
 export interface WatchedEpisode {

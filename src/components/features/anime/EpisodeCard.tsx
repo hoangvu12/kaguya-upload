@@ -1,10 +1,9 @@
-import { Episode } from "@/types/core";
-import React, { useMemo } from "react";
 import Image from "@/components/shared/Image";
-import { getEpisodeDescription, getEpisodeTitle } from "@/utils/data";
-import { useRouter } from "next/router";
 import { Media } from "@/types/anilist";
+import { Episode } from "@/types/core";
 import classNames from "classnames";
+import { useRouter } from "next/router";
+import React, { useMemo } from "react";
 
 interface EpisodeCardProps {
   episode: Episode;
@@ -37,19 +36,12 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
   }, [watchedTime, duration]);
 
   const episodeTitle = useMemo(() => {
-    if (episode.translations?.length) {
-      return getEpisodeTitle(episode.translations, {
-        locale,
-        fallback: episode.title,
-      });
-    }
-
     return episode.title;
-  }, [episode.title, episode.translations, locale]);
+  }, [episode.title]);
 
   const episodeDescription = useMemo(() => {
-    return getEpisodeDescription(episode.translations, { locale });
-  }, [episode.translations, locale]);
+    return episode.description;
+  }, [episode.description]);
 
   return (
     <div
