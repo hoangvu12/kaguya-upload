@@ -26,7 +26,7 @@ const Card: React.FC<CardProps> = (props) => {
         />
       </div>
 
-      <p className="mt-1 text-base font-semibold line-clamp-2">{data.title}</p>
+      <p className="mt-1 text-base font-semibold">{data.title}</p>
     </div>
   );
 };
