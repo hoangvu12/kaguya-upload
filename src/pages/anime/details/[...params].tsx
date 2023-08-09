@@ -2,6 +2,7 @@ import SourceEpisodeSelector from "@/components/features/anime/SourceEpisodeSele
 import Button from "@/components/shared/Button";
 import Card from "@/components/shared/Card";
 import CharacterConnectionCard from "@/components/shared/CharacterConnectionCard";
+import ClientOnly from "@/components/shared/ClientOnly";
 import DetailsBanner from "@/components/shared/DetailsBanner";
 import DetailsSection from "@/components/shared/DetailsSection";
 import DotList from "@/components/shared/DotList";
@@ -13,6 +14,7 @@ import List from "@/components/shared/List";
 import MediaDescription from "@/components/shared/MediaDescription";
 import PlainCard from "@/components/shared/PlainCard";
 import Section from "@/components/shared/Section";
+import Time from "@/components/shared/Time";
 import { titleTypeAtom } from "@/components/shared/TitleSwitcher";
 import { REVALIDATE_TIME } from "@/constants";
 import withRedirect from "@/hocs/withRedirect";
@@ -30,6 +32,7 @@ import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef } from "react";
+import { isMobileOnly } from "react-device-detect";
 import { BsFillPlayFill } from "react-icons/bs";
 import { toast } from "react-toastify";
 
@@ -49,12 +52,6 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
         .find((schedule) => dayjs.unix(schedule.airingAt).isAfter(dayjs())),
     [anime?.airingSchedule]
   );
-
-  const nextAiringScheduleTime = useMemo(() => {
-    if (!nextAiringSchedule?.airingAt) return null;
-
-    return dayjs.unix(nextAiringSchedule.airingAt).locale(locale).fromNow();
-  }, [nextAiringSchedule?.airingAt, locale]);
 
   const titleType = useAtomValue(titleTypeAtom);
 
@@ -171,13 +168,25 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
                 />
 
                 {nextAiringSchedule && (
-                  <InfoItem
-                    className="!text-primary-300"
-                    title={t("next_airing_schedule")}
-                    value={`${t("common:episode")} ${
-                      nextAiringSchedule.episode
-                    }: ${nextAiringScheduleTime}`}
-                  />
+                  <Time time={nextAiringSchedule.airingAt}>
+                    {(timestamp) => {
+                      const time = new Date(timestamp * 1000);
+                      const seconds = time.getSeconds();
+                      const minutes = time.getMinutes();
+                      const hours = time.getHours();
+                      const days = Math.floor(timestamp / (24 * 60 * 60));
+
+                      return (
+                        <InfoItem
+                          className="!text-primary-300"
+                          title={t("next_airing_schedule")}
+                          value={`${t("common:episode")} ${
+                            nextAiringSchedule.episode
+                          }: ${days}d ${hours}h ${minutes}m ${seconds}s`}
+                        />
+                      );
+                    }}
+                  </Time>
                 )}
               </div>
             </div>
@@ -229,16 +238,6 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
               title={t("common:age_rated")}
               value={anime.isAdult ? "18+" : ""}
             />
-
-            {nextAiringSchedule && (
-              <InfoItem
-                className="!text-primary-300"
-                title={t("next_airing_schedule")}
-                value={`${t("common:episode")} ${
-                  nextAiringSchedule.episode
-                }: ${nextAiringScheduleTime}`}
-              />
-            )}
           </div>
         </Section>
 
@@ -314,6 +313,34 @@ const DetailsPage: NextPage<DetailsPageProps> = ({ anime }) => {
               </ul>
             </div>
           </div>
+
+          {nextAiringSchedule?.airingAt && isMobileOnly && (
+            <ClientOnly>
+              <div className="flex flex-col items-center justify-center">
+                <p className="uppercase text-gray-100 text-lg">
+                  Episode {nextAiringSchedule.episode} will be released in
+                </p>
+
+                <p className="text-center text-lg uppercase font-semibold">
+                  <Time time={nextAiringSchedule.airingAt}>
+                    {(timestamp) => {
+                      const time = new Date(timestamp * 1000);
+                      const seconds = time.getSeconds();
+                      const minutes = time.getMinutes();
+                      const hours = time.getHours();
+                      const days = Math.floor(timestamp / (24 * 60 * 60));
+
+                      return (
+                        <p>
+                          {days}D {hours}H {minutes}M {seconds}S
+                        </p>
+                      );
+                    }}
+                  </Time>
+                </p>
+              </div>
+            </ClientOnly>
+          )}
 
           <div className="space-y-12 md:col-span-8">
             <DetailsSection
