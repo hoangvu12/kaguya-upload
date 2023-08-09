@@ -2,6 +2,7 @@ import ButtonTooltip from "@/components/shared/ButtonTooltip";
 import CircleButton from "@/components/shared/CircleButton";
 import Input from "@/components/shared/Input";
 import Kbd from "@/components/shared/Kbd";
+import Select from "@/components/shared/Select";
 import { titleTypeAtom } from "@/components/shared/TitleSwitcher";
 import {
   chaptersAtom,
@@ -20,6 +21,7 @@ import {
   useReadSettings,
 } from "@/contexts/ReadSettingsContext";
 import useHistory from "@/hooks/useHistory";
+import { groupBy } from "@/utils";
 import { getTitle } from "@/utils/data";
 import classNames from "classnames";
 import { Variants, motion } from "framer-motion";
@@ -39,9 +41,6 @@ import {
   CgArrowsShrinkV,
 } from "react-icons/cg";
 import { HiOutlineArrowsExpand } from "react-icons/hi";
-
-const sourcesToOptions = (sources: string[]) =>
-  sources.map((source) => ({ value: source, label: source }));
 
 const sidebarVariants: Variants = {
   initial: {
@@ -78,6 +77,38 @@ const Sidebar = () => {
 
   const [filterText, setFilterText] = useState("");
 
+  const sections = useMemo(
+    () => groupBy(chapters, (chapter) => chapter.section || "Unknown"),
+    [chapters]
+  );
+
+  const sectionOptions = useMemo(() => {
+    const sectionKeys = Object.keys(sections).filter(
+      (section) => section && section !== "null" && section !== "undefined"
+    );
+
+    if (!sectionKeys.length) {
+      return [];
+    }
+
+    return sectionKeys.map((section) => {
+      return {
+        value: section,
+        label: section === "null" ? "Default" : section,
+      };
+    });
+  }, [sections]);
+
+  const [activeSection, setActiveSection] = useState(() => {
+    if (currentChapter?.section) return currentChapter.section;
+
+    const sectionHasMostChapters = Object.keys(sections).sort((a, b) => {
+      return sections[b].length - sections[a].length;
+    });
+
+    return sectionHasMostChapters[0];
+  });
+
   const handleSidebarState = (isOpen: boolean) => () => {
     setState((prev) => ({ ...prev, isSidebarOpen: isOpen }));
   };
@@ -89,16 +120,20 @@ const Sidebar = () => {
     [manga, titleType, router.locale]
   );
 
+  const sectionChapters = useMemo(() => {
+    return chapters.filter((chapter) => chapter.section === activeSection);
+  }, [activeSection, chapters]);
+
   const filteredChapters = useMemo(() => {
-    return chapters.filter(
+    return sectionChapters.filter(
       (chapter) =>
         chapter?.title?.includes(filterText) ||
         chapter?.number?.includes(filterText)
     );
-  }, [filterText, chapters]);
+  }, [sectionChapters, filterText]);
 
   const handleChangeChapterIndex = (index: number) => () => {
-    setChapter(chapters[index]);
+    setChapter(sectionChapters[index]);
   };
 
   useEffect(() => {
@@ -144,6 +179,25 @@ const Sidebar = () => {
           </BrowserView>
         </div>
 
+        <MobileView>
+          <div className="flex gap-x-2 w-full px-2 overflow-x-auto no-scrollbar [&>*]:shrink-0">
+            {Object.keys(sections).map((section) => (
+              <div
+                className={classNames(
+                  "text-gray-300 cursor-pointer rounded-[18px] px-2 py-1 w-[max-content] duration-300 transition",
+                  activeSection === section
+                    ? "bg-white text-black"
+                    : "hover:text-white"
+                )}
+                key={section}
+                onClick={() => setActiveSection(section)}
+              >
+                {section}
+              </div>
+            ))}
+          </div>
+        </MobileView>
+
         {/* Mobile chapter selector */}
         <div className="flex items-center justify-center md:justify-between space-x-2 md:space-x-0">
           <ButtonTooltip
@@ -165,7 +219,7 @@ const Sidebar = () => {
               value={currentChapter.id}
               onChange={(e) => {
                 const chapterId = e.target.value;
-                const chapter = chapters.find(
+                const chapter = sectionChapters.find(
                   (chapter) => chapter.id === chapterId
                 );
 
@@ -173,7 +227,7 @@ const Sidebar = () => {
               }}
               className="rounded-md py-1 px-2 appearance-none w-full bg-background-700"
             >
-              {chapters.map((chapter) => (
+              {sectionChapters.map((chapter) => (
                 <option key={chapter.id} value={chapter.id}>
                   {chapter.number}
                 </option>
@@ -194,7 +248,7 @@ const Sidebar = () => {
             LeftIcon={BiChevronRight}
             iconClassName="w-8 h-8"
             secondary
-            disabled={currentChapterIndex === chapters.length - 1}
+            disabled={currentChapterIndex === sectionChapters.length - 1}
             onClick={handleChangeChapterIndex(currentChapterIndex + 1)}
             shortcutKey="]"
           />
@@ -261,6 +315,19 @@ const Sidebar = () => {
               setFilterText((e.target as HTMLInputElement).value)
             }
           />
+
+          <div className="flex items-center gap-2 mb-4">
+            <Select
+              options={sectionOptions}
+              // @ts-ignore
+              onChange={({ value }) => {
+                setActiveSection(value);
+              }}
+              defaultValue={{ value: activeSection, label: activeSection }}
+              isClearable={false}
+              isSearchable={false}
+            />
+          </div>
         </BrowserView>
 
         <BrowserView renderWithFragment>

@@ -1,5 +1,6 @@
 import {
   chaptersAtom,
+  currentChapterAtom,
   currentChapterIndexAtom,
   imagesAtom,
   setChapterAtom,
@@ -12,10 +13,12 @@ import { useReadSettings } from "@/contexts/ReadSettingsContext";
 import { useAtomValue, useSetAtom } from "jotai";
 import React, { useEffect, useMemo } from "react";
 import ReadImage from "./ReadImage";
+import { groupBy } from "@/utils";
 
 const VerticalContainer: React.FC = () => {
   const chapters = useAtomValue(chaptersAtom);
   const currentChapterIndex = useAtomValue(currentChapterIndexAtom);
+  const currentChapter = useAtomValue(currentChapterAtom);
   const setChapter = useAtomValue(setChapterAtom);
   const images = useAtomValue(imagesAtom);
 
@@ -24,12 +27,22 @@ const VerticalContainer: React.FC = () => {
 
   const { direction } = useReadSettings();
 
+  const activeSection = useMemo(
+    () => currentChapter.section,
+    [currentChapter?.section]
+  );
+
+  const sectionChapters = useMemo(
+    () => chapters.filter((chapter) => chapter.section === activeSection),
+    [activeSection, chapters]
+  );
+
   const handleImageVisible = (index: number) => () => {
     setState((prev) => ({ ...prev, activeImageIndex: index }));
   };
 
   const handleChangeChapter = (index: number) => () => {
-    setChapter(chapters[index]);
+    setChapter(sectionChapters[index]);
   };
 
   const nextChapter = useMemo(() => {
@@ -71,18 +84,16 @@ const VerticalContainer: React.FC = () => {
         </div>
       ))}
 
-      {currentChapterIndex < chapters.length - 1 && (
-        <div className="w-full h-60 p-8">
+      {currentChapterIndex < sectionChapters.length - 1 && (
+        <div
+          title={`Next chapter - ${nextChapter.number}`}
+          className="w-full h-60 p-8"
+        >
           <button
             onClick={handleChangeChapter(currentChapterIndex + 1)}
             className="w-full h-full border-2 border-dashed border-gray-600 text-gray-600 hover:border-white hover:text-white transition duration-300 flex items-center justify-center"
           >
-            <p
-              title={`Next chapter - ${nextChapter.number}`}
-              className="text-center text-2xl"
-            >
-              {nextChapter.number}
-            </p>
+            <p className="text-center text-2xl">{nextChapter.number}</p>
           </button>
         </div>
       )}

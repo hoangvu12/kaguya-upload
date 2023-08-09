@@ -90,9 +90,15 @@ const ReadPage: NextPage<ReadPageProps> = ({
     return chapter;
   }, [chapters, chapterId]);
 
+  const sectionChapters = useMemo(() => {
+    return chapters.filter(
+      (chapter) => chapter.section === currentChapter.section
+    );
+  }, [chapters, currentChapter.section]);
+
   const currentChapterIndex = useMemo(
-    () => chapters.findIndex((chapter) => chapter.id === chapterId),
-    [chapters, chapterId]
+    () => sectionChapters.findIndex((chapter) => chapter.id === chapterId),
+    [sectionChapters, chapterId]
   );
 
   const readChapter = useMemo(
