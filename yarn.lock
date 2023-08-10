@@ -4292,9 +4292,10 @@ loader-utils@^1.4.0:
     emojis-list "^3.0.0"
     json5 "^1.0.1"
 
-"locale-codes@https://github.com/hoangvu12/Locale-Codes":
+locale-country-codes@^1.3.1:
   version "1.3.1"
-  resolved "https://github.com/hoangvu12/Locale-Codes#2e398e00f0229929a17a06e1a65c6cdc9a5275f0"
+  resolved "https://registry.yarnpkg.com/locale-country-codes/-/locale-country-codes-1.3.1.tgz#1e3915fbf23735d4cdea6508fd07d3fc5b06214c"
+  integrity sha512-Z+Xyv5NijK2ZWc4/kPz1UDmtwy/f3ZVPjsJ3qQMPZXH8e3US2c9tp+FmvrgaSpLW8EjyOCO3W4G71VEBGw4Tyw==
   dependencies:
     iso639-codes "^1.0.1"
     langs "^2.0.0"

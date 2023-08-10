@@ -4,7 +4,7 @@ import nookies from "nookies";
 import React, { useMemo } from "react";
 import { AiOutlineCheck } from "react-icons/ai";
 import { MdOutlineLanguage } from "react-icons/md";
-import { getByTag, getByISO6391 } from "locale-codes";
+import { getByTag, getByISO6391 } from "locale-country-codes";
 
 import Popup from "./Popup";
 

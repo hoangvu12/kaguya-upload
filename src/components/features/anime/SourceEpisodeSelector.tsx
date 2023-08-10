@@ -7,7 +7,7 @@ import useSources, { SourceType } from "@/hooks/useSources";
 import useWatchedEpisode from "@/hooks/useWatchedEpisode";
 import { Media, MediaType } from "@/types/anilist";
 import { Source } from "@/types/core";
-import { getByISO6391, getByTag } from "locale-codes";
+import { getByISO6391, getByTag } from "locale-country-codes";
 import { useRouter } from "next/router";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import EpisodeSelector, { EpisodeSelectorProps } from "./EpisodeSelector";
