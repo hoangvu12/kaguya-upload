@@ -3,7 +3,7 @@ const fs = require("fs");
 const AdmZip = require("adm-zip");
 const rimraf = require("rimraf");
 
-require("dotenv").config();
+require("dotenv").config({ path: "./.env.local" });
 
 // https://translate.kaguya.app/v2/projects/export?ak=<Only new key can be revealed>
 
