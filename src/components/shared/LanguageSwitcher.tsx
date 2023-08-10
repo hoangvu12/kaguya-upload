@@ -4,7 +4,7 @@ import nookies from "nookies";
 import React, { useMemo } from "react";
 import { AiOutlineCheck } from "react-icons/ai";
 import { MdOutlineLanguage } from "react-icons/md";
-import ISO6391 from "iso-639-1";
+import { getByTag, getByISO6391 } from "locale-codes";
 
 import Popup from "./Popup";
 
@@ -25,7 +25,13 @@ const LanguageSwitcher = () => {
   };
 
   const currentLocaleName = useMemo(() => {
-    return ISO6391.getNativeName(router.locale);
+    const locale = router.locale || "en";
+
+    if (locale.includes("-")) {
+      return getByTag(locale)?.local;
+    }
+
+    return getByISO6391(locale)?.local;
   }, [router.locale]);
 
   return (
@@ -38,7 +44,7 @@ const LanguageSwitcher = () => {
           <MdOutlineLanguage className="w-6 h-6 hover:text-primary-300 transition duration-300" />
 
           <p className="hidden lg:block text-white text-base">
-            {currentLocaleName}
+            {currentLocaleName} ({router.locale})
           </p>
         </div>
       }
@@ -46,7 +52,15 @@ const LanguageSwitcher = () => {
     >
       <ul className="space-y-1">
         {locales.map((locale) => {
-          const localeName = ISO6391.getNativeName(locale);
+          const localeName = (() => {
+            locale = locale || "en";
+
+            if (locale?.includes("-")) {
+              return getByTag(locale)?.local;
+            }
+
+            return getByISO6391(locale)?.local;
+          })();
 
           return (
             <li
@@ -55,9 +69,8 @@ const LanguageSwitcher = () => {
               key={locale}
               title={locale}
             >
-              {localeName}
-
-              {localeName === currentLocaleName && (
+              {localeName} ({locale})
+              {localeName === currentLocaleName && router.locale === locale && (
                 <AiOutlineCheck className="w-5 h-5 absolute right-2 top-1/2 -translate-y-1/2 text-primary-300"></AiOutlineCheck>
               )}
             </li>
