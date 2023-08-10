@@ -7,7 +7,7 @@ import useSources, { SourceType } from "@/hooks/useSources";
 import useWatchedEpisode from "@/hooks/useWatchedEpisode";
 import { Media, MediaType } from "@/types/anilist";
 import { Source } from "@/types/core";
-import { getByISO6391 } from "locale-codes";
+import { getByISO6391, getByTag } from "locale-codes";
 import { useRouter } from "next/router";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import EpisodeSelector, { EpisodeSelectorProps } from "./EpisodeSelector";
@@ -54,7 +54,13 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
   }, [sources]);
 
   const [activeLanguage, setActiveLanguage] = useState<string>(() => {
-    const userLanguage = getByISO6391(locale).name;
+    const userLanguage = (() => {
+      if (locale.includes("-")) {
+        return getByTag(locale).name;
+      }
+
+      return getByISO6391(locale).name;
+    })();
 
     let activeLanguage = languages[0];
 
@@ -123,7 +129,13 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
   useEffect(() => {
     if (!languages?.length) return;
 
-    const userLanguage = getByISO6391(locale).name;
+    const userLanguage = (() => {
+      if (locale.includes("-")) {
+        return getByTag(locale).name;
+      }
+
+      return getByISO6391(locale).name;
+    })();
 
     let activeLanguage = languages[0];
 
