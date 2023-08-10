@@ -1,0 +1,16 @@
+{
+  "comments_section" : "Comentarios",
+  "episodes_section" : "Episodios",
+  "error_fallback_suggest" : "Prueba a actualizar la página o elige otro servidor y otra fuente.",
+  "error_goback" : "Volver atrás",
+  "error_message" : "Se ha producido un error ({{error}})",
+  "info_section" : "Información",
+  "no_episodes_message" : "No hay ningún episodio",
+  "recommendations_section" : "Recomendaciones",
+  "relations_section" : "Relacionado",
+  "rewatch_description" : "El sistema reconoce que has visto {{episodeName}}",
+  "rewatch_heading" : "Vuelve a ver {{episodeName}}",
+  "rewatch_no" : "No",
+  "rewatch_question" : "¿Quieres volver a ver {{episodeName}}?",
+  "rewatch_yes" : "Si"
+}

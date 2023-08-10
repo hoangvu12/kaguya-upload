@@ -1,0 +1,6 @@
+{
+  "error_description" : "Por desgracia, esta dimensión no tiene nada.",
+  "error_heading" : "Ha descubierto una nueva sección.",
+  "error_title" : "Se ha producido un error ({{statusCode}})",
+  "error_welcome" : "Bienvenido a la <2>dimensión {{statusCode}}</2>"
+}

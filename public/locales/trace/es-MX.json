@@ -1,0 +1,18 @@
+{
+  "browse_files" : "Selecciona la imagen de tu ordenador",
+  "description" : "Te dice qué anime, qué episodio y el momento exacto en que aparece esta escena",
+  "drag_and_drop" : "Arrastrar y soltar",
+  "heading" : "Buscar escenas de anime por imagen",
+  "invalid_url" : "URL inválida",
+  "made_by" : "Utilizar el motor de búsqueda",
+  "note" : "Nota: Los resultados de la búsqueda no son 100% exactos. Solo funciona con escenas de anime.",
+  "num_of_found_images" : "Búsqueda {{num}} imágenes",
+  "percent_similarity" : "~{{percent}}% similitud",
+  "tab_title" : "Buscar escenas de anime por imagen",
+  "try_again" : "Pruebe con otra imagen",
+  "upload" : "Subir",
+  "upload_another_image" : "Otra imagen",
+  "upload_image" : "Sube tu imagen",
+  "upload_supported_extensions" : "Admite PNG, JPG.",
+  "your_image" : "Tu imagen de búsqueda"
+}

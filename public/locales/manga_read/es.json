@@ -1,0 +1,20 @@
+{
+  "error_fallback_suggest" : "Prueba a actualizar la página o elige otro servidor y otra fuente.",
+  "error_goback" : "Volver atrás",
+  "error_message" : "Se ha producido un error ({{error}})",
+  "fit_mode" : "Modo de ajuste",
+  "head_description" : "Leer {{title}} ({{chapterName}}) en Kaguya.",
+  "layout_direction" : "Dirección del diseño",
+  "next_chapter" : "Próximo capítulo",
+  "next_image" : "Próxima imagen",
+  "no_chapters_message" : "No hay capítulos",
+  "previous_chapter" : "Capítulo previo",
+  "previous_image" : "Imagen previa",
+  "reading" : "Lectura",
+  "reread_description" : "El sistema reconoce que has leído {{chapterName}}",
+  "reread_heading" : "Leer {{chapterName}}",
+  "reread_no" : "No",
+  "reread_question" : "¿Quieres leer {{chapterName}}?",
+  "reread_yes" : "Si",
+  "search_chapter_placeholder" : "Nombre del capítulo"
+}
