@@ -1,0 +1,16 @@
+{
+  "comments_section" : "Comments",
+  "episodes_section" : "Episodes",
+  "error_fallback_suggest" : "Try to refresh the page or choose another server and source.",
+  "error_goback" : "Go back",
+  "error_message" : "An error has occured ({{error}})",
+  "info_section" : "Info",
+  "no_episodes_message" : "There are no episodes",
+  "recommendations_section" : "Recommendations",
+  "relations_section" : "Related",
+  "rewatch_description" : "The system recognizes you have watched {{episodeName}}",
+  "rewatch_heading" : "Rewatch {{episodeName}}",
+  "rewatch_no" : "No",
+  "rewatch_question" : "Do you want to rewatch {{episodeName}}?",
+  "rewatch_yes" : "Yes"
+}

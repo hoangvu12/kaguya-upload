@@ -1,7 +1,0 @@
-{
-    "greeting": "Hey, what can I do for you?",
-    "loading_msg": "Maid-chan is thinking...",
-    "input_placeholder": "Ask Maid-chan about anything.",
-    "stop_button_label": "Stop generating",
-    "error_msg": "Please try again"
-}

@@ -1,9 +1,11 @@
-import locales from "@/locales";
+import locales from "@/locales.json";
 import { useRouter } from "next/router";
 import nookies from "nookies";
 import React, { useMemo } from "react";
 import { AiOutlineCheck } from "react-icons/ai";
 import { MdOutlineLanguage } from "react-icons/md";
+import ISO6391 from "iso-639-1";
+
 import Popup from "./Popup";
 
 const LanguageSwitcher = () => {
@@ -22,10 +24,8 @@ const LanguageSwitcher = () => {
     nookies.set(null, "NEXT_LOCALE", lang, { path: "/" });
   };
 
-  const currentLocale = useMemo(() => {
-    const locale = locales.find(({ locale }) => router.locale === locale);
-
-    return locale || locales.find(({ locale }) => locale === "en");
+  const currentLocaleName = useMemo(() => {
+    return ISO6391.getNativeName(router.locale);
   }, [router.locale]);
 
   return (
@@ -38,27 +38,31 @@ const LanguageSwitcher = () => {
           <MdOutlineLanguage className="w-6 h-6 hover:text-primary-300 transition duration-300" />
 
           <p className="hidden lg:block text-white text-base">
-            {currentLocale.name}
+            {currentLocaleName}
           </p>
         </div>
       }
       className="!px-0 w-40"
     >
       <ul className="space-y-1">
-        {locales.map(({ locale, name }) => (
-          <li
-            className="relative px-3 py-2 cursor-pointer transition duration-300 hover:bg-white/20"
-            onClick={handleChangeLanguage(locale)}
-            key={locale}
-            title={locale}
-          >
-            {name}
+        {locales.map((locale) => {
+          const localeName = ISO6391.getNativeName(locale);
 
-            {name === currentLocale.name && (
-              <AiOutlineCheck className="w-5 h-5 absolute right-2 top-1/2 -translate-y-1/2 text-primary-300"></AiOutlineCheck>
-            )}
-          </li>
-        ))}
+          return (
+            <li
+              className="relative px-3 py-2 cursor-pointer transition duration-300 hover:bg-white/20"
+              onClick={handleChangeLanguage(locale)}
+              key={locale}
+              title={locale}
+            >
+              {localeName}
+
+              {localeName === currentLocaleName && (
+                <AiOutlineCheck className="w-5 h-5 absolute right-2 top-1/2 -translate-y-1/2 text-primary-300"></AiOutlineCheck>
+              )}
+            </li>
+          );
+        })}
       </ul>
     </Popup>
   );

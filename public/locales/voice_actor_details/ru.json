@@ -1,0 +1,11 @@
+{
+  "age" : "Возраст",
+  "birthday" : "Дата рождения",
+  "blood_type" : "Группа крови",
+  "characters_section" : "Персонажи",
+  "deathday" : "Дата смерти",
+  "gender" : "Гендер",
+  "hometown" : "Родной город",
+  "is_today_birthday" : "День рождения",
+  "years_active" : "Активность"
+}

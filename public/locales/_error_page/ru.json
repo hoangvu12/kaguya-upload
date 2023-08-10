@@ -1,0 +1,6 @@
+{
+  "error_description" : "Но к сожалению, в ней совсем ничего нет",
+  "error_heading" : "Вы обнаружили новое измерение",
+  "error_title" : "Произошла ошибка ({{statusCode}})",
+  "error_welcome" : "Добро пожаловать в <2>Измерение {{statusCode}}</2>"
+}
