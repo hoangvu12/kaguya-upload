@@ -5,8 +5,6 @@ import { useMemo } from "react";
 const useConstantTranslation = () => {
   const { locale } = useRouter();
 
-  console.log(locale);
-
   const translations = useMemo(() => getConstantTranslation(locale), [locale]);
 
   return translations;
