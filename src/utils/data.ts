@@ -37,7 +37,7 @@ type TranslationKeys = [
 type Translation = Record<TranslationKeys[number], Translate[]>;
 
 export const getConstantTranslation = (locale: string) => {
-  switch (locale.toLocaleLowerCase()) {
+  switch (locale?.toLowerCase()) {
     case "vi":
       return viTranslations;
     case "en":
