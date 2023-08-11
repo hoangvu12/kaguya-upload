@@ -524,7 +524,7 @@ const WatchPage: NextPage<WatchPageProps> = ({
 
               {anime.recommendations.nodes.map((recommendation) => (
                 <HorizontalCard
-                  key={recommendation.id}
+                  key={recommendation.mediaRecommendation.id}
                   data={recommendation.mediaRecommendation}
                 />
               ))}

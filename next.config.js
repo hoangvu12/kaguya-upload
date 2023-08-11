@@ -25,7 +25,7 @@ module.exports = withPlausibleProxy({
         new CopyWebpackPlugin({
           patterns: [
             {
-              from: "node_modules/libass-wasm/dist/js",
+              from: "node_modules/jassub/dist",
               to: `${isServer ? "../" : ""}static`,
             },
           ],

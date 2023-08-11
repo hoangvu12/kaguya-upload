@@ -3,7 +3,6 @@ import { SubtitleFormat } from "@/types/core";
 import { parse } from "@plussub/srt-vtt-parser";
 import classNames from "classnames";
 import { useAtomValue } from "jotai";
-import SubtitlesOctopus from "libass-wasm";
 import {
   useInteract,
   useSubtitleSettings,
@@ -14,6 +13,7 @@ import {
 import { useEffect, useMemo, useRef, useState } from "react";
 import { isDesktop } from "react-device-detect";
 import { toast } from "react-toastify";
+import JASSUB, { JassubOptions } from "jassub";
 
 const textStyles = {
   none: "",
@@ -43,7 +43,7 @@ const Subtitle = () => {
   const [subtitleText, setSubtitleText] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const subtitlesOctopusRef = useRef(null);
+  const subtitlesOctopusRef = useRef<JASSUB>(null);
 
   const subtitle = useMemo(
     () => state.subtitles?.find((sub) => sub.lang === state.currentSubtitle),
@@ -56,7 +56,7 @@ const Subtitle = () => {
     if (!subtitle?.file) return;
 
     if (subtitlesOctopusRef.current) {
-      subtitlesOctopusRef.current.dispose();
+      subtitlesOctopusRef.current.destroy();
 
       subtitlesOctopusRef.current = null;
     }
@@ -65,16 +65,18 @@ const Subtitle = () => {
       subtitle.file.includes(".ass") ||
       subtitle.format === SubtitleFormat.ASS
     ) {
-      const options = {
+      const options: JassubOptions = {
         video: videoEl,
         subUrl: subtitle.file,
-        workerUrl: "/_next/static/subtitles-octopus-worker.js",
-        legacyWorkerUrl: "/_next/static/subtitles-octopus-worker-legacy.js",
-        fallbackFont: "/Montserrat-SemiBold.ttf",
-        renderMode: "wasm-blend",
+        workerUrl: "/_next/static/jassub-worker.js",
+        wasmUrl: "/_next/static/jassub-worker.wasm",
+        fallbackFont: "notosans",
+        availableFonts: {
+          notosans: "/NotoSans-Regular.ttf",
+        },
       };
 
-      const instance = new SubtitlesOctopus(options);
+      const instance = new JASSUB(options);
 
       subtitlesOctopusRef.current = instance;
 
