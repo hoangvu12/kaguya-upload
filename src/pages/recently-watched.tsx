@@ -18,7 +18,9 @@ const RecentlyWatchedPage = () => {
         description={`Your recently watched data in Kaguya`}
       />
 
-      <h1 className="text-4xl font-semibold mb-8">Recently Watched</h1>
+      <h1 className="text-4xl font-semibold mb-8">
+        {t("anime_home:recently_watched")}
+      </h1>
 
       {isLoading ? (
         <ListSkeleton />

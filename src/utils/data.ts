@@ -1,16 +1,16 @@
+import { TitleType } from "@/components/shared/TitleSwitcher";
 import enTranslations from "@/constants/en";
 import esTranslations from "@/constants/es";
 import ruTranslations from "@/constants/ru";
 import viTranslations from "@/constants/vi";
+import kkTranslations from "@/constants/kk";
+import esMXTranslations from "@/constants/es-MX";
+import ptPTTranslations from "@/constants/pt-PT";
+
 import { Media } from "@/types/anilist";
+import { Chapter, Episode } from "@/types/core";
 import { Translation } from "next-i18next";
-import {
-  Chapter,
-  Episode,
-  Translation as MediaUnitTranslation,
-} from "@/types/core";
 import { parseNumbersFromString } from ".";
-import { TitleType } from "@/components/shared/TitleSwitcher";
 
 type Translate = { readonly value: string; readonly label: string } & Record<
   string,
@@ -37,7 +37,7 @@ type TranslationKeys = [
 type Translation = Record<TranslationKeys[number], Translate[]>;
 
 export const getConstantTranslation = (locale: string) => {
-  switch (locale) {
+  switch (locale.toLocaleLowerCase()) {
     case "vi":
       return viTranslations;
     case "en":
@@ -46,6 +46,12 @@ export const getConstantTranslation = (locale: string) => {
       return ruTranslations;
     case "es":
       return esTranslations;
+    case "es-mx":
+      return esMXTranslations;
+    case "pt-pt":
+      return ptPTTranslations;
+    case "kk":
+      return kkTranslations;
     default:
       return enTranslations;
   }

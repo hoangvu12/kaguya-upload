@@ -1,0 +1,6 @@
+{
+  "no_search_results" : "Результатов нет",
+  "search_results_heading" : "Результаты поиска: <italic>{{searchQuery}}</italic>",
+  "wrong_title_error" : "Что-то не то ({{errorMessage}})",
+  "wrong_title_label" : "Неверное название?"
+}

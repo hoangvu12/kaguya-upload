@@ -8,63 +8,63 @@ import {
 import { I18n } from "netplayer";
 
 export const SEASONS = [
-  { value: MediaSeason.Winter, label: "Зима" },
-  { value: MediaSeason.Spring, label: "Весна" },
-  { value: MediaSeason.Summer, label: "Лето" },
-  { value: MediaSeason.Fall, label: "Осень" },
+  { value: MediaSeason.Winter, label: "Қыс" },
+  { value: MediaSeason.Spring, label: "Көктем" },
+  { value: MediaSeason.Summer, label: "Жаз" },
+  { value: MediaSeason.Fall, label: "Күз" },
 ];
 
 export const STATUS = [
-  { value: MediaStatus.Finished, label: "Вышло" },
-  { value: MediaStatus.Releasing, label: "Выходит" },
-  { value: MediaStatus.Not_yet_released, label: "Ещё не вышло" },
-  { value: MediaStatus.Cancelled, label: "Отменено" },
+  { value: MediaStatus.Finished, label: "Шығып бітті" },
+  { value: MediaStatus.Releasing, label: "Шығып жатыр" },
+  { value: MediaStatus.Not_yet_released, label: "Әлі шықпайды" },
+  { value: MediaStatus.Cancelled, label: "Релизі болмайды" },
   { value: MediaStatus.Hiatus, label: "Хиатус" },
 ];
 
 export const FORMATS = [
-  { value: MediaFormat.Tv, label: "TV" },
-  { value: MediaFormat.Tv_short, label: "TV-Short" },
-  { value: MediaFormat.Movie, label: "Фильм" },
+  { value: MediaFormat.Tv, label: "ТВ" },
+  { value: MediaFormat.Tv_short, label: "Қысқа ТВ" },
+  { value: MediaFormat.Movie, label: "Филім" },
   { value: MediaFormat.Special, label: "Спешл" },
   { value: MediaFormat.Ova, label: "OVA" },
   { value: MediaFormat.Ona, label: "ONA" },
-  { value: MediaFormat.Music, label: "Музыка" },
-  { value: MediaFormat.Manga, label: "Манга" },
+  { value: MediaFormat.Music, label: "Ән" },
+  { value: MediaFormat.Manga, label: "Маңга" },
 ];
 
 export const ANIME_SORTS = [
-  { value: MediaSort.Popularity_desc, label: "Популярное" },
-  { value: MediaSort.Trending_desc, label: "В тренде" },
-  { value: MediaSort.Favourites_desc, label: "Любимое" },
-  { value: MediaSort.Score_desc, label: "Лучшее по рейтингу" },
-  { value: MediaSort.Updated_at_desc, label: "Последнее обновленное" },
+  { value: MediaSort.Popularity_desc, label: "Танымал анимелер" },
+  { value: MediaSort.Trending_desc, label: "Трендтегілер" },
+  { value: MediaSort.Favourites_desc, label: "Таңдаулылар" },
+  { value: MediaSort.Score_desc, label: "Жоғары ұпай алғандар" },
+  { value: MediaSort.Updated_at_desc, label: "Жуырда жаңартылғандар" },
 ];
 
 export const MANGA_SORTS = [
-  { value: MediaSort.Popularity_desc, label: "Популярное" },
-  { value: MediaSort.Trending_desc, label: "В тренде" },
-  { value: MediaSort.Favourites_desc, label: "Любимое" },
-  { value: MediaSort.Score_desc, label: "Лучшее по рейтингу" },
-  { value: MediaSort.Updated_at_desc, label: "Последнее обновленное" },
+  { value: MediaSort.Popularity_desc, label: "Танымал маңгалар" },
+  { value: MediaSort.Trending_desc, label: "Трендтегілер" },
+  { value: MediaSort.Favourites_desc, label: "Таңдаулылар" },
+  { value: MediaSort.Score_desc, label: "Жоғары ұпай алғандар" },
+  { value: MediaSort.Updated_at_desc, label: "Жуырда жаңартылғандар" },
 ];
 
 export const GENRES = [
   {
     value: "Action",
-    label: "Экшн",
+    label: "Атыс-шабыс",
     thumbnail:
       "https://s4.anilist.co/file/anilistcdn/media/anime/banner/5114-q0V5URebphSG.jpg",
   },
   {
     value: "Adventure",
-    label: "Приключения",
+    label: "Шытырман",
     thumbnail:
       "https://s4.anilist.co/file/anilistcdn/media/anime/banner/101922-YfZhKBUDDS6L.jpg",
   },
   {
     value: "Comedy",
-    label: "Комедия",
+    label: "Әзіл-қалжың",
     thumbnail:
       "https://s4.anilist.co/file/anilistcdn/media/anime/banner/20464-HbmkPacki4sl.jpg",
   },
@@ -76,19 +76,19 @@ export const GENRES = [
   },
   {
     value: "Ecchi",
-    label: "Этти",
+    label: "Эччи",
     thumbnail:
       "https://s4.anilist.co/file/anilistcdn/media/anime/banner/108465-RgsRpTMhP9Sv.jpg",
   },
   {
     value: "Fantasy",
-    label: "Фэнтези",
+    label: "Фентези",
     thumbnail:
       "https://s4.anilist.co/file/anilistcdn/media/anime/banner/101759-MhlCoeqnODso.jpg",
   },
   {
     value: "Hentai",
-    label: "Хентай",
+    label: "Ұятсыз",
     thumbnail:
       "https://s4.anilist.co/file/anilistcdn/media/anime/banner/99894-MWIuMGnDIg1x.jpg",
   },
@@ -100,7 +100,7 @@ export const GENRES = [
   },
   {
     value: "Mahou Shoujo",
-    label: "Махо-сёдзё",
+    label: "Махоу Шоуджо",
     thumbnail:
       "https://s4.anilist.co/file/anilistcdn/media/anime/banner/9756-d5M8NffgJJHB.jpg",
   },
@@ -118,31 +118,31 @@ export const GENRES = [
   },
   {
     value: "Mystery",
-    label: "Мистика",
+    label: "Жұмбақ",
     thumbnail:
       "https://s4.anilist.co/file/anilistcdn/media/anime/banner/n101291-fqIUvQ6apEtD.jpg",
   },
   {
     value: "Psychological",
-    label: "Психологическое",
+    label: "Психологиялық",
     thumbnail:
       "https://s4.anilist.co/file/anilistcdn/media/anime/banner/21355-f9SjOfEJMk5P.jpg",
   },
   {
     value: "Romance",
-    label: "Романтика",
+    label: "Махаббат",
     thumbnail:
       "https://s4.anilist.co/file/anilistcdn/media/anime/banner/101921-GgvvFhlNhzlF.jpg",
   },
   {
     value: "Sci-Fi",
-    label: "Научное",
+    label: "Сай-фай",
     thumbnail:
       "https://s4.anilist.co/file/anilistcdn/media/anime/banner/1-T3PJUjFJyRwg.jpg",
   },
   {
     value: "Slice of Life",
-    label: "Slice of Life",
+    label: "Өмір үзіндісі",
     thumbnail:
       "https://s4.anilist.co/file/anilistcdn/media/anime/banner/124080-ARyLAHHgikRq.jpg",
   },
@@ -154,7 +154,7 @@ export const GENRES = [
   },
   {
     value: "Supernatural",
-    label: "Сверхъестественное",
+    label: "Тылсым",
     thumbnail:
       "https://s4.anilist.co/file/anilistcdn/media/anime/banner/21507-Qx8bGsLXUgLo.jpg",
   },
@@ -173,30 +173,30 @@ export const TYPES = [
   },
   {
     value: "manga",
-    label: "Манга",
+    label: "Маңга",
   },
   {
     value: "characters",
-    label: "Персонажи",
+    label: "Кейіпкерлер",
   },
   {
     value: "voice_actors",
-    label: "Актеры озвучки",
+    label: "Дыбыстаушылар",
   },
   {
     value: "users",
-    label: "Пользователи",
+    label: "Пайдаланушылар",
   },
 ];
 
 export const COUNTRIES = [
   {
     value: "JP",
-    label: "Япония",
+    label: "Жапония",
   },
   {
     value: "CN",
-    label: "Китай",
+    label: "Қытай",
   },
   {
     value: "KR",
@@ -205,53 +205,53 @@ export const COUNTRIES = [
 ];
 
 export const CHARACTERS_ROLES = [
-  { value: CharacterRole.Main, label: "Главный" },
-  { value: CharacterRole.Supporting, label: "Вспомогательный" },
-  { value: CharacterRole.Background, label: "Фоновый" },
+  { value: CharacterRole.Main, label: "Басты" },
+  { value: CharacterRole.Supporting, label: "Қосалқы" },
+  { value: CharacterRole.Background, label: "Артқы" },
 ];
 
 export const GENDERS = {
-  male: "Мужской",
-  female: "Женский",
+  male: "Ер",
+  female: "Әйел",
 };
 
 export const PLAYER_TRANSLATIONS: I18n = {
   controls: {
-    play: "Играть ({{shortcut}})",
-    pause: "Пауза ({{shortcut}})",
-    forward: "Перемотать на {{time}} секунд",
-    backward: "Отмотать на {{time}} секунд",
-    enableSubtitle: "Включить субтитры",
-    disableSubtitle: "Выключить субтитры",
-    settings: "Настройки",
-    enterFullscreen: "Полноэкранный режим ({{shortcut}})",
-    exitFullscreen: "Выйти из полноэкрнанного режима ({{shortcut}})",
-    muteVolume: "Выкл звук ({{shortcut}})",
-    unmuteVolume: "Вкл звук ({{shortcut}})",
-    sliderDragMessage: "Удерживайте чтобы отмотать видео",
-    nextEpisode: "Следующая серия",
-    episodes: "Серии",
-    skipOPED: "Пропустить опенинг/эндинг",
-    timestamps: "Временные метки",
+    play: "Ойнату ({{shortcut}})",
+    pause: "Тоқтату ({{shortcut}})",
+    forward: "{{time}} сек. алға",
+    backward: "{{time}} сек. артқа",
+    enableSubtitle: "Субтитр қосу",
+    disableSubtitle: "Субтитр өшіру",
+    settings: "Баптау",
+    enterFullscreen: "Толық экранға қосу ({{shortcut}})",
+    exitFullscreen: "Толық экраннан шығу ({{shortcut}})",
+    muteVolume: "Даусын сөндіру ({{shortcut}})",
+    unmuteVolume: "Даусын қосу ({{shortcut}})",
+    sliderDragMessage: "Бейне іздеу үшін сүйреңіз",
+    nextEpisode: "Келесі бөлім",
+    episodes: "Бөлімдер",
+    skipOPED: "Опениң/Эндиңін өткізіп жіберу",
+    timestamps: "Уақыт белгісі",
     screenshot: "Скриншот",
   },
   settings: {
     audio: "Аудио",
-    playbackSpeed: "Скорость",
-    quality: "Качество",
-    subtitle: "Субтитры",
-    subtitleSettings: "Настройки субтитров",
-    reset: "Сбросить",
-    none: "Ничего",
-    off: "Выкл",
-    subtitleBackgroundOpacity: "Прозрачность фона",
-    subtitleFontOpacity: "Прозрачность шрифта",
-    subtitleFontSize: "Размер шрифта",
-    subtitleTextStyle: "Стиль шрифта",
+    playbackSpeed: "Жылдамдығы",
+    quality: "Сапасы",
+    subtitle: "Субтитр",
+    subtitleSettings: "Субтитрді баптау",
+    reset: "Қалпына келтіру",
+    none: "Нөл",
+    off: "Өшіру",
+    subtitleBackgroundOpacity: "Арты жағының ашықтығы",
+    subtitleFontOpacity: "Қаріп ашықтығы",
+    subtitleFontSize: "Қаріп көлемі",
+    subtitleTextStyle: "Мәтін мәнері",
   },
 };
 
-const DAYSOFWEEK = ["Вос", "Пон", "Вто", "Сре", "Чет", "Пят", "Суб"];
+const DAYSOFWEEK = ["Жек", "Дүй", "Сей", "Сәр", "Бей", "Жұм", "Сен"];
 
 const translations = {
   SEASONS,

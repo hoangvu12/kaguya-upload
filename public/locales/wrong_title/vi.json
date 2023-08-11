@@ -1,0 +1,6 @@
+{
+  "no_search_results" : "Không tìm thấy kết quả",
+  "search_results_heading" : "Kết quả tìm kiếm của: <italic>{{searchQuery}}</italic>",
+  "wrong_title_error" : "Đã có lỗi xảy ra ({{errorMessage}})",
+  "wrong_title_label" : "Sai anime/manga?"
+}

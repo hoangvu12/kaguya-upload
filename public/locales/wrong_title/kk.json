@@ -1,0 +1,6 @@
+{
+  "no_search_results" : "Еш нәтиже жоқ",
+  "search_results_heading" : "<italic>{{searchQuery}}</italic> үшін нәтижелер",
+  "wrong_title_error" : "Бірдеңе боп қалды ({{errorMessage}})",
+  "wrong_title_label" : "Атауы бұрыс па?"
+}

@@ -88,13 +88,13 @@ export const GENRES = [
   },
   {
     value: "Hentai",
-    label: "Pervertido",
+    label: "Hentai",
     thumbnail:
       "https://s4.anilist.co/file/anilistcdn/media/anime/banner/99894-MWIuMGnDIg1x.jpg",
   },
   {
     value: "Horror",
-    label: "Terror",
+    label: "Horror",
     thumbnail:
       "https://s4.anilist.co/file/anilistcdn/media/anime/banner/101759-MhlCoeqnODso.jpg",
   },
@@ -106,7 +106,7 @@ export const GENRES = [
   },
   {
     value: "Mecha",
-    label: "Robot",
+    label: "Mecha",
     thumbnail:
       "https://s4.anilist.co/file/anilistcdn/media/anime/banner/30-gEMoHHIqxDgN.jpg",
   },
@@ -118,19 +118,19 @@ export const GENRES = [
   },
   {
     value: "Mystery",
-    label: "Misterioso",
+    label: "Misterio",
     thumbnail:
       "https://s4.anilist.co/file/anilistcdn/media/anime/banner/n101291-fqIUvQ6apEtD.jpg",
   },
   {
     value: "Psychological",
-    label: "Psicológica",
+    label: "Psicológico",
     thumbnail:
       "https://s4.anilist.co/file/anilistcdn/media/anime/banner/21355-f9SjOfEJMk5P.jpg",
   },
   {
     value: "Romance",
-    label: "Romances",
+    label: "Romance",
     thumbnail:
       "https://s4.anilist.co/file/anilistcdn/media/anime/banner/101921-GgvvFhlNhzlF.jpg",
   },
@@ -142,7 +142,7 @@ export const GENRES = [
   },
   {
     value: "Slice of Life",
-    label: "Trozos de vida",
+    label: "Un trozo de vida",
     thumbnail:
       "https://s4.anilist.co/file/anilistcdn/media/anime/banner/124080-ARyLAHHgikRq.jpg",
   },
@@ -181,7 +181,7 @@ export const TYPES = [
   },
   {
     value: "voice_actors",
-    label: "Actores de doblaje",
+    label: "Actores de voz",
   },
   {
     value: "users",
@@ -224,11 +224,11 @@ export const PLAYER_TRANSLATIONS: I18n = {
     enableSubtitle: "Activar subtítulos",
     disableSubtitle: "Desactivar subtítulos",
     settings: "Ajustes",
-    enterFullscreen: "Acceder a pantalla completa ({{shortcut}})",
-    exitFullscreen: "Salir Pantalla completa ({{shortcut}})",
-    muteVolume: "silenciar Volumen ({{shortcut}})",
-    unmuteVolume: "Desactivar Volumen ({{shortcut}})",
-    sliderDragMessage: "arrastre deslizante buscar vídeo",
+    enterFullscreen: "Entrar en pantalla completa ({{shortcut}})",
+    exitFullscreen: "Salir de pantalla completa ({{shortcut}})",
+    muteVolume: "Silenciar ({{shortcut}})",
+    unmuteVolume: "Desactivar silencio ({{shortcut}})",
+    sliderDragMessage: "Arrastrar para buscar vídeo",
     nextEpisode: "Siguiente episodio",
     episodes: "Episodios",
     skipOPED: "Saltar OP/ED",

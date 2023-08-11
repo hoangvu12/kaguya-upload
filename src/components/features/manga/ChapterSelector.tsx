@@ -8,6 +8,7 @@ import { Media } from "@/types/anilist";
 import { Chapter, Episode, ReadChapter, WatchedEpisode } from "@/types/core";
 import { chunk, groupBy, parseNumberFromString } from "@/utils";
 import classNames from "classnames";
+import { useTranslation } from "next-i18next";
 import { LinkProps } from "next/link";
 import React, {
   useCallback,
@@ -89,6 +90,7 @@ const ChapterSelector: React.FC<ChapterSelectorProps> = ({
   const savedActiveChunkIndex = useRef<number>(0);
   const containerEl = useRef<HTMLDivElement>(null);
   const [swiper, setSwiper] = useState<SwiperInstance>();
+  const { t } = useTranslation("chapter-selector");
 
   const readChapterNumber = useMemo(
     () =>
@@ -293,6 +295,28 @@ const ChapterSelector: React.FC<ChapterSelectorProps> = ({
       </div>
 
       <div className="mt-4 space-y-2 overflow-hidden">
+        {readChapter?.chapter && (
+          <div className="flex items-center gap-4 mb-4">
+            <p className="shrink-0">{t("continue_reading")}: </p>
+
+            <Link
+              href={`/manga/read/${media.id}/${sourceId}/${readChapter?.chapter.id}`}
+              key={readChapter?.chapter.id}
+              {...chapterLinkProps}
+            >
+              <a className="relative block p-2 bg-background-800 hover:bg-white/20 duration-300 transition w-full">
+                <p className="line-clamp-1 text-sm font-semibold">
+                  {readChapter?.chapter.number}{" "}
+                  {readChapter?.chapter.title &&
+                    ` - ${readChapter?.chapter.title}`}
+                </p>
+
+                <div className="absolute left-0 top-0 w-0.5 h-full bg-primary-500"></div>
+              </a>
+            </Link>
+          </div>
+        )}
+
         {activeChunk?.map((chapter) => {
           const isRead =
             parseNumberFromString(chapter.number) <= readChapterNumber;

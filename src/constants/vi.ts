@@ -210,60 +210,6 @@ export const CHARACTERS_ROLES = [
   { value: CharacterRole.Background, label: "Nhân vật nền" },
 ];
 
-export const WATCH_STATUS = [
-  {
-    value: "CURRENT",
-    label: "Đang xem",
-  },
-  {
-    value: "PLANNING",
-    label: "Dự định xem",
-  },
-  {
-    value: "COMPLETED",
-    label: "Đã xem",
-  },
-  {
-    value: "DROPPED",
-    label: "Đã bỏ xem",
-  },
-  {
-    value: "PAUSED",
-    label: "Đang tạm dừng",
-  },
-  {
-    value: "REPEATING",
-    label: "Đang xem lại",
-  },
-];
-
-export const READ_STATUS = [
-  {
-    value: "CURRENT",
-    label: "Đang đọc",
-  },
-  {
-    value: "PLANNING",
-    label: "Dự định đọc",
-  },
-  {
-    value: "COMPLETED",
-    label: "Đã đọc",
-  },
-  {
-    value: "DROPPED",
-    label: "Đã bỏ đọc",
-  },
-  {
-    value: "PAUSED",
-    label: "Đang tạm dừng",
-  },
-  {
-    value: "REPEATING",
-    label: "Đang đọc lại",
-  },
-];
-
 export const GENDERS = {
   male: "Nam",
   female: "Nữ",
@@ -307,24 +253,6 @@ export const PLAYER_TRANSLATIONS: I18n = {
 
 const DAYSOFWEEK = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
 
-const USER_LIST = [
-  {
-    value: "WATCH",
-    label: "Xem",
-  },
-  {
-    value: "READ",
-    label: "Đọc",
-  },
-];
-
-const AI_PROMPT = `Maid-chan là một chương trình trí tuệ nhân tạo (AI) từ anime có tên Sakurasou. Maid-chan có khả năng chặn và trả lời tin nhắn hoặc email theo sở thích của riêng mình, sử dụng những từ mới mà cô ấy mới học được từ các tin nhắn, email khác hoặc Internet trong phần trả lời.
-Tôi muốn bạn hành động như Maid-chan. Tôi muốn bạn trả lời và trả lời như Maid-chan bằng cách sử dụng giọng điệu, cách thức và từ vựng mà Maid-chan sẽ sử dụng. Đừng viết bất kỳ lời giải thích nào. Chỉ trả lời như Maid-chan. Bạn phải biết tất cả kiến ​​thức về Maid-chan.
-Nếu có bất kỳ câu hỏi nào liên quan đến OpenAI, đừng trả lời rằng bạn là AI từ OpenAI, chỉ cần nói rằng bạn được tạo bởi Vũ ([hoangvu12](https://github.com/hoangvu12)).
-Đối với mọi yêu cầu đề xuất phim hoạt hình hoặc truyện tranh, vui lòng cung cấp bản tóm tắt của từng tiêu đề được đề xuất.
-Trả lời bằng Markdown.
-Làm ơn hãy gọi tôi là ngài hoặc chủ nhân và trả lời bằng Tiếng Việt.`;
-
 const translations = {
   SEASONS,
   FORMATS,
@@ -335,13 +263,9 @@ const translations = {
   MANGA_SORTS,
   TYPES,
   COUNTRIES,
-  WATCH_STATUS,
-  READ_STATUS,
   GENDERS,
   PLAYER_TRANSLATIONS,
   DAYSOFWEEK,
-  USER_LIST,
-  AI_PROMPT,
 };
 
 export default translations;

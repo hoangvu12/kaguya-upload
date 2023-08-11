@@ -11,6 +11,7 @@ import { getByISO6391, getByTag } from "locale-country-codes";
 import { useRouter } from "next/router";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import ChapterSelector from "./ChapterSelector";
+import { useTranslation } from "next-i18next";
 
 interface SourceChapterSelectorProps {
   media: Media;
@@ -29,6 +30,7 @@ const SourceChapterSelector: React.FC<SourceChapterSelectorProps> = ({
 
   const [videoContainer, setVideoContainer] = useState<HTMLElement>();
   const containerEl = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation("chapter-selector");
 
   const { asPath, locale } = useRouter();
 
@@ -156,7 +158,7 @@ const SourceChapterSelector: React.FC<SourceChapterSelectorProps> = ({
   if (isError) {
     return (
       <p className="text-center justify-center text-2xl font-semibold">
-        Something went wrong
+        {t("error_message")}
       </p>
     );
   }
@@ -229,7 +231,7 @@ const SourceChapterSelector: React.FC<SourceChapterSelectorProps> = ({
         />
       ) : (
         <p className="text-center justify-center text-2xl font-semibold">
-          No episodes were found
+          {t("no_chapters")}
         </p>
       )}
     </React.Fragment>

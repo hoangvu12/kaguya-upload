@@ -8,51 +8,51 @@ import {
 import { I18n } from "netplayer";
 
 export const SEASONS = [
-  { value: MediaSeason.Winter, label: "Invierno" },
+  { value: MediaSeason.Winter, label: "Inverno" },
   { value: MediaSeason.Spring, label: "Primavera" },
-  { value: MediaSeason.Summer, label: "Verano" },
-  { value: MediaSeason.Fall, label: "Otoño" },
+  { value: MediaSeason.Summer, label: "Verão" },
+  { value: MediaSeason.Fall, label: "Outono" },
 ];
 
 export const STATUS = [
-  { value: MediaStatus.Finished, label: "Terminado" },
-  { value: MediaStatus.Releasing, label: "En emisión" },
-  { value: MediaStatus.Not_yet_released, label: "No se ha estrenado" },
+  { value: MediaStatus.Finished, label: "Concluído" },
+  { value: MediaStatus.Releasing, label: "Em lançamento" },
+  { value: MediaStatus.Not_yet_released, label: "Ainda não lançado" },
   { value: MediaStatus.Cancelled, label: "Cancelado" },
-  { value: MediaStatus.Hiatus, label: "En pausa" },
+  { value: MediaStatus.Hiatus, label: "Em hiato" },
 ];
 
 export const FORMATS = [
-  { value: MediaFormat.Tv, label: "Serie" },
-  { value: MediaFormat.Tv_short, label: "Cortometraje" },
-  { value: MediaFormat.Movie, label: "Película" },
+  { value: MediaFormat.Tv, label: "Série" },
+  { value: MediaFormat.Tv_short, label: "Curta-metragem" },
+  { value: MediaFormat.Movie, label: "Filme" },
   { value: MediaFormat.Special, label: "Especial" },
   { value: MediaFormat.Ova, label: "OVA" },
   { value: MediaFormat.Ona, label: "ONA" },
   { value: MediaFormat.Music, label: "Música" },
-  { value: MediaFormat.Manga, label: "Manga" },
+  { value: MediaFormat.Manga, label: "Mangá" },
 ];
 
 export const ANIME_SORTS = [
-  { value: MediaSort.Popularity_desc, label: "Popularidad" },
-  { value: MediaSort.Trending_desc, label: "Tendencia" },
+  { value: MediaSort.Popularity_desc, label: "Popularidade" },
+  { value: MediaSort.Trending_desc, label: "Tendência" },
   { value: MediaSort.Favourites_desc, label: "Favoritos" },
-  { value: MediaSort.Score_desc, label: "Puntuación media" },
-  { value: MediaSort.Updated_at_desc, label: "Actualizado recientemente" },
+  { value: MediaSort.Score_desc, label: "Média de pontuação" },
+  { value: MediaSort.Updated_at_desc, label: "Atualizado recentemente" },
 ];
 
 export const MANGA_SORTS = [
-  { value: MediaSort.Popularity_desc, label: "Popularidad" },
-  { value: MediaSort.Trending_desc, label: "Tendencia" },
+  { value: MediaSort.Popularity_desc, label: "Popularidade" },
+  { value: MediaSort.Trending_desc, label: "Tendência" },
   { value: MediaSort.Favourites_desc, label: "Favoritos" },
-  { value: MediaSort.Score_desc, label: "Puntuación media" },
-  { value: MediaSort.Updated_at_desc, label: "Actualizado recientemente" },
+  { value: MediaSort.Score_desc, label: "Média de pontuação" },
+  { value: MediaSort.Updated_at_desc, label: "Atualizado recentemente" },
 ];
 
 export const GENRES = [
   {
     value: "Action",
-    label: "Acción",
+    label: "Ação",
     thumbnail:
       "https://s4.anilist.co/file/anilistcdn/media/anime/banner/5114-q0V5URebphSG.jpg",
   },
@@ -64,7 +64,7 @@ export const GENRES = [
   },
   {
     value: "Comedy",
-    label: "Comedia",
+    label: "Comédia",
     thumbnail:
       "https://s4.anilist.co/file/anilistcdn/media/anime/banner/20464-HbmkPacki4sl.jpg",
   },
@@ -106,55 +106,55 @@ export const GENRES = [
   },
   {
     value: "Mecha",
-    label: "Robot",
+    label: "Robô",
     thumbnail:
       "https://s4.anilist.co/file/anilistcdn/media/anime/banner/30-gEMoHHIqxDgN.jpg",
   },
   {
     value: "Music",
-    label: "Musica",
+    label: "A música",
     thumbnail:
       "https://s4.anilist.co/file/anilistcdn/media/anime/banner/20665-j4kSsfhfkM24.jpg",
   },
   {
     value: "Mystery",
-    label: "Misterioso",
+    label: "Mistério",
     thumbnail:
       "https://s4.anilist.co/file/anilistcdn/media/anime/banner/n101291-fqIUvQ6apEtD.jpg",
   },
   {
     value: "Psychological",
-    label: "Psicológica",
+    label: "Psicológico",
     thumbnail:
       "https://s4.anilist.co/file/anilistcdn/media/anime/banner/21355-f9SjOfEJMk5P.jpg",
   },
   {
     value: "Romance",
-    label: "Romances",
+    label: "O Romance",
     thumbnail:
       "https://s4.anilist.co/file/anilistcdn/media/anime/banner/101921-GgvvFhlNhzlF.jpg",
   },
   {
     value: "Sci-Fi",
-    label: "Ciencia ficción",
+    label: "Ficção científica",
     thumbnail:
       "https://s4.anilist.co/file/anilistcdn/media/anime/banner/1-T3PJUjFJyRwg.jpg",
   },
   {
     value: "Slice of Life",
-    label: "Trozos de vida",
+    label: "Fatia de vida",
     thumbnail:
       "https://s4.anilist.co/file/anilistcdn/media/anime/banner/124080-ARyLAHHgikRq.jpg",
   },
   {
     value: "Sports",
-    label: "Deportes",
+    label: "Desporto",
     thumbnail:
       "https://s4.anilist.co/file/anilistcdn/media/anime/banner/20992-sYHxFXg98JEj.jpg",
   },
   {
     value: "Supernatural",
-    label: "Sobrenatural",
+    label: "Sobrenaturais",
     thumbnail:
       "https://s4.anilist.co/file/anilistcdn/media/anime/banner/21507-Qx8bGsLXUgLo.jpg",
   },
@@ -177,15 +177,15 @@ export const TYPES = [
   },
   {
     value: "characters",
-    label: "Personajes",
+    label: "personagens",
   },
   {
     value: "voice_actors",
-    label: "Actores de doblaje",
+    label: "actores vocais",
   },
   {
     value: "users",
-    label: "Usuarios",
+    label: "utentes",
   },
 ];
 
@@ -217,41 +217,48 @@ export const GENDERS = {
 
 export const PLAYER_TRANSLATIONS: I18n = {
   controls: {
-    play: "Play ({{shortcut}})",
-    pause: "Pause ({{shortcut}})",
-    forward: "Adelante {{time}} segundos",
-    backward: "retroceder {{time}} segundos",
-    enableSubtitle: "Activar subtítulos",
-    disableSubtitle: "Desactivar subtítulos",
+    play: "Pronto ({{shortcut}})",
+    pause: "Pausa ({{shortcut}})",
+    forward: "Avançar {{time}} segundos",
+    backward: "Recuar {{time}} segundos",
+    enableSubtitle: "Ativar legendas",
+    disableSubtitle: "Desativar legendas",
     settings: "Ajustes",
-    enterFullscreen: "Acceder a pantalla completa ({{shortcut}})",
-    exitFullscreen: "Salir Pantalla completa ({{shortcut}})",
+    enterFullscreen: "Aceder ao ecrã inteiro ({{shortcut}})",
+    exitFullscreen: "Sair do ecrã inteiro ({{shortcut}})",
     muteVolume: "silenciar Volumen ({{shortcut}})",
     unmuteVolume: "Desactivar Volumen ({{shortcut}})",
-    sliderDragMessage: "arrastre deslizante buscar vídeo",
-    nextEpisode: "Siguiente episodio",
+    sliderDragMessage: "pesquisa de vídeo com arrastar e largar",
+    nextEpisode: "Próximo episódio",
     episodes: "Episodios",
     skipOPED: "Saltar OP/ED",
-    timestamps: "Marcas de tiempo",
-    screenshot: "Captura de pantalla",
+    timestamps: "Carimbos de tempo",
+    screenshot: "Captura de ecrã",
   },
   settings: {
-    audio: "Audio",
-    playbackSpeed: "Velocidad de reproducción",
-    quality: "Calidad",
-    subtitle: "Subtítulo",
-    subtitleSettings: "Ajustes de subtítulos",
-    reset: "Reiniciar",
-    none: "Ninguno",
-    off: "Off",
-    subtitleBackgroundOpacity: "Opacidad de fondo",
-    subtitleFontOpacity: "Opacidad de fuente",
-    subtitleFontSize: "Tamaño de fuente",
-    subtitleTextStyle: "Estilo de texto",
+    audio: "Áudio",
+    playbackSpeed: "Velocidade de reprodução",
+    quality: "Qualidade",
+    subtitle: "Legenda",
+    subtitleSettings: "Definições de legendas",
+    reset: "Recomeçar",
+    none: "Nenhum",
+    off: "Não",
+    subtitleBackgroundOpacity: "Opacidade do fundo",
+    subtitleFontOpacity: "Opacidade da fonte",
+    subtitleFontSize: "Tamanho da letra",
+    subtitleTextStyle: "Estilo do texto",
   },
 };
 
-const DAYSOFWEEK = ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"];
+const DAYSOFWEEK = [
+  "Dom",
+  "Seg-feira",
+  "Ter-feira",
+  "Qua-feira",
+  "Qui-feira",
+  "Sex-feira",
+];
 
 const translations = {
   SEASONS,

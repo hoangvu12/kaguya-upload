@@ -13,6 +13,7 @@ import Input from "./Input";
 import { AiOutlineSearch } from "react-icons/ai";
 import { debounce } from "@/utils";
 import { saveMapping } from "@/utils/mediaId";
+import { Trans, useTranslation } from "next-i18next";
 
 interface WrongTitleProps {
   sourceId: string;
@@ -35,6 +36,7 @@ const WrongTitleDesktop: React.FC<WrongTitleProps> = ({
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const { t } = useTranslation("wrong_title");
 
   const { data, isLoading, isError, error } = useSourceSearch(
     {
@@ -91,7 +93,7 @@ const WrongTitleDesktop: React.FC<WrongTitleProps> = ({
         onClick={handleOpen}
         className="text-right cursor-pointer font-semibold underline"
       >
-        Wrong title?
+        {t("wrong_title_label")}
       </p>
 
       <Modal onClose={handleClose} ref={modalRef}>
@@ -104,17 +106,31 @@ const WrongTitleDesktop: React.FC<WrongTitleProps> = ({
         />
 
         <h1 className="font-semibold text-2xl my-8">
-          Search result for:{" "}
-          <i className="italic">
-            {searchQuery || anilist.title.english || anilist.title.romaji}
-          </i>
+          <Trans
+            t={t}
+            i18nKey="search_results_heading"
+            defaults="Search result for: <italic>{{searchQuery}}</italic>"
+            values={{
+              searchQuery:
+                searchQuery ||
+                anilist.title.english ||
+                anilist.title.romaji ||
+                anilist.title.userPreferred,
+            }}
+            components={{ italic: <i className="italic" /> }}
+          />
         </h1>
 
         {isLoading ? (
           <ListSkeleton />
         ) : isError ? (
           <p className="text-center font-bold text-2l">
-            Something went wrong ({error.message})
+            <Trans
+              t={t}
+              i18nKey="wrong_title_error"
+              defaults="Something went wrong ({{errorMessage}})"
+              values={{ errorMessage: error.message }}
+            />
           </p>
         ) : data?.length ? (
           <List data={data}>
@@ -127,7 +143,9 @@ const WrongTitleDesktop: React.FC<WrongTitleProps> = ({
             )}
           </List>
         ) : (
-          <p className="text-center font-bold text-2l">No results</p>
+          <p className="text-center font-bold text-2xl">
+            {t("no_search_results")}
+          </p>
         )}
       </Modal>
     </React.Fragment>

@@ -22,6 +22,7 @@ import { HiOutlineViewGrid } from "react-icons/hi";
 import { IoMdImage } from "react-icons/io";
 import Swiper, { Mousewheel, SwiperOptions } from "swiper";
 import EpisodeCard from "./EpisodeCard";
+import { useTranslation } from "next-i18next";
 
 export interface EpisodeSelectorProps {
   episodes: Episode[];
@@ -187,6 +188,7 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = ({
   });
   const containerEl = useRef<HTMLDivElement>(null);
   const [swiper, setSwiper] = useState<SwiperInstance>();
+  const { t } = useTranslation("episode-selector");
 
   const watchedEpisodeNumber = useMemo(
     () =>
@@ -437,7 +439,7 @@ const EpisodeSelector: React.FC<EpisodeSelectorProps> = ({
       <div className="mt-10 space-y-4 max-h-96 overflow-y-auto">
         {watchedEpisode?.episode && (
           <div className="flex items-center gap-4">
-            <p className="shrink-0">Continue watching: </p>
+            <p className="shrink-0">{t("continue_watching")}: </p>
 
             <div className="grid grid-cols-1 w-28">
               <Link

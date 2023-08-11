@@ -11,6 +11,7 @@ import { getByISO6391, getByTag } from "locale-country-codes";
 import { useRouter } from "next/router";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import EpisodeSelector, { EpisodeSelectorProps } from "./EpisodeSelector";
+import { useTranslation } from "next-i18next";
 
 interface SourceEpisodeSelectorProps extends Partial<EpisodeSelectorProps> {
   media: Media;
@@ -30,6 +31,7 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
 
   const [videoContainer, setVideoContainer] = useState<HTMLElement>();
   const containerEl = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation("episode-selector");
 
   const { asPath, locale } = useRouter();
 
@@ -157,7 +159,7 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
   if (isError) {
     return (
       <p className="text-center justify-center text-2xl font-semibold">
-        Something went wrong
+        {t("error_message")}
       </p>
     );
   }
@@ -231,7 +233,7 @@ const SourceEpisodeSelector: React.FC<SourceEpisodeSelectorProps> = ({
         />
       ) : (
         <p className="text-center justify-center text-2xl font-semibold">
-          No episodes were found
+          {t("no_episodes")}
         </p>
       )}
     </React.Fragment>
