@@ -70,6 +70,8 @@ const Subtitle = () => {
         subUrl: subtitle.file,
         workerUrl: "/_next/static/jassub-worker.js",
         wasmUrl: "/_next/static/jassub-worker.wasm",
+        legacyWasmUrl: "/_next/static/jassub-worker.wasm.js",
+        modernWasmUrl: "/_next/static/jassub-worker-modern.wasm",
         fallbackFont: "notosans",
         availableFonts: {
           notosans: "/NotoSans-Regular.ttf",
