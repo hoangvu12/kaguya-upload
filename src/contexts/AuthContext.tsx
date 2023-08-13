@@ -1,14 +1,14 @@
-import { default as supabase, default as supabaseClient } from "@/lib/supabase";
+import { default as supabase } from "@/lib/supabase";
 import { getWithExpiry, setWithExpiry } from "@/utils";
 import { User } from "@supabase/supabase-js";
 import { atom, useAtom, useAtomValue } from "jotai";
 import nookies from "nookies";
 import { useEffect } from "react";
 
-const accessTokenCookieName = "sb-access-token";
-const refreshTokenCookieName = "sb-refresh-token";
+export const accessTokenCookieName = "sb-access-token";
+export const refreshTokenCookieName = "sb-refresh-token";
 
-const userAtom = atom<User>(null as User);
+export const userAtom = atom<User>(null as User);
 
 export const AuthContextProvider = () => {
   // @ts-ignore
@@ -59,7 +59,11 @@ export const AuthContextProvider = () => {
 
   // Set cookies on auth state change
   useEffect(() => {
+    console.log("use effect");
+
     const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("auth change", session);
+
       if (!session) {
         setUser(null);
 

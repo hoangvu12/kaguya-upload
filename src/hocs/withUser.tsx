@@ -29,37 +29,57 @@ type WithUserResult = {
 
 const withUser =
   (options?: WithUserOptions) => async (ctx: GetServerSidePropsContext) => {
+    let globalUser: User = null;
+
     try {
       const { user } = await getUser(ctx);
+
+      console.log(user);
 
       if (!user) {
         throw new Error("User not found");
       }
 
+      globalUser = user;
+    } catch (error) {
+      console.log("with user", error);
+
+      return {
+        redirect: {
+          statusCode: 302,
+          destination: `/login`,
+        },
+      };
+    }
+
+    try {
       let initialResult: WithUserResult = {
         props: {
-          user,
+          user: globalUser,
         },
       };
 
-      const serverSideResult = await options?.getServerSideProps?.(ctx, user);
+      const serverSideResult = await options?.getServerSideProps?.(
+        ctx,
+        globalUser
+      );
 
       if (serverSideResult) {
         initialResult = {
           ...serverSideResult,
           props: {
-            user,
+            user: globalUser,
             ...("props" in serverSideResult && serverSideResult.props),
           },
         };
       }
 
       return initialResult;
-    } catch (error) {
+    } catch (err) {
       return {
         redirect: {
           statusCode: 302,
-          destination: `/login`,
+          destination: `/register`,
         },
       };
     }

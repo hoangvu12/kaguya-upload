@@ -205,32 +205,23 @@ export default UploadEpisodeEditPage;
 
 export const getServerSideProps = withUser({
   async getServerSideProps(ctx, user) {
-    try {
-      const { data: sourceAddedByUser, error } = await supabaseClient
-        .from<Source>("kaguya_sources")
-        .select("id")
-        .eq("userId", user.id)
-        .single();
+    const { data: sourceAddedByUser, error } = await supabaseClient
+      .from<Source>("kaguya_sources")
+      .select("id")
+      .eq("userId", user.id)
+      .single();
 
-      if (error || !sourceAddedByUser?.id) {
-        throw error;
-      }
-
-      return {
-        props: {
-          sourceId: sourceAddedByUser.id,
-          mediaId: ctx.query.id,
-          episodeSlug: ctx.query.episodeSlug,
-        },
-      };
-    } catch (err) {
-      return {
-        redirect: {
-          statusCode: 302,
-          destination: "/login",
-        },
-      };
+    if (error || !sourceAddedByUser?.id) {
+      throw error;
     }
+
+    return {
+      props: {
+        sourceId: sourceAddedByUser.id,
+        mediaId: ctx.query.id,
+        episodeSlug: ctx.query.episodeSlug,
+      },
+    };
   },
 });
 

@@ -172,32 +172,21 @@ export default UploadAnimePage;
 
 export const getServerSideProps = withUser({
   async getServerSideProps(_, user) {
-    try {
-      const { data: sourceAddedByUser, error } = await supabaseClient
-        .from<Source>("kaguya_sources")
-        .select("id")
-        .eq("userId", user.id)
-        .single();
+    const { data: sourceAddedByUser, error } = await supabaseClient
+      .from<Source>("kaguya_sources")
+      .select("id")
+      .eq("userId", user.id)
+      .single();
 
-      if (error || !sourceAddedByUser?.id) {
-        throw error;
-      }
-
-      return {
-        props: {
-          sourceId: sourceAddedByUser.id,
-        },
-      };
-    } catch (err) {
-      console.log(err);
-
-      return {
-        redirect: {
-          statusCode: 302,
-          destination: "/login",
-        },
-      };
+    if (error || !sourceAddedByUser?.id) {
+      throw error;
     }
+
+    return {
+      props: {
+        sourceId: sourceAddedByUser.id,
+      },
+    };
   },
 });
 

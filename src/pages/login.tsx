@@ -1,28 +1,53 @@
 import Button from "@/components/shared/Button";
 import Head from "@/components/shared/Head";
+import {
+  accessTokenCookieName,
+  refreshTokenCookieName,
+  userAtom,
+} from "@/contexts/AuthContext";
 import useSignIn from "@/hooks/useSignIn";
 import { supabaseClient } from "@supabase/auth-helpers-nextjs";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
+import nookies from "nookies";
+import { useSetAtom } from "jotai";
 
 const LoginPage: NextPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const setUser = useSetAtom(userAtom);
 
   const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const { error } = await supabaseClient.auth.signIn({ email, password });
+    const { error, session, user } = await supabaseClient.auth.signIn({
+      email,
+      password,
+    });
 
     if (error) {
       toast.error(error.message);
 
       return;
     }
+
+    nookies.destroy(null, accessTokenCookieName);
+    nookies.set(null, accessTokenCookieName, session.access_token, {
+      path: "/",
+      maxAge: 604800,
+    });
+
+    nookies.destroy(null, refreshTokenCookieName);
+    nookies.set(null, refreshTokenCookieName, session.refresh_token, {
+      path: "/",
+      maxAge: 604800,
+    });
+
+    setUser(user);
 
     router.replace("/");
   };
@@ -45,7 +70,7 @@ const LoginPage: NextPage = () => {
               <input
                 type="email"
                 id="email"
-                className="shadow appearance-none rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline bg-background-500"
+                className="shadow appearance-none rounded w-full px-4 py-3 text-white leading-tight focus:outline-none focus:shadow-outline bg-background-500"
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -61,7 +86,7 @@ const LoginPage: NextPage = () => {
               <input
                 type="password"
                 id="password"
-                className="shadow appearance-none rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline bg-background-500"
+                className="shadow appearance-none rounded w-full px-4 py-3 text-white leading-tight focus:outline-none focus:shadow-outline bg-background-500"
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
