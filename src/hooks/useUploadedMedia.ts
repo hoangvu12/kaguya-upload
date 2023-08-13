@@ -1,9 +1,5 @@
 import { getMedia } from "@/services/anilist";
-import {
-  AnimeSourceConnection,
-  MangaSourceConnection,
-  SourceConnection,
-} from "@/types";
+import { AnimeSourceConnection, MangaSourceConnection } from "@/types";
 import { Media, MediaType } from "@/types/anilist";
 import { getPagination } from "@/utils";
 import { supabaseClient } from "@supabase/auth-helpers-nextjs";
