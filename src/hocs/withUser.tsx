@@ -76,6 +76,8 @@ const withUser =
 
       return initialResult;
     } catch (err) {
+      console.log("error", err);
+
       return {
         redirect: {
           statusCode: 302,
