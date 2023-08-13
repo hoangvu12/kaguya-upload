@@ -24,18 +24,18 @@ ENV NODE_ENV production
 
 # Add "kaguya" group and "web" user (no sudo needed)
 RUN addgroup --system --gid 1001 kaguya \
-    && adduser --system --uid 1001 web
+    && adduser --system --uid 1001 upload
 
 # Copy files and set appropriate ownership and permissions
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
-COPY --from=builder --chown=web:kaguya /app/.next/standalone ./
-COPY --from=builder --chown=web:kaguya /app/.next/static ./.next/static
+COPY --from=builder --chown=upload:kaguya /app/.next/standalone ./
+COPY --from=builder --chown=upload:kaguya /app/.next/static ./.next/static
 
 # Grant read and write permissions to the "web" user and "kaguya" group
 RUN chmod -R g+rwX ./public ./package.json ./.next
 
-USER web
+USER upload
 
 EXPOSE 3000
 
