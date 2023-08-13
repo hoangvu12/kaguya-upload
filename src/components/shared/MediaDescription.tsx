@@ -1,6 +1,5 @@
 import useDevice from "@/hooks/useDevice";
 import classNames from "classnames";
-import { useTranslation } from "next-i18next";
 import React, { useCallback, useEffect, useRef } from "react";
 import Description, { DescriptionProps } from "./Description";
 
@@ -18,7 +17,6 @@ const MediaDescription: React.FC<MediaDescriptionProps> = ({
 }) => {
   const [isDescriptionExpanded, setIsDescriptionExpanded] =
     React.useState(false);
-  const { t } = useTranslation("common");
   const ref = useRef<HTMLDivElement>(null);
   const { isMobile } = useDevice();
 
@@ -44,7 +42,7 @@ const MediaDescription: React.FC<MediaDescriptionProps> = ({
     <div className={classNames("group relative", containerClassName)}>
       <Description
         ref={ref}
-        description={description || t("updating") + "..."}
+        description={description || "..."}
         className={classNames(
           isDescriptionExpanded ? "line-clamp-none" : "line-clamp-6",
           className
@@ -58,7 +56,7 @@ const MediaDescription: React.FC<MediaDescriptionProps> = ({
           onClick={handleClick}
           className="bg-gradient-to-t from-background-900 via-background-900/80 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 absolute bottom-0 w-full h-12 text-center"
         >
-          {t("read_more")}
+          Read more
         </button>
       )}
     </div>

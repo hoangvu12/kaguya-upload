@@ -11,6 +11,8 @@ export type SourceConnection = {
   sourceId: string;
   sourceMediaId: string;
   mediaId: number;
+  updated_at?: any;
+  created_at?: any;
 };
 
 export interface AnimeSourceConnection extends SourceConnection {

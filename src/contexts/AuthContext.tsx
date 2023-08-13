@@ -1,6 +1,6 @@
 import { default as supabase, default as supabaseClient } from "@/lib/supabase";
-import { AdditionalUser } from "@/types";
 import { getWithExpiry, setWithExpiry } from "@/utils";
+import { User } from "@supabase/supabase-js";
 import { atom, useAtom, useAtomValue } from "jotai";
 import nookies from "nookies";
 import { useEffect } from "react";
@@ -8,7 +8,7 @@ import { useEffect } from "react";
 const accessTokenCookieName = "sb-access-token";
 const refreshTokenCookieName = "sb-refresh-token";
 
-const userAtom = atom<AdditionalUser>(null as AdditionalUser);
+const userAtom = atom<User>(null as User);
 
 export const AuthContextProvider = () => {
   // @ts-ignore
@@ -29,7 +29,7 @@ export const AuthContextProvider = () => {
 
   useEffect(() => {
     const getData = async () => {
-      const savedUser = getWithExpiry<AdditionalUser>("user");
+      const savedUser = getWithExpiry<User>("user");
 
       if (savedUser) {
         return setUser(savedUser);
@@ -37,15 +37,7 @@ export const AuthContextProvider = () => {
 
       const user = supabase.auth.user();
 
-      if (!user) return;
-
-      const { data: profileUser } = await supabaseClient
-        .from<AdditionalUser>("users")
-        .select("*")
-        .eq("id", user.id)
-        .single();
-
-      setUser(profileUser);
+      setUser(user);
     };
 
     getData();
@@ -83,15 +75,7 @@ export const AuthContextProvider = () => {
         nookies.destroy(null, accessTokenCookieName);
         nookies.destroy(null, refreshTokenCookieName);
       } else if (event === "SIGNED_IN") {
-        if (user) return;
-
-        const { data: profileUser } = await supabaseClient
-          .from<AdditionalUser>("users")
-          .select("*")
-          .eq("id", session.user.id)
-          .single();
-
-        setUser(profileUser);
+        setUser(user);
       }
 
       const token = session.access_token;

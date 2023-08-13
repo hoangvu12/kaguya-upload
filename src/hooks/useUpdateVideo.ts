@@ -1,5 +1,5 @@
 import { createUploadService, FileInfo, RemoteStatus } from "@/services/upload";
-import { humanFileSize, sleep } from "@/utils";
+import { sleep } from "@/utils";
 import { supabaseClient } from "@supabase/auth-helpers-nextjs";
 import { PostgrestError } from "@supabase/supabase-js";
 import { useMutation, useQueryClient } from "react-query";
@@ -16,12 +16,8 @@ export const useUpdateVideo = (episodeSlug: string) => {
 
   return useMutation<FileInfo, PostgrestError, UseUpdateVideoInput>(
     async ({ video, hostingId }) => {
-      const {
-        getRemoteStatus,
-        getVideoStatus,
-        remoteUploadVideo,
-        uploadVideo,
-      } = createUploadService(hostingId);
+      const { getRemoteStatus, getVideoStatus, remoteUploadVideo } =
+        createUploadService(hostingId);
 
       if (!video) {
         throw new Error("Video is required");
@@ -65,9 +61,10 @@ export const useUpdateVideo = (episodeSlug: string) => {
         const remoteStatus = await waitRemoteUntilDownloaded();
 
         uploadedVideo = await getVideoStatus(remoteStatus.fileId);
-      } else if (video instanceof File) {
-        uploadedVideo = await uploadVideo(video);
       }
+      // else if (video instanceof File) {
+      //   uploadedVideo = await uploadVideo(video);
+      // }
 
       const { error } = await supabaseClient
         .from("kaguya_videos")
