@@ -1,7 +1,6 @@
 import classNames from "classnames";
 import React, { useEffect } from "react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import isHotKey from "is-hotkey";
 export interface BaseButtonProps
   extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "onClick"> {
   LeftIcon?: React.ComponentType<{ className: string }>;
@@ -12,7 +11,6 @@ export interface BaseButtonProps
   onClick?: (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null
   ) => void;
-  shortcutKey?: string;
   isLoading?: boolean;
 }
 
@@ -28,26 +26,9 @@ const BaseButton = React.forwardRef<HTMLButtonElement, BaseButtonProps>(
       disabled = false,
       children,
       onClick,
-      shortcutKey,
       isLoading,
       ...rest
     } = props;
-
-    useEffect(() => {
-      if (!shortcutKey) return;
-
-      const handleShortcutKey = (e: KeyboardEvent) => {
-        if (isHotKey(shortcutKey, { byKey: true })(e)) {
-          onClick?.(null);
-        }
-      };
-
-      window.addEventListener("keypress", handleShortcutKey);
-
-      return () => {
-        window.removeEventListener("keypress", handleShortcutKey);
-      };
-    }, [onClick, shortcutKey]);
 
     // If class name contains 'w-' or 'h-' then override default className
     const iconClass =

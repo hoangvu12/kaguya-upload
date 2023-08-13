@@ -1,15 +1,12 @@
 import Button from "@/components/shared/Button";
 import Head from "@/components/shared/Head";
 import Section from "@/components/shared/Section";
-import { Trans, useTranslation } from "next-i18next";
 import Link from "@/components/shared/Link";
 
 function ErrorPage() {
-  const { t } = useTranslation("404_page");
-
   return (
     <div className="relative w-full min-h-screen flex items-center">
-      <Head title={`${t("error_title")} - Kaguya`} />
+      <Head title={`404 - Kaguya`} />
 
       <div className="fixed z-0 w-full h-full flex items-center justify-center">
         <h1 className="font-bold text-[30vw] text-gray-500">404</h1>
@@ -19,22 +16,19 @@ function ErrorPage() {
 
       <Section className="relative z-10 flex flex-col items-center w-full h-full text-center ">
         <div className="mb-4 text-gray-300">
-          <span className="text-lg">
-            <Trans i18nKey="404_page:error_welcome">
-              Chào mừng đến với{" "}
-              <span className="text-red-300">chiều không gian 404</span>
-            </Trans>
-          </span>
+          <div className="text-lg">
+            Welcome to <span className="text-red-300">the 404 dimension</span>
+          </div>
         </div>
 
-        <p className="text-4xl font-semibold">{t("error_heading")}</p>
+        <p className="text-4xl font-semibold">You found new dimension</p>
 
-        <p className="text-2xl text-gray-200 mt-4">{t("error_description")}</p>
+        <p className="text-2xl text-gray-200 mt-4">Nothing here tho</p>
 
         <Link href="/">
           <a>
             <Button primary outline className="mt-8">
-              <p className="text-lg">{t("error_goback")}</p>
+              <p className="text-lg">Go back</p>
             </Button>
           </a>
         </Link>

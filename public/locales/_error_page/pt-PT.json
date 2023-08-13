@@ -1,6 +1,0 @@
-{
-  "error_description" : "Mas, infelizmente, esta dimensão não tem nada",
-  "error_heading" : "Encontrou uma nova dimensão",
-  "error_title" : "Ocorreu um erro ({{statusCode}})",
-  "error_welcome" : "Bem-vindo à <2>dimensão {{statusCode}}</2>"
-}

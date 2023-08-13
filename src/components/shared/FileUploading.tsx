@@ -1,5 +1,4 @@
 import classNames from "classnames";
-import { useTranslation } from "next-i18next";
 import React, { useState } from "react";
 import ReactFileUploading, {
   FileUploadingPropsType,
@@ -76,8 +75,6 @@ export const FileUploader: React.FC<ExportInterface> = ({
   dragProps,
   onFileUpload,
 }) => {
-  const { t } = useTranslation("file_uploading");
-
   return (
     <div
       className={classNames(
@@ -88,14 +85,14 @@ export const FileUploader: React.FC<ExportInterface> = ({
     >
       <AiOutlineCloudUpload className="text-gray-300 w-24 h-24" />
 
-      <p className="text-gray-300">
-        {t("drag_and_drop")} {t("common:or")}{" "}
+      <p className="text-gray-300 text-center">
+        Drag and drop or{" "}
         <button
           className="text-primary-300 hover:underline"
           onClick={onFileUpload}
           type="button"
         >
-          {t("browse_files")}
+          browser files
         </button>{" "}
       </p>
     </div>

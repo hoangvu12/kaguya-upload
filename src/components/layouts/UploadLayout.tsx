@@ -19,17 +19,17 @@ import Popup from "../shared/Popup";
 const routes = [
   {
     title: "Home",
-    href: "/upload",
+    href: "/",
     icon: AiOutlineHome,
   },
   {
     title: "Anime",
-    href: "/upload/anime",
+    href: "/anime",
     icon: AiOutlineVideoCameraAdd,
   },
   {
     title: "Manga",
-    href: "/upload/manga",
+    href: "/manga",
     icon: BiImageAdd,
   },
 ];
@@ -86,12 +86,12 @@ const UploadLayout: React.FC = ({ children }) => {
                 }
               >
                 <div className="space-y-1">
-                  <Link href="/upload/anime/create">
+                  <Link href="/anime/create">
                     <a>
                       <Button secondary>Upload Anime</Button>
                     </a>
                   </Link>
-                  <Link href="/upload/manga/create">
+                  <Link href="/manga/create">
                     <a>
                       <Button secondary>Upload Manga</Button>
                     </a>

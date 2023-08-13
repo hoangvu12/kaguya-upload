@@ -1,54 +1,97 @@
+import { Attachment, FileInfo } from "@/services/upload";
 import { MediaTitle as ALMediaTitle } from "./anilist";
 
 export interface MediaTitle extends Partial<ALMediaTitle> {
   [key: string]: string;
 }
 
-export type VideoSource = {
-  file: string;
-  label?: string;
+export type MediaDescription = Record<string, string>;
+
+export type SourceConnection = {
+  sourceId: string;
+  sourceMediaId: string;
+  mediaId: number;
 };
 
-export type DataWithExtra<T> = {
-  data: T;
-  extraData?: Record<string, string>;
+export interface AnimeSourceConnection extends SourceConnection {
+  episodes: SupabaseEpisode[];
+}
+
+export interface MangaSourceConnection extends SourceConnection {
+  chapters: SupabaseChapter[];
+}
+
+export type Source = {
+  id: string;
+  name: string;
+  languages: string[];
+  userId?: string;
+};
+
+export type Video = {
+  fonts: Attachment[];
+  subtitles: Attachment[];
+  video: FileInfo;
+  episodeId: string;
+  userId: string;
+  hostingId: string;
+};
+
+export type Hosting = {
+  id: string;
+  name: string;
+  supportedUrlFormats: string[];
+};
+
+export type SupabaseEpisode = {
+  sourceConnectionId: string;
+  sourceId: string;
+  sourceEpisodeId: string;
+  sourceMediaId: string;
+  slug: string;
+  thumbnail?: string;
+  published?: boolean;
+  section?: string;
+  number: number;
+  description?: string;
+  title?: string;
+  video: Video;
+};
+
+export type SupabaseChapter = {
+  sourceConnectionId?: string;
+  sourceId: string;
+  sourceChapterId: string;
+  sourceMediaId: string;
+  source: Source;
+  slug: string;
+  published: boolean;
+  number: number;
+  title?: string;
+  section?: string;
+  images: {
+    images: Attachment[];
+  }[];
+};
+
+export type Subtitle = {
+  file: string;
+  lang: string;
+  language: string;
+};
+
+export type Font = {
+  file: string;
 };
 
 export type CallbackSetter<T> = (handler: T) => void;
 
 export type Noop = () => void;
 
-export type MediaListStatus =
-  | "CURRENT"
-  | "PLANNING"
-  | "COMPLETED"
-  | "DROPPED"
-  | "PAUSED"
-  | "REPEATING";
-
-export type SkipType = "ed" | "op" | "mixed-ed" | "mixed-op" | "recap";
-
-export interface SkipTimeStamp {
-  interval: {
-    startTime: number;
-    endTime: number;
-  };
-  skipType: SkipType;
-  skipId: string;
-  episodeLength: number;
-}
-
-export interface AnimeSongTheme {
-  title: string;
-}
-export interface AnimeTheme {
-  slug: string;
-  song: AnimeSongTheme;
+export interface UploadSubtitle {
+  file: File;
   name: string;
-  type: string;
-  episode: string;
-  sources: VideoSource[];
-  anilistId?: number;
+  locale: string;
 }
 
 export type DeviceSelectors = {

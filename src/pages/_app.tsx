@@ -1,24 +1,14 @@
-import IosAlert from "@/components/features/others/IosAlert";
-import BaseLayout from "@/components/layouts/BaseLayout";
+import BaseLayout from "@/components/layouts/UploadLayout";
 import { AppErrorFallback } from "@/components/shared/AppErrorFallback";
-import GlobalPlayerContextProvider from "@/contexts/GlobalPlayerContext";
+import { AuthContextProvider } from "@/contexts/AuthContext";
 import "@/styles/index.css";
-import { logError } from "@/utils/error";
 import { Provider } from "jotai";
-import { appWithTranslation } from "next-i18next";
-import nextI18nextConfig from "next-i18next.config";
-import PlausibleProvider from "next-plausible";
 import { AppProps } from "next/app";
 import Router from "next/router";
 import NProgress from "nprogress";
 import React, { useEffect, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import {
-  MutationCache,
-  QueryCache,
-  QueryClient,
-  QueryClientProvider,
-} from "react-query";
+import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { ToastContainer } from "react-toastify";
 
@@ -38,82 +28,6 @@ const queryClient = new QueryClient({
       staleTime: Infinity,
     },
   },
-  queryCache: new QueryCache({
-    onError: (error, query) => {
-      const errorMessage = (() => {
-        if (typeof error === "object") {
-          const errorObject: Record<string, any> = { ...error };
-
-          if ("message" in errorObject) {
-            return errorObject.message as string;
-          }
-
-          if (Object.keys(errorObject).length === 0) {
-            return null;
-          }
-
-          return JSON.stringify(errorObject) as string;
-        }
-
-        if (typeof error === "string") {
-          return error;
-        }
-
-        return null;
-      })();
-
-      const errorSource = (() => {
-        if (query.queryKey[0]) {
-          return `Query - ${JSON.stringify(query.queryKey)}`;
-        }
-
-        return "Query - Unknown";
-      })();
-
-      logError({
-        error: errorMessage,
-        errorSource: errorSource,
-      });
-    },
-  }),
-  mutationCache: new MutationCache({
-    onError: (error, _, __, mutation) => {
-      const errorMessage = (() => {
-        if (typeof error === "object") {
-          const errorObject: Record<string, any> = { ...error };
-
-          if ("message" in errorObject) {
-            return errorObject.message as string;
-          }
-
-          if (Object.keys(errorObject).length === 0) {
-            return null;
-          }
-
-          return JSON.stringify(errorObject) as string;
-        }
-
-        if (typeof error === "string") {
-          return error;
-        }
-
-        return null;
-      })();
-
-      const errorSource = (() => {
-        if (mutation.mutationId) {
-          return `Mutation - ${mutation.mutationId}`;
-        }
-
-        return "Mutation - Unknown";
-      })();
-
-      logError({
-        error: errorMessage,
-        errorSource: errorSource,
-      });
-    },
-  }),
 });
 
 interface WorkaroundAppProps extends AppProps {
@@ -122,6 +36,10 @@ interface WorkaroundAppProps extends AppProps {
 
 function App({ Component, pageProps, err }: WorkaroundAppProps) {
   const [errorInfo, setErrorInfo] = useState<React.ErrorInfo>(null);
+
+  const getLayout =
+    // @ts-ignore
+    Component.getLayout || ((page) => <BaseLayout>{page}</BaseLayout>);
 
   useEffect(() => {
     const handleResponse = (e: CustomEvent) => {
@@ -137,17 +55,8 @@ function App({ Component, pageProps, err }: WorkaroundAppProps) {
     dispatchEvent(new CustomEvent("request-ext_id"));
   }, []);
 
-  const getLayout =
-    // @ts-ignore
-    Component.getLayout || ((page) => <BaseLayout>{page}</BaseLayout>);
-
   return (
-    <PlausibleProvider
-      domain="kaguya.app"
-      selfHosted
-      customDomain="https://analytics.kaguya.app"
-      trackLocalhost
-    >
+    <React.Fragment>
       {/* A placeholder to integrate MAL-Sync (https://github.com/MALSync/MALSync)*/}
       <script id="syncData" type="application/json"></script>
 
@@ -165,12 +74,10 @@ function App({ Component, pageProps, err }: WorkaroundAppProps) {
         toastClassName="!bg-background-700"
       />
 
-      <IosAlert />
-
       <Provider>
-        <QueryClientProvider client={queryClient}>
-          <GlobalPlayerContextProvider />
+        <AuthContextProvider />
 
+        <QueryClientProvider client={queryClient}>
           <ErrorBoundary
             onError={(_, info) => {
               setErrorInfo(info);
@@ -187,14 +94,14 @@ function App({ Component, pageProps, err }: WorkaroundAppProps) {
           {process.env.NODE_ENV === "development" && <ReactQueryDevtools />}
         </QueryClientProvider>
       </Provider>
-    </PlausibleProvider>
+    </React.Fragment>
   );
 }
-
-export default appWithTranslation(App, nextI18nextConfig);
 
 declare global {
   interface Window {
     __kaguya__: { extId: string };
   }
 }
+
+export default App;

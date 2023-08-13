@@ -1,156 +1,243 @@
-import AnimeSchedule from "@/components/features/anime/AiringSchedule";
-import RecommendedAnimeSection from "@/components/features/anime/RecommendedAnimeSection";
-import WatchedSection from "@/components/features/anime/WatchedSection";
-import Card from "@/components/shared/Card";
-import CardSwiper from "@/components/shared/CardSwiper";
-import GenreSwiper from "@/components/shared/GenreSwiper";
-import Head from "@/components/shared/Head";
-import HomeBanner from "@/components/shared/HomeBanner";
-import List from "@/components/shared/List";
+import UploadContainer from "@/components/features/UploadContainer";
+import UploadLayout from "@/components/layouts/UploadLayout";
+import HorizontalCard from "@/components/shared/HorizontalCard";
 import Section from "@/components/shared/Section";
-import ShouldWatch from "@/components/shared/ShouldWatch";
-import ListSkeleton from "@/components/skeletons/ListSkeleton";
-import ListSwiperSkeleton from "@/components/skeletons/ListSwiperSkeleton";
-import useMedia from "@/hooks/useMedia";
-import useRecentlyUpdated from "@/hooks/useRecentlyUpdated";
-import { DeviceSelectors } from "@/types";
-import { MediaSort, MediaStatus, MediaType } from "@/types/anilist";
-import { randomElement } from "@/utils";
-import classNames from "classnames";
-import { NextPage } from "next";
-import { useTranslation } from "next-i18next";
-import React, { useMemo } from "react";
-import {
-  BrowserView,
-  MobileOnlyView,
-  getSelectorsByUserAgent,
-} from "react-device-detect";
+import StatisticBox from "@/components/shared/StatisticBox";
+import withUser from "@/hocs/withUser";
+import { getMedia } from "@/services/anilist";
+import { AnimeSourceConnection, MangaSourceConnection, Source } from "@/types";
+import { Media, MediaType } from "@/types/anilist";
+import { User, getUser, supabaseClient } from "@supabase/auth-helpers-nextjs";
+import { GetServerSideProps, NextPage } from "next";
+import { AiOutlineVideoCamera } from "react-icons/ai";
+import { BiImage } from "react-icons/bi";
 
-interface HomeProps {
-  selectors: DeviceSelectors;
+interface UploadPageProps {
+  user: User;
+  totalAnime: number;
+  totalManga: number;
+  recentlyUpdatedAnime: Media[];
+  recentlyUpdatedManga: Media[];
 }
 
-const Home: NextPage<HomeProps> = ({ selectors }) => {
-  const { t } = useTranslation();
-
-  const { isMobileOnly } = selectors;
-
-  const { data: trendingAnime, isLoading: trendingLoading } = useMedia({
-    type: MediaType.Anime,
-    sort: [MediaSort.Trending_desc, MediaSort.Popularity_desc],
-    perPage: 10,
-  });
-
-  const { data: recentlyUpdated, isLoading: recentlyUpdatedLoading } =
-    useRecentlyUpdated();
-
-  const { data: upcoming, isLoading: upcomingLoading } = useMedia(
-    {
-      status: MediaStatus.Not_yet_released,
-      sort: [MediaSort.Trending_desc],
-      perPage: 10,
-      type: MediaType.Anime,
-    },
-    {
-      enabled: !isMobileOnly,
-    }
-  );
-
-  const randomTrendingAnime = useMemo(() => {
-    return randomElement(trendingAnime || []);
-  }, [trendingAnime]);
+const UploadPage: NextPage<UploadPageProps> = ({
+  user,
+  totalAnime,
+  totalManga,
+  recentlyUpdatedAnime = [],
+  recentlyUpdatedManga = [],
+}) => {
+  console.log(user);
 
   return (
-    <React.Fragment>
-      <Head title="Home (Anime) - Kaguya" />
-
-      <div className="pb-8">
-        <HomeBanner
-          selectors={selectors}
-          data={trendingAnime}
-          isLoading={trendingLoading}
+    <UploadContainer title={`Hi, ${user?.email}!`} className="space-y-8">
+      <div className="flex flex-col md:flex-row gap-4">
+        <StatisticBox
+          title="Uploaded Anime"
+          Icon={AiOutlineVideoCamera}
+          value={totalAnime}
         />
-
-        <div className="space-y-8">
-          <WatchedSection />
-
-          {!isMobileOnly && <RecommendedAnimeSection />}
-
-          <BrowserView renderWithFragment>
-            {recentlyUpdatedLoading ? (
-              <ListSwiperSkeleton />
-            ) : recentlyUpdated?.length ? (
-              <Section title={t("common:newly_added")}>
-                <CardSwiper data={recentlyUpdated} />
-              </Section>
-            ) : null}
-
-            {upcomingLoading ? (
-              <ListSwiperSkeleton />
-            ) : upcoming?.length ? (
-              <Section title={t("anime_home:upcoming")}>
-                <CardSwiper data={upcoming} />
-              </Section>
-            ) : null}
-          </BrowserView>
-
-          <MobileOnlyView renderWithFragment>
-            <Section title={t("common:newly_added")}>
-              {recentlyUpdatedLoading ? (
-                <ListSkeleton numOfItems={10} />
-              ) : recentlyUpdated?.length ? (
-                <List data={recentlyUpdated}>
-                  {(node) => <Card data={node} />}
-                </List>
-              ) : null}
-            </Section>
-          </MobileOnlyView>
-
-          {!isMobileOnly && (
-            <div
-              className={classNames(
-                "flex gap-8",
-                isMobileOnly ? "flex-col" : "flex-row"
-              )}
-            >
-              <Section
-                title={t("anime_home:should_watch_today")}
-                className="w-full md:w-[80%] md:!pr-0"
-              >
-                {randomTrendingAnime && (
-                  <ShouldWatch
-                    data={randomTrendingAnime}
-                    isLoading={!randomTrendingAnime}
-                  />
-                )}
-              </Section>
-
-              <Section
-                title={t("common:genres")}
-                className="w-full md:w-[20%] md:!pl-0"
-              >
-                <GenreSwiper selectors={selectors} className="md:h-[500px]" />
-              </Section>
-            </div>
-          )}
-
-          <Section title={t("anime_home:airing_schedule")}>
-            <AnimeSchedule />
-          </Section>
-        </div>
+        <StatisticBox
+          title="Uploaded Manga"
+          Icon={BiImage}
+          value={totalManga}
+        />
       </div>
-    </React.Fragment>
+
+      <div className="flex flex-col md:flex-row gap-8 md:gap-4">
+        <Section hasPadding={false} className="flex-1" title="Recently Anime">
+          <div className="bg-background-900 p-4">
+            {recentlyUpdatedAnime.length ? (
+              recentlyUpdatedAnime.map((media) => (
+                <HorizontalCard
+                  redirectUrl={`/anime/${media.id}`}
+                  key={media.id}
+                  data={media}
+                />
+              ))
+            ) : (
+              <p className="text-center text-gray-300">No data</p>
+            )}
+          </div>
+        </Section>
+        <Section hasPadding={false} className="flex-1" title="Recently Manga">
+          <div className="bg-background-900 p-4">
+            {recentlyUpdatedManga.length ? (
+              recentlyUpdatedManga.map((media) => (
+                <HorizontalCard
+                  redirectUrl={`/manga/${media.id}`}
+                  key={media.id}
+                  data={media}
+                />
+              ))
+            ) : (
+              <p className="text-center text-gray-300">No data</p>
+            )}
+          </div>
+        </Section>
+      </div>
+    </UploadContainer>
   );
 };
 
-Home.getInitialProps = async ({ req }) => {
-  const userAgent = req ? req.headers["user-agent"] : navigator.userAgent;
+export default UploadPage;
 
-  const selectors = getSelectorsByUserAgent(userAgent);
+// @ts-ignore
+UploadPage.getLayout = (children) => <UploadLayout>{children}</UploadLayout>;
+
+const getTotalUploadedMedia = async (sourceId: string) => {
+  const animeSourcePromise = supabaseClient
+    .from<AnimeSourceConnection>("kaguya_anime_source")
+    .select("id", { count: "exact" })
+    .eq("sourceId", sourceId);
+
+  const mangaSourcePromise = supabaseClient
+    .from<MangaSourceConnection>("kaguya_manga_source")
+    .select("id", { count: "exact" })
+    .eq("sourceId", sourceId);
+
+  const [{ count: totalAnime }, { count: totalManga }] = await Promise.all([
+    animeSourcePromise,
+    mangaSourcePromise,
+  ]);
 
   return {
-    selectors,
+    totalAnime,
+    totalManga,
   };
 };
 
-export default Home;
+const getRecentlyUpdatedMedia = async (sourceId: string) => {
+  const episodeQuery = `
+    mediaId,
+    episodes:kaguya_episodes(
+        updated_at
+    )
+  `;
+
+  const chapterQuery = `
+    mediaId,
+    chapters:kaguya_chapters(
+        updated_at
+    )
+  `;
+
+  const animeSourcePromise = supabaseClient
+    .from<AnimeSourceConnection>("kaguya_anime_source")
+    .select(episodeQuery)
+    .eq("sourceId", sourceId)
+    .order("updated_at", { ascending: false, foreignTable: "episodes" })
+    .limit(5);
+
+  const mangaSourcePromise = supabaseClient
+    .from<MangaSourceConnection>("kaguya_manga_source")
+    .select(chapterQuery)
+    .eq("sourceId", sourceId)
+    .order("updated_at", { ascending: false, foreignTable: "chapters" })
+    .limit(5);
+
+  const [
+    { data: animeSources = [], error: animeError },
+    { data: mangaSources = [], error: mangaError },
+  ] = await Promise.all([animeSourcePromise, mangaSourcePromise]);
+
+  if (animeError) {
+    throw animeError;
+  }
+
+  if (mangaError) {
+    throw mangaError;
+  }
+
+  const animeIds = animeSources.map((source) => source?.mediaId);
+  const mangaIds = mangaSources.map((source) => source?.mediaId);
+
+  const mediaPromises: Promise<Media[]>[] = [];
+
+  if (animeIds.length) {
+    const animePromise = getMedia({
+      id_in: animeIds,
+      type: MediaType.Anime,
+    });
+
+    mediaPromises.push(animePromise);
+  } else {
+    // To keep promise position. [anime, manga]
+    mediaPromises.push(Promise.resolve(null));
+  }
+
+  if (mangaIds.length) {
+    const mangaPromise = getMedia({
+      id_in: mangaIds,
+      type: MediaType.Manga,
+    });
+
+    mediaPromises.push(mangaPromise);
+  }
+
+  if (!mediaPromises?.length) {
+    return {
+      anime: [],
+      manga: [],
+    };
+  }
+
+  const [anime = [], manga = []] = await Promise.all(mediaPromises);
+
+  const sortedAnimeList = animeSources
+    .map((connection) => {
+      const media = anime.find((a) => a.id === connection.mediaId);
+
+      return media;
+    })
+    .filter((a) => a);
+
+  const sortedMangaList = mangaSources
+    .map((connection) => {
+      const media = manga.find((a) => a.id === connection.mediaId);
+
+      return media;
+    })
+    .filter((a) => a);
+
+  return {
+    anime: sortedAnimeList || [],
+    manga: sortedMangaList || [],
+  };
+};
+
+export const getServerSideProps = withUser({
+  getServerSideProps: async (_, user) => {
+    const { data: sourceAddedByUser, error } = await supabaseClient
+      .from<Source>("kaguya_sources")
+      .select("id")
+      .eq("userId", user.id)
+      .single();
+
+    if (!sourceAddedByUser?.id || error) {
+      return {
+        props: {
+          totalAnime: 0,
+          totalManga: 0,
+        },
+      };
+    }
+
+    const { totalAnime, totalManga } = await getTotalUploadedMedia(
+      sourceAddedByUser.id
+    );
+
+    const { anime, manga } = await getRecentlyUpdatedMedia(
+      sourceAddedByUser.id
+    );
+
+    return {
+      props: {
+        totalAnime,
+        totalManga,
+        recentlyUpdatedAnime: anime,
+        recentlyUpdatedManga: manga,
+      },
+    };
+  },
+});

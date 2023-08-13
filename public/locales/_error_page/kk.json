@@ -1,6 +1,0 @@
-{
-  "error_description" : "Бірақ өкініштісі, оның ішінде түк те жоқ екен",
-  "error_heading" : "Сіз жаңа әлемді таптыңыз",
-  "error_title" : "Қателікке тап болдық ({{statusCode}})",
-  "error_welcome" : "<2>{{statusCode}} әлеміне</2> қош келдіңіз"
-}

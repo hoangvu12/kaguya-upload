@@ -1,25 +1,18 @@
 import DotList from "@/components/shared/DotList";
 import Image from "@/components/shared/Image";
+import Link from "@/components/shared/Link";
 import TextIcon from "@/components/shared/TextIcon";
 import { Media } from "@/types/anilist";
-import {
-  createMediaDetailsUrl,
-  isColorVisible,
-  numberWithCommas,
-} from "@/utils";
-import { convert, getDescription, getTitle } from "@/utils/data";
+import { isColorVisible, numberWithCommas } from "@/utils";
 import { Options } from "@popperjs/core";
 import classNames from "classnames";
-import Link from "@/components/shared/Link";
+import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import React, { useMemo } from "react";
 import { AiFillHeart } from "react-icons/ai";
 import { MdTagFaces } from "react-icons/md";
 import Description from "./Description";
 import Popup from "./Popup";
-import dayjs from "dayjs";
-import { titleTypeAtom } from "./TitleSwitcher";
-import { useAtomValue } from "jotai";
 
 interface CardProps {
   data: Media;
@@ -56,13 +49,7 @@ const popupOptions: Partial<Options> = {
 };
 
 const Card: React.FC<CardProps> = (props) => {
-  const {
-    data,
-    className,
-    imageEndSlot,
-    redirectUrl = createMediaDetailsUrl(data),
-    showType,
-  } = props;
+  const { data, className, imageEndSlot, redirectUrl, showType } = props;
 
   const router = useRouter();
 
@@ -74,17 +61,9 @@ const Card: React.FC<CardProps> = (props) => {
     [data]
   );
 
-  const titleType = useAtomValue(titleTypeAtom);
+  const title = data.title.userPreferred;
 
-  const title = useMemo(
-    () => getTitle(data, { titleType, locale: router.locale }),
-    [data, titleType, router.locale]
-  );
-
-  const description = useMemo(
-    () => getDescription(data, { locale: router.locale }),
-    [data, router.locale]
-  );
+  const description = data.description;
 
   const nextEpisodeAiringTimeDuration = useMemo(() => {
     const nextEpisodeAiringTime = !data.nextAiringEpisode
@@ -188,7 +167,7 @@ const Card: React.FC<CardProps> = (props) => {
                   }}
                   key={genre}
                 >
-                  {convert(genre, "genre", { locale: router.locale })}
+                  {genre}
                 </span>
               ))}
             </DotList>

@@ -2,11 +2,8 @@ import Button from "@/components/shared/Button";
 import Head from "@/components/shared/Head";
 import Link from "@/components/shared/Link";
 import Section from "@/components/shared/Section";
-import { logError } from "@/utils/error";
 import { NextPage } from "next";
-import { Trans, useTranslation } from "next-i18next";
 import NextErrorComponent, { ErrorProps } from "next/error";
-import { useEffect } from "react";
 
 interface CustomErrorProps extends ErrorProps {
   hasGetInitialPropsRun: boolean;
@@ -21,18 +18,9 @@ const ErrorPage: NextPage<CustomErrorProps, CustomErrorProps> = ({
   err,
   title,
 }) => {
-  const { t } = useTranslation("_error_page");
-
-  useEffect(() => {
-    logError({
-      error: title || JSON.stringify(err),
-      errorSource: "ErrorPage",
-    });
-  }, [err, title]);
-
   return (
     <div className="relative w-full min-h-screen flex items-center">
-      <Head title={`${t("error_title", { statusCode })} - Kaguya`} />
+      <Head title={`Error ${statusCode} - Kaguya`} />
 
       <div className="fixed z-0 w-full h-full flex items-center justify-center">
         <h1 className="font-bold text-[30vw] text-gray-500">{statusCode}</h1>
@@ -42,19 +30,15 @@ const ErrorPage: NextPage<CustomErrorProps, CustomErrorProps> = ({
 
       <Section className="relative z-10 flex flex-col items-center w-full h-full text-center ">
         <div className="mb-4 text-gray-300">
-          <span className="text-lg">
-            <Trans i18nKey="_error_page:error_welcome" statusCode={statusCode}>
-              Chào mừng đến với{" "}
-              <span className="text-red-300">chiều không gian 404</span>
-            </Trans>
-          </span>
+          <div className="text-lg">
+            Welcome to{" "}
+            <span className="text-red-300">the {statusCode} dimension</span>
+          </div>
         </div>
 
-        <p className="text-4xl font-semibold">
-          {t("error_heading", { statusCode: statusCode || err.statusCode })}
-        </p>
+        <p className="text-4xl font-semibold">You found new dimension</p>
 
-        <p className="text-2xl text-gray-200 mt-4">{t("error_description")}</p>
+        <p className="text-2xl text-gray-200 mt-4">Nothing here tho</p>
 
         <p>
           <i>Error: {title || JSON.stringify(err)}</i>
@@ -63,7 +47,7 @@ const ErrorPage: NextPage<CustomErrorProps, CustomErrorProps> = ({
         <Link href="/">
           <a>
             <Button primary outline className="mt-8">
-              <p className="text-lg">{t("error_goback")}</p>
+              <p className="text-lg">Go back</p>
             </Button>
           </a>
         </Link>

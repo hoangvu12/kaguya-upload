@@ -1,15 +1,10 @@
 import Link from "@/components/shared/Link";
 import { Media } from "@/types/anilist";
-import { createMediaDetailsUrl } from "@/utils";
-import { convert, getTitle } from "@/utils/data";
 import classNames from "classnames";
-import { useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
 import React, { useMemo } from "react";
 import DotList from "./DotList";
 import PlainCard from "./PlainCard";
-import { useAtomValue } from "jotai";
-import { titleTypeAtom } from "./TitleSwitcher";
 
 interface HorizontalCardProps extends React.HTMLAttributes<HTMLDivElement> {
   data: Media;
@@ -22,20 +17,15 @@ interface HorizontalCardProps extends React.HTMLAttributes<HTMLDivElement> {
 const HorizontalCard = ({
   data,
   className,
-  redirectUrl = createMediaDetailsUrl(data),
+  redirectUrl,
   endSlot,
   cardContainerClassName,
   size = "sm",
   ...props
 }: HorizontalCardProps) => {
   const { locale } = useRouter();
-  const { t } = useTranslation("common");
-  const titleType = useAtomValue(titleTypeAtom);
 
-  const title = useMemo(
-    () => getTitle(data, { titleType, locale }),
-    [data, titleType, locale]
-  );
+  const title = data.title.userPreferred;
 
   const sizeClassName = useMemo(() => {
     if (size === "sm") {
@@ -107,24 +97,20 @@ const HorizontalCard = ({
         </Link>
 
         <DotList className={classNames("text-gray-300", sizeClassName.info)}>
-          {data.format && (
-            <span>{convert(data.format, "format") || t("unknown")}</span>
-          )}
+          {data.format && <span>{data.format || "Unknown"}</span>}
 
           {data.season && data.seasonYear && (
             <span>
-              {convert(data.season, "season", { locale })} {data.seasonYear}
+              {data.season} {data.seasonYear}
             </span>
           )}
 
-          {data.status && (
-            <span>{convert(data.status, "status", { locale })}</span>
-          )}
+          {data.status && <span>{data.status}</span>}
         </DotList>
 
         <DotList className={classNames("text-gray-300", sizeClassName.genres)}>
           {data.genres?.map((genre) => (
-            <span key={genre}>{convert(genre, "genre", { locale })}</span>
+            <span key={genre}>{genre}</span>
           ))}
         </DotList>
 

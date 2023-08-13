@@ -1,6 +1,0 @@
-{
-  "no_search_results" : "No hay resultados de búsqueda",
-  "search_results_heading" : "Resultado de la búsqueda de: <italic>{{searchQuery}}</italic>",
-  "wrong_title_error" : "Algo salió mal ({{errorMessage}})",
-  "wrong_title_label" : "¿Título erróneo?"
-}

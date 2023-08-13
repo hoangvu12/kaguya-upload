@@ -1,6 +1,0 @@
-{
-  "error_description" : "Lamentablemente, esta sección no tiene nada.",
-  "error_heading" : "Ha descubierto una sección nueva.",
-  "error_title" : "Ha ocurrido un error ({{statusCode}})",
-  "error_welcome" : "Bienvenido a la <2>dimensión {{statusCode}}</2>"
-}

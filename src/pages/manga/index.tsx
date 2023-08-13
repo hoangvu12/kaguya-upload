@@ -1,161 +1,208 @@
-import ReadSection from "@/components/features/manga/ReadSection";
-import RecommendedMangaSection from "@/components/features/manga/RecommendedMangaSection";
-import Card from "@/components/shared/Card";
-import CardSwiper from "@/components/shared/CardSwiper";
-import GenreSwiper from "@/components/shared/GenreSwiper";
-import Head from "@/components/shared/Head";
-import HomeBanner from "@/components/shared/HomeBanner";
-import List from "@/components/shared/List";
-import Section from "@/components/shared/Section";
-import ShouldWatch from "@/components/shared/ShouldWatch";
-import ListSkeleton from "@/components/skeletons/ListSkeleton";
-import ListSwiperSkeleton from "@/components/skeletons/ListSwiperSkeleton";
-import useMedia from "@/hooks/useMedia";
-import { DeviceSelectors } from "@/types";
-import { MediaSort, MediaStatus, MediaType } from "@/types/anilist";
-import { randomElement } from "@/utils";
-import classNames from "classnames";
-import { useTranslation } from "next-i18next";
-import { NextPage } from "next/types";
-import React, { useMemo } from "react";
-import {
-  BrowserView,
-  MobileOnlyView,
-  getSelectorsByUserAgent,
-} from "react-device-detect";
+import UploadContainer from "@/components/features/UploadContainer";
+import UploadLayout from "@/components/layouts/UploadLayout";
+import Button from "@/components/shared/Button";
+import CircleButton from "@/components/shared/CircleButton";
+import Description from "@/components/shared/Description";
+import Loading from "@/components/shared/Loading";
+import PlainCard from "@/components/shared/PlainCard";
+import ServerPaginateTable from "@/components/shared/ServerPaginateTable";
+import withUser from "@/hocs/withUser";
+import useUploadedMedia, {
+  getUploadedMedia,
+  MediaWithMediaUnit,
+} from "@/hooks/useUploadedMedia";
+import { Source } from "@/types";
+import { MediaType } from "@/types/anilist";
+import { supabaseClient, User } from "@supabase/auth-helpers-nextjs";
+import { NextPage } from "next";
+import Link from "@/components/shared/Link";
+import { useEffect, useState } from "react";
+import { AiOutlineEdit } from "react-icons/ai";
+import { useQueryClient } from "react-query";
+import { Column } from "react-table";
 
-interface HomeProps {
-  selectors: DeviceSelectors;
+interface UploadAnimePageProps {
+  user: User;
+  sourceId: string;
 }
 
-const Home: NextPage<HomeProps> = ({ selectors }) => {
-  const { t } = useTranslation();
+const columns: Column<MediaWithMediaUnit<MediaType.Manga>>[] = [
+  {
+    Header: "Image",
+    Cell: ({ cell }) => {
+      const originalCell = cell.row.original;
+      const title = originalCell.title.userPreferred;
 
-  const { isMobileOnly } = selectors;
+      return (
+        <div className="p-2">
+          <PlainCard src={originalCell.coverImage.extraLarge} alt={title} />
+        </div>
+      );
+    },
+    accessor: "coverImage",
+  },
+  {
+    Header: "Title",
+    Cell: ({ cell }) => {
+      const originalCell = cell.row.original;
 
-  const { data: trendingManga, isLoading: trendingLoading } = useMedia({
+      const title = originalCell.title.userPreferred;
+
+      return (
+        <div className="px-6 py-4">
+          <p className="line-clamp-5">{title}</p>
+        </div>
+      );
+    },
+    accessor: "title",
+  },
+  {
+    Header: "Description",
+    accessor: "description",
+    Cell: ({ cell }) => {
+      return (
+        <div className="px-6 py-4">
+          <Description
+            className="line-clamp-5 overflow-hidden text-white"
+            description={cell.value}
+          />
+        </div>
+      );
+    },
+  },
+  {
+    Header: "Uploaded chapters",
+    accessor: "chapters",
+    Cell: ({ cell }) => {
+      const originalCell = cell.row.original;
+
+      return (
+        <div className="px-6 py-4">
+          <p className="line-clamp-5 overflow-hidden">
+            {originalCell.totalUploadedChapters || 0}/{cell.value || "??"}
+          </p>
+        </div>
+      );
+    },
+  },
+  {
+    Header: "Action",
+    Cell: ({ cell }) => {
+      return (
+        <div className="w-full flex items-center justify-center">
+          <Link href={`/manga/${cell.value}`}>
+            <a>
+              <CircleButton secondary LeftIcon={AiOutlineEdit} />
+            </a>
+          </Link>
+        </div>
+      );
+    },
+    accessor: "id",
+  },
+];
+
+const UploadAnimePage: NextPage<UploadAnimePageProps> = ({
+  user,
+  sourceId,
+}) => {
+  const [pageSize, setPageSize] = useState(10);
+  const [pageIndex, setPageIndex] = useState(0);
+
+  const queryClient = useQueryClient();
+
+  const { data, isLoading } = useUploadedMedia({
     type: MediaType.Manga,
-    sort: [MediaSort.Trending_desc, MediaSort.Popularity_desc],
-    perPage: 10,
+    page: pageIndex + 1,
+    perPage: pageSize,
+    sourceId,
   });
 
-  const { data: recentlyUpdated, isLoading: recentlyUpdatedLoading } = useMedia(
-    {
+  useEffect(() => {
+    const options = {
       type: MediaType.Manga,
-      sort: [MediaSort.Updated_at_desc],
-      isAdult: false,
-      perPage: 10,
-    }
-  );
+      page: pageIndex + 2,
+      perPage: pageSize,
+      sourceId,
+    };
 
-  const { data: upcoming, isLoading: upcomingLoading } = useMedia({
-    status: MediaStatus.Not_yet_released,
-    sort: [MediaSort.Trending_desc],
-    perPage: 10,
-    type: MediaType.Manga,
-  });
+    queryClient.prefetchQuery(["uploaded-media", { options }], () =>
+      getUploadedMedia(options)
+    );
+  }, [pageIndex, pageSize, queryClient, sourceId]);
 
-  const randomTrendingManga = useMemo(() => {
-    return randomElement(trendingManga || []);
-  }, [trendingManga]);
+  const handlePageSizeChange = (newPageSize: number) => {
+    setPageSize(newPageSize);
+  };
+
+  const handlePageIndexChange = (newPageIndex: number) => {
+    setPageIndex(newPageIndex);
+  };
 
   return (
-    <React.Fragment>
-      <Head
-        title="Home (Manga) - Kaguya"
-        description="Welcome to our manga website, your ultimate source for the latest manga releases. Here, you can explore the vast world of manga and read your favorite titles online. Our extensive library features a wide range of manga genres, from action and adventure to romance and drama. You can easily search and sort by manga name, author, and genre to find the perfect read. Our website is updated regularly with the latest manga releases, so you'll never miss a beat. Whether you're a long-time manga fan or a newcomer, our website is the perfect destination for all your manga needs. Visit us now and start reading the latest manga releases!"
-      />
+    <UploadContainer title="Uploaded Manga list">
+      <Button
+        primary
+        className="absolute -top-2 right-4 md:right-12 lg:right-20 xl:right-28 2xl:right-36"
+      >
+        <Link href="/manga/create">
+          <a>Search Manga</a>
+        </Link>
+      </Button>
 
-      <div className="pb-8">
-        <HomeBanner
-          selectors={selectors}
-          data={trendingManga}
-          isLoading={trendingLoading}
+      {isLoading ? (
+        <Loading />
+      ) : data?.media?.length ? (
+        <ServerPaginateTable
+          data={data.media}
+          columns={columns}
+          totalCount={data.total}
+          pageIndex={pageIndex}
+          pageSize={pageSize}
+          onPageSizeChange={handlePageSizeChange}
+          onPageIndexChange={handlePageIndexChange}
         />
-
-        <div className="space-y-8">
-          <ReadSection />
-
-          {!isMobileOnly && <RecommendedMangaSection />}
-
-          <BrowserView renderWithFragment>
-            {recentlyUpdatedLoading ? (
-              <ListSwiperSkeleton />
-            ) : recentlyUpdated?.length ? (
-              <Section title={t("common:newly_added")}>
-                <CardSwiper data={recentlyUpdated} />
-              </Section>
-            ) : null}
-
-            {upcomingLoading ? (
-              <ListSwiperSkeleton />
-            ) : upcoming?.length ? (
-              <Section title={t("anime_home:upcoming")}>
-                <CardSwiper data={upcoming} />
-              </Section>
-            ) : null}
-          </BrowserView>
-
-          <MobileOnlyView renderWithFragment>
-            <Section title={t("common:newly_added")}>
-              {recentlyUpdatedLoading ? (
-                <ListSkeleton numOfItems={10} />
-              ) : recentlyUpdated?.length ? (
-                <List data={recentlyUpdated}>
-                  {(node) => <Card data={node} />}
-                </List>
-              ) : null}
-            </Section>
-
-            <Section title={t("anime_home:upcoming")}>
-              {upcomingLoading ? (
-                <ListSwiperSkeleton />
-              ) : upcoming?.length ? (
-                <List data={upcoming}>{(node) => <Card data={node} />}</List>
-              ) : null}
-            </Section>
-          </MobileOnlyView>
-
-          {!isMobileOnly && (
-            <div
-              className={classNames(
-                "flex gap-8",
-                isMobileOnly ? "flex-col" : "flex-row"
-              )}
-            >
-              <Section
-                title={t("manga_home:should_read_today")}
-                className="w-full md:w-[80%] md:!pr-0"
-              >
-                {randomTrendingManga && (
-                  <ShouldWatch
-                    data={randomTrendingManga}
-                    isLoading={!randomTrendingManga}
-                  />
-                )}
-              </Section>
-              <Section
-                title={t("common:genres")}
-                className="w-full md:w-[20%] md:!pl-0"
-              >
-                <GenreSwiper selectors={selectors} className="md:h-[500px]" />
-              </Section>
-            </div>
-          )}
-        </div>
-      </div>
-    </React.Fragment>
+      ) : (
+        <h1 className="text-3xl text-center">
+          You haven&apos;t uploaded any Manga.
+        </h1>
+      )}
+    </UploadContainer>
   );
 };
 
-Home.getInitialProps = async ({ req }) => {
-  const userAgent = req ? req.headers["user-agent"] : navigator.userAgent;
+export default UploadAnimePage;
 
-  const selectors = getSelectorsByUserAgent(userAgent);
+export const getServerSideProps = withUser({
+  async getServerSideProps(_, user) {
+    try {
+      const { data: sourceAddedByUser, error } = await supabaseClient
+        .from<Source>("kaguya_sources")
+        .select("id")
+        .eq("userId", user.id)
+        .single();
 
-  return {
-    selectors,
-  };
-};
+      if (error || !sourceAddedByUser?.id) {
+        throw error;
+      }
 
-export default Home;
+      return {
+        props: {
+          sourceId: sourceAddedByUser.id,
+        },
+      };
+    } catch (err) {
+      return {
+        redirect: {
+          statusCode: 302,
+          destination: "/login",
+        },
+      };
+    }
+  },
+});
+
+// @ts-ignore
+UploadAnimePage.getLayout = (children) => (
+  <UploadLayout>{children}</UploadLayout>
+);

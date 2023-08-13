@@ -1,16 +1,8 @@
 import dayjs from "@/lib/dayjs";
-import {
-  Character,
-  Media,
-  MediaSeason,
-  MediaType,
-  Staff,
-  Studio,
-} from "@/types/anilist";
+import { MediaSeason } from "@/types/anilist";
 import axios from "axios";
 import mime from "mime";
 import { toast } from "react-toastify";
-import slugify, { charmap, multicharmap } from "slug";
 
 export const randomElement = <T>(array: T[]): T => {
   const index = Math.floor(Math.random() * array.length);
@@ -233,17 +225,6 @@ export const groupBy = <T, K extends string>(
     return previous;
   }, {} as Record<string, T[]>);
 
-export const stringToSlug = (str: string) => {
-  return slugify(str, {
-    replacement: "-",
-    remove: null,
-    lower: true,
-    charmap,
-    multicharmap,
-    trim: true,
-  });
-};
-
 export const sleep = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -362,32 +343,6 @@ export const createFileFromUrl = async (url: string, filename: string) => {
   const file = new File([data], filename, metadata);
 
   return file;
-};
-
-export const createMediaDetailsUrl = (media: Media) => {
-  if (!media) return "";
-
-  if (media.type === MediaType.Anime) {
-    return `/anime/details/${media.id}/${slugify(media.title.userPreferred)}`;
-  }
-
-  return `/manga/details/${media.id}/${slugify(media.title.userPreferred)}`;
-};
-
-export const createCharacterDetailsUrl = (character: Character) => {
-  return `/characters/details/${character.id}/${
-    character.id + "-" + slugify(character?.name?.userPreferred)
-  }`;
-};
-
-export const createVoiceActorDetailsUrl = (voiceActor: Staff) => {
-  return `/voice-actors/details/${voiceActor.id}/${
-    voiceActor.id + "-" + slugify(voiceActor?.name?.userPreferred)
-  }`;
-};
-
-export const createStudioDetailsUrl = (studio: Studio) => {
-  return `/studios/${studio.id}/${studio.id + "-" + slugify(studio?.name)}`;
 };
 
 export const sortObjectByValue = <T extends object>(
