@@ -1,31 +1,30 @@
 import Button from "@/components/shared/Button";
 import Head from "@/components/shared/Head";
 import useSignIn from "@/hooks/useSignIn";
-import { Provider } from "@supabase/gotrue-js";
+import { supabaseClient } from "@supabase/auth-helpers-nextjs";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-
-const isDev = process.env.NODE_ENV === "development";
+import { toast } from "react-toastify";
 
 const LoginPage: NextPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { query } = useRouter();
+  const router = useRouter();
 
-  const { redirectedFrom = "/" } = query as { redirectedFrom: string };
-
-  const signInMutation = useSignIn({
-    redirectTo: isDev
-      ? `http://localhost:3000${redirectedFrom}`
-      : redirectedFrom,
-  });
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    signInMutation.mutate({ email, password });
+    const { error } = await supabaseClient.auth.signIn({ email, password });
+
+    if (error) {
+      toast.error(error.message);
+
+      return;
+    }
+
+    router.replace("/");
   };
 
   return (
