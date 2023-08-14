@@ -34,8 +34,6 @@ const withUser =
     try {
       const { user } = await getUser(ctx);
 
-      console.log(user);
-
       if (!user) {
         throw new Error("User not found");
       }
