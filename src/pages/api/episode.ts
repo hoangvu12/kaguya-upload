@@ -10,6 +10,52 @@ const supabaseAdminClient = createClient(
 );
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+  if (req.method === "GET") {
+    const { mediaId, sourceId } = req.query;
+
+    if (!mediaId || !sourceId) {
+      return res
+        .status(400)
+        .json({ success: false, errorMessage: "Bad request" });
+    }
+
+    const { data, error } = await supabaseClient
+      .from("kaguya_anime_source")
+      .select(
+        `
+          episodes:kaguya_episodes(
+              title,
+              thumbnail,
+              description,
+              number,
+              video:kaguya_videos(
+                subtitles,
+                fonts,
+                data:video,
+                hostingId
+              ),
+              id:sourceEpisodeId
+          )
+        `
+      )
+      .eq("sourceId", sourceId)
+      .eq("mediaId", mediaId)
+      // .eq("episodes.published", true)
+      .single();
+
+    if (error) {
+      console.log(error);
+
+      return res
+        .status(400)
+        .json({ success: false, errorMessage: "Bad request" });
+    }
+
+    return res
+      .status(200)
+      .json({ success: true, episodes: data?.episodes || [] });
+  }
+
   if (req.method !== "POST") {
     return res
       .status(405)

@@ -10,6 +10,60 @@ const supabaseAdminClient = createClient(
 );
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+  if (req.method === "GET") {
+    const { mediaId, sourceId } = req.query;
+
+    if (!mediaId || !sourceId) {
+      return res
+        .status(400)
+        .json({ success: false, errorMessage: "Bad request" });
+    }
+
+    const { data, error } = await supabaseClient
+      .from("kaguya_manga_source")
+      .select(
+        `
+          chapters:kaguya_chapters(
+              title,
+              number,
+              images:kaguya_images(
+                data:images
+              ),
+              id:sourceChapterId
+          )
+        `
+      )
+      .eq("sourceId", sourceId)
+      .eq("mediaId", mediaId)
+      // .eq("chapters.published", true)
+      .single();
+
+    if (error) {
+      console.log(error);
+
+      return res
+        .status(400)
+        .json({ success: false, errorMessage: "Bad request" });
+    }
+
+    if (!data?.chapters?.length) {
+      return res.status(200).json({ success: true, chapters: [] });
+    }
+
+    const composedChapters = data.chapters.map((chapter) => {
+      const images = chapter.images.flatMap((image) => {
+        return image.data;
+      });
+
+      return {
+        ...chapter,
+        images,
+      };
+    });
+
+    return res.status(200).json({ success: true, chapters: composedChapters });
+  }
+
   if (req.method !== "POST") {
     return res
       .status(405)
