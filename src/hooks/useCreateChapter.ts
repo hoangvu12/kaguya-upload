@@ -36,6 +36,10 @@ const useCreateChapter = (args: UseCreateChapterArgs) => {
 
   return useMutation<CreateChapterResponse, Error, CreateChapterInput>(
     async ({ chapter, images }) => {
+      if (!user?.id) {
+        throw new Error("Can't find user data, please relogin");
+      }
+
       if (!chapter?.number) {
         throw new Error("Chapter number is required");
       }

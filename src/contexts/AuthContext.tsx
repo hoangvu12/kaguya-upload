@@ -10,28 +10,41 @@ export const refreshTokenCookieName = "sb-refresh-token";
 
 export const userAtom = atom<User>(null as User);
 
+const removeCookie = () => {
+  nookies.destroy({}, accessTokenCookieName, { path: "/" });
+  nookies.destroy({}, refreshTokenCookieName, { path: "/" });
+};
+
 export const AuthContextProvider = () => {
   // @ts-ignore
   const [user, setUser] = useAtom(userAtom);
 
-  // Set cookies on auth state change
   useEffect(() => {
-    console.log("use effect");
+    const getData = async () => {
+      const user = supabase.auth.user();
 
-    const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("auth change", session);
-
-      if (!session) {
-        setUser(null);
-
-        nookies.destroy(null, accessTokenCookieName);
-        nookies.destroy(null, refreshTokenCookieName);
+      if (!user) {
+        removeCookie();
 
         return;
       }
 
-      nookies.destroy(null, accessTokenCookieName);
-      nookies.destroy(null, refreshTokenCookieName);
+      setUser(user);
+    };
+
+    getData();
+  }, [setUser]);
+
+  // Set cookies on auth state change
+  useEffect(() => {
+    const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
+      removeCookie();
+
+      if (!session) {
+        setUser(null);
+
+        return;
+      }
 
       if (event === "SIGNED_OUT") {
         setUser(null);

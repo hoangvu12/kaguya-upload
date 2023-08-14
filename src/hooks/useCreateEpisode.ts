@@ -50,6 +50,10 @@ const useCreateEpisode = (args: UseCreateEpisodeArgs) => {
 
   return useMutation<CreateEpisodeResponse, Error, CreateEpisodeInput>(
     async ({ episode, fonts, subtitles, video, hostingId }) => {
+      if (!user?.id) {
+        throw new Error("Can't find user data, please relogin");
+      }
+
       const { getRemoteStatus, getVideoStatus, remoteUploadVideo } =
         createUploadService(hostingId);
 

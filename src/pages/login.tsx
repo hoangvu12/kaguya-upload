@@ -13,6 +13,7 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import nookies from "nookies";
 import { useSetAtom } from "jotai";
+import { setWithExpiry } from "@/utils";
 
 const LoginPage: NextPage = () => {
   const [email, setEmail] = useState("");
@@ -28,6 +29,10 @@ const LoginPage: NextPage = () => {
       email,
       password,
     });
+
+    const data = { currentSession: session, expiresAt: session.expires_at };
+
+    localStorage.setItem("supabase.auth.token", JSON.stringify(data));
 
     if (error) {
       toast.error(error.message);
