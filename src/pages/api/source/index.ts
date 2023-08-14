@@ -15,7 +15,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       .json({ success: false, errorMessage: "Method not allowed" });
   }
 
-  const { name } = req.body;
+  const { name, languages, mediaType } = req.body;
 
   const { data: user, error } =
     await supabaseAdminClient.auth.api.getUserByCookie(req);
@@ -32,6 +32,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       name: name,
       id: slugify(name),
       userId: user.id,
+      mediaType,
+      languages,
     });
 
   if (upsertError) {
