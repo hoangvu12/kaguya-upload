@@ -35,7 +35,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       )
       .eq("sourceId", sourceId)
       .eq("mediaId", mediaId)
-      // .eq("chapters.published", true)
+      .eq("chapters.published", true)
       .single();
 
     if (error) {
