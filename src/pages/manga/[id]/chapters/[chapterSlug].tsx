@@ -13,12 +13,14 @@ import { MAIN_WEBSITE_DOMAIN, supportedUploadImageFormats } from "@/constants";
 import { UploadMediaProvider } from "@/contexts/UploadMediaContext";
 import withUser from "@/hocs/withUser";
 import useChapterDelete from "@/hooks/useChapterDelete";
+import usePublishChapter from "@/hooks/usePublishChapter";
 import useUploadedChapter from "@/hooks/useUploadedChapter";
 import { Source } from "@/types";
 import { User, supabaseClient } from "@supabase/auth-helpers-nextjs";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
+import { useQueryClient } from "react-query";
 
 interface UploadChapterEditPageProps {
   user: User;
@@ -35,14 +37,26 @@ const UploadChapterEditPage: NextPage<UploadChapterEditPageProps> = ({
   const { data, isLoading } = useUploadedChapter(chapterSlug);
   const { mutate: deleteChapter, isLoading: deleteLoading } =
     useChapterDelete(chapterSlug);
-  const router = useRouter();
+  const { mutate: publishChapter, isLoading: publishLoading } =
+    usePublishChapter(chapterSlug);
 
   const chapterId = useMemo(() => chapterSlug.split("-")[1], [chapterSlug]);
+
+  const router = useRouter();
+  const queryClient = useQueryClient();
 
   const handleDelete = () => {
     deleteChapter(null, {
       onSuccess: () => {
         router.replace(`/manga/${mediaId}`);
+      },
+    });
+  };
+
+  const handlePublish = () => {
+    publishChapter(null, {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["uploaded-chapter", chapterSlug]);
       },
     });
   };
@@ -115,13 +129,23 @@ const UploadChapterEditPage: NextPage<UploadChapterEditPageProps> = ({
               </a>
             </Link>
 
-            <Link
-              href={`https://${MAIN_WEBSITE_DOMAIN}/manga/read/${mediaId}/${sourceId}/${chapterId}`}
-            >
-              <a target="_blank" rel="noreferrer">
-                <Button primary>Read chapter</Button>
-              </a>
-            </Link>
+            {data.published ? (
+              <Link
+                href={`https://${MAIN_WEBSITE_DOMAIN}/manga/read/${mediaId}/${sourceId}/${chapterId}`}
+              >
+                <a target="_blank" rel="noreferrer">
+                  <Button primary>Read chapter</Button>
+                </a>
+              </Link>
+            ) : (
+              <Button
+                isLoading={publishLoading}
+                primary
+                onClick={handlePublish}
+              >
+                Publish chapter
+              </Button>
+            )}
           </div>
         </Section>
       )}
