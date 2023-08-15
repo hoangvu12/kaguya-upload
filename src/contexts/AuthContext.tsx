@@ -34,6 +34,10 @@ export const AuthContextProvider = () => {
     };
 
     const getData = async () => {
+      if (router.asPath === "/set-password") {
+        return;
+      }
+
       const supabaseStorageSession = localStorage.getItem(
         "supabase.auth.token"
       );
