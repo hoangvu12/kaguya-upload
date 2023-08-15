@@ -1,5 +1,5 @@
 import { default as supabase } from "@/lib/supabase";
-import { User } from "@supabase/supabase-js";
+import { Session, User } from "@supabase/supabase-js";
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useRouter } from "next/router";
 import nookies from "nookies";
@@ -21,21 +21,34 @@ export const AuthContextProvider = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const getData = async () => {
-      const user = supabase.auth.user();
+    const removeCookieAndRedirectToLogin = () => {
+      removeCookie();
 
-      console.log("getData", user);
+      if (router.asPath === "/login") {
+        return;
+      }
+
+      router.replace("/login");
+
+      return;
+    };
+
+    const getData = async () => {
+      const supabaseStorageSession = localStorage.getItem(
+        "supabase.auth.token"
+      );
+
+      if (!supabaseStorageSession) {
+        return removeCookieAndRedirectToLogin();
+      }
+
+      const sessionStorage: { currentSession: Session; expiresAt: number } =
+        JSON.parse(supabaseStorageSession);
+
+      const user = sessionStorage?.currentSession?.user;
 
       if (!user) {
-        removeCookie();
-
-        if (router.asPath === "/login") {
-          return;
-        }
-
-        router.replace("/login");
-
-        return;
+        return removeCookieAndRedirectToLogin();
       }
 
       setUser(user);
