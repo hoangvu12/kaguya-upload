@@ -1,7 +1,7 @@
 import { default as supabase } from "@/lib/supabase";
-import { getWithExpiry, setWithExpiry } from "@/utils";
 import { User } from "@supabase/supabase-js";
-import { atom, useAtom, useAtomValue } from "jotai";
+import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useRouter } from "next/router";
 import nookies from "nookies";
 import { useEffect } from "react";
 
@@ -17,14 +17,23 @@ const removeCookie = () => {
 
 export const AuthContextProvider = () => {
   // @ts-ignore
-  const [user, setUser] = useAtom(userAtom);
+  const setUser = useSetAtom(userAtom);
+  const router = useRouter();
 
   useEffect(() => {
     const getData = async () => {
       const user = supabase.auth.user();
 
+      console.log("getData", user);
+
       if (!user) {
         removeCookie();
+
+        if (router.asPath === "/login") {
+          return;
+        }
+
+        router.replace("/login");
 
         return;
       }
@@ -33,41 +42,7 @@ export const AuthContextProvider = () => {
     };
 
     getData();
-  }, [setUser]);
-
-  // Set cookies on auth state change
-  useEffect(() => {
-    const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
-      removeCookie();
-
-      if (!session) {
-        setUser(null);
-
-        return;
-      }
-
-      if (event === "SIGNED_OUT") {
-        setUser(null);
-      } else if (event === "SIGNED_IN") {
-        setUser(user);
-      }
-
-      const token = session.access_token;
-      const refreshToken = session.refresh_token;
-
-      nookies.set(null, accessTokenCookieName, token, {
-        path: "/",
-        maxAge: 604800,
-      });
-
-      nookies.set(null, refreshTokenCookieName, refreshToken, {
-        path: "/",
-        maxAge: 604800,
-      });
-    });
-
-    return data.unsubscribe;
-  }, [setUser, user]);
+  }, [router, setUser]);
 
   return null;
 };

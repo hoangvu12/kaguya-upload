@@ -15,6 +15,11 @@ import nookies from "nookies";
 import { useSetAtom } from "jotai";
 import { setWithExpiry } from "@/utils";
 
+const removeCookie = () => {
+  nookies.destroy({}, accessTokenCookieName, { path: "/" });
+  nookies.destroy({}, refreshTokenCookieName, { path: "/" });
+};
+
 const LoginPage: NextPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,23 +35,23 @@ const LoginPage: NextPage = () => {
       password,
     });
 
-    const data = { currentSession: session, expiresAt: session.expires_at };
-
-    localStorage.setItem("supabase.auth.token", JSON.stringify(data));
-
     if (error) {
       toast.error(error.message);
 
       return;
     }
 
-    nookies.destroy(null, accessTokenCookieName);
+    const data = { currentSession: session, expiresAt: session.expires_at };
+
+    localStorage.setItem("supabase.auth.token", JSON.stringify(data));
+
+    removeCookie();
+
     nookies.set(null, accessTokenCookieName, session.access_token, {
       path: "/",
       maxAge: 604800,
     });
 
-    nookies.destroy(null, refreshTokenCookieName);
     nookies.set(null, refreshTokenCookieName, session.refresh_token, {
       path: "/",
       maxAge: 604800,

@@ -1,20 +1,29 @@
 import Head from "@/components/shared/Head";
+import Link from "@/components/shared/Link";
 import Logo from "@/components/shared/Logo";
 import NavItem from "@/components/shared/NavItem";
 import useDevice from "@/hooks/useDevice";
 import classNames from "classnames";
 import { AnimatePresence, motion, Variants } from "framer-motion";
-import Link from "@/components/shared/Link";
 import React, { useState } from "react";
 import {
   AiOutlineHome,
+  AiOutlineLogout,
   AiOutlinePlus,
   AiOutlineVideoCameraAdd,
 } from "react-icons/ai";
-import { BiImageAdd, BiLogOutCircle } from "react-icons/bi";
+import { BiImageAdd } from "react-icons/bi";
 import { GiHamburgerMenu } from "react-icons/gi";
 import Button from "../shared/Button";
 import Popup from "../shared/Popup";
+import supabaseClient from "@/lib/supabase";
+import { useRouter } from "next/router";
+import nookies from "nookies";
+import {
+  accessTokenCookieName,
+  refreshTokenCookieName,
+} from "@/contexts/AuthContext";
+import { toast } from "react-toastify";
 
 const routes = [
   {
@@ -43,9 +52,15 @@ const variants: Variants = {
   },
 };
 
+const removeCookie = () => {
+  nookies.destroy({}, accessTokenCookieName, { path: "/" });
+  nookies.destroy({}, refreshTokenCookieName, { path: "/" });
+};
+
 const UploadLayout: React.FC = ({ children }) => {
   const { isMobile } = useDevice();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const router = useRouter();
 
   return (
     <div className="w-full min-h-screen flex justify-end">
@@ -123,19 +138,27 @@ const UploadLayout: React.FC = ({ children }) => {
             </ul>
           </div>
 
-          <Link href="/">
-            <a className="w-full">
-              <li
-                className={classNames(
-                  "flex items-center space-x-2 hover:bg-white/20 transition duration-300 font-semibold px-3 py-2 cursor-pointer rounded-md"
-                )}
-              >
-                <BiLogOutCircle className="w-6 h-6" />
+          <Button
+            secondary
+            onClick={async () => {
+              removeCookie();
 
-                <p>Go back to home page</p>
-              </li>
-            </a>
-          </Link>
+              const { error } = await supabaseClient.auth.signOut();
+
+              if (error) {
+                return toast.error(`Failed to sign out (${error})`);
+              }
+
+              router.replace("/login");
+            }}
+            className={classNames(
+              "w-full flex items-center space-x-2 hover:bg-white/20 transition duration-300 font-semibold px-3 py-2 cursor-pointer rounded-md"
+            )}
+          >
+            <AiOutlineLogout className="w-6 h-6" />
+
+            <p>Logout</p>
+          </Button>
         </motion.div>
       </AnimatePresence>
 
