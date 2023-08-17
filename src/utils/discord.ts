@@ -172,6 +172,9 @@ class DiscordUpload {
 
       this.currentQueue.status = "processing";
 
+      console.log(`Start processing (queue: ${this.currentQueue.id})`);
+      console.time(this.currentQueue.id);
+
       await this.syncQueueToDatabase();
 
       const filePath = file.filepath;
@@ -335,6 +338,9 @@ class DiscordUpload {
       this.currentQueue.percent = 100;
 
       await this.syncQueueToDatabase();
+
+      console.log(`Start processing (queue: ${this.currentQueue.id})`);
+      console.timeEnd(this.currentQueue.id);
 
       return masterAttachment;
     } catch (err) {
