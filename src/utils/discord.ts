@@ -9,6 +9,9 @@ import path from "path";
 import fsPromise from "fs/promises";
 import { sleep } from ".";
 import config from "@/config";
+import { path as ffmpegPath } from "@ffmpeg-installer/ffmpeg";
+
+Ffmpeg.setFfmpegPath(ffmpegPath);
 
 const DISCORD_MAX_FILE_SIZE = 25 * 1024 * 1024;
 const MAXIMUM_ATTACHMENTS = 10;
