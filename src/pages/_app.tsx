@@ -18,17 +18,7 @@ Router.events.on("routeChangeStart", NProgress.start);
 Router.events.on("routeChangeComplete", NProgress.done);
 Router.events.on("routeChangeError", NProgress.done);
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      refetchOnReconnect: false,
-      retry: 1,
-      staleTime: Infinity,
-    },
-  },
-});
+const queryClient = new QueryClient();
 
 interface WorkaroundAppProps extends AppProps {
   err: any;

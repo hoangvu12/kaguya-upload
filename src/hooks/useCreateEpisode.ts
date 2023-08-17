@@ -54,8 +54,12 @@ const useCreateEpisode = (args: UseCreateEpisodeArgs) => {
         throw new Error("Can't find user data, please relogin");
       }
 
-      const { getRemoteStatus, getVideoStatus, remoteUploadVideo } =
-        createUploadService(hostingId);
+      const {
+        getRemoteStatus,
+        getVideoStatus,
+        remoteUploadVideo,
+        uploadVideo,
+      } = createUploadService(hostingId);
 
       if (!episode.number) {
         throw new Error("Episode number is required");
@@ -113,10 +117,9 @@ const useCreateEpisode = (args: UseCreateEpisodeArgs) => {
         const remoteStatus = await waitRemoteUntilDownloaded();
 
         uploadedVideo = await getVideoStatus(remoteStatus.fileId);
+      } else if (video instanceof File) {
+        uploadedVideo = await uploadVideo(video);
       }
-      // else if (video instanceof File) {
-      //   uploadedVideo = await uploadVideo(video);
-      // }
 
       if (!uploadedVideo) {
         throw new Error("Upload video failed");

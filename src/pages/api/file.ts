@@ -1,12 +1,12 @@
+import { DiscordAttachment, DiscordFile, uploadFile } from "@/utils/discord";
+import { Fields, File, IncomingForm } from "formidable";
 import { NextApiRequest, NextApiResponse } from "next";
-import { IncomingForm, File, Files, Fields } from "formidable";
-import { DiscordAttachment, uploadFile } from "@/utils/discord";
 
-const DISCORD_MAX_FILE_SIZE = 8 * 1024 * 1024;
+const DISCORD_MAX_FILE_SIZE = 25 * 1024 * 1024;
 const MAXIMUM_ATTACHMENTS_PER_MESSAGE = 10;
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-const chunk = (array: any[], size: number) =>
+const chunk = <T>(array: T[], size: number) =>
   Array.from({ length: Math.ceil(array.length / size) }, (_, i) =>
     array.slice(i * size, i * size + size)
   );
@@ -89,27 +89,24 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       (a, b) => a.size - b.size
     );
 
-    sortedSizeFiles
-      .sort((a, b) => a.size - b.size)
-      .forEach((file) => {
-        const latestIndex = !chunkedFiles.length ? 0 : chunkedFiles.length - 1;
+    sortedSizeFiles.forEach((file) => {
+      const latestIndex = !chunkedFiles.length ? 0 : chunkedFiles.length - 1;
 
-        if (!chunkedFiles[latestIndex]) {
-          chunkedFiles.push([file]);
+      if (!chunkedFiles[latestIndex]) {
+        chunkedFiles.push([file]);
 
-          return;
-        }
+        return;
+      }
 
-        const totalFileSize =
-          chunkedFiles[latestIndex]?.reduce((acc, cur) => acc + cur.size, 0) ||
-          0;
+      const totalFileSize =
+        chunkedFiles[latestIndex]?.reduce((acc, cur) => acc + cur.size, 0) || 0;
 
-        if (totalFileSize + file.size < DISCORD_MAX_FILE_SIZE) {
-          chunkedFiles[latestIndex].push(file);
-        } else {
-          chunkedFiles.push([file]);
-        }
-      });
+      if (totalFileSize + file.size < DISCORD_MAX_FILE_SIZE) {
+        chunkedFiles[latestIndex].push(file);
+      } else {
+        chunkedFiles.push([file]);
+      }
+    });
 
     const chunkUploadedFiles: DiscordAttachment[][] = [];
 
@@ -117,7 +114,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       const amountChunks = chunk(chunkFile, MAXIMUM_ATTACHMENTS_PER_MESSAGE);
 
       for (const chunk of amountChunks) {
-        const uploadedFiles = await uploadFile(chunk);
+        const files: DiscordFile[] = chunk.map((file) => ({
+          name: file.originalFilename,
+          path: file.filepath,
+        }));
+
+        const uploadedFiles = await uploadFile(files);
 
         uploadCount++;
 

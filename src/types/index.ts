@@ -39,10 +39,16 @@ export type Video = {
   hostingId: string;
 };
 
+export enum UploadType {
+  File = "file",
+  Remote = "remote",
+}
+
 export type Hosting = {
   id: string;
   name: string;
   supportedUrlFormats: string[];
+  uploadTypes: UploadType[];
 };
 
 export type SupabaseEpisode = {

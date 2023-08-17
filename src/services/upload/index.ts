@@ -1,5 +1,5 @@
+import supabaseClient from "@/lib/supabase";
 import { SupabaseChapter, SupabaseEpisode } from "@/types";
-import { serialize } from "@/utils";
 import { sendMessage } from "@/utils/events";
 import axios from "axios";
 
@@ -84,27 +84,60 @@ export type UploadFileResponse = {
 };
 
 export const createUploadService = (hostingId: string) => {
+  const session = supabaseClient.auth.session();
+
+  const uploadVideo = async (file: File) => {
+    const fileId = await sendMessage<
+      {
+        file: {
+          url: string;
+          name: string;
+          mimeType: string;
+        };
+        hostingId: string;
+        accessToken: string;
+      },
+      string
+    >("file-upload", {
+      file: {
+        url: URL.createObjectURL(file),
+        name: file.name,
+        mimeType: file.type,
+      },
+      hostingId,
+      accessToken: session?.access_token,
+    });
+
+    if (!fileId) {
+      throw new Error("Upload video failed");
+    }
+
+    const videoInfo = await getVideoStatus(fileId);
+
+    return videoInfo;
+  };
+
   const getVideoStatus = async (videoId: string) => {
     const video = await sendMessage<
-      { fileId: string; hostingId: string },
+      { fileId: string; hostingId: string; accessToken: string },
       FileInfo
     >("file-status", {
       fileId: videoId,
       hostingId,
+      accessToken: session?.access_token,
     });
-
-    console.log(video);
 
     return video;
   };
 
   const getRemoteStatus = async (remoteId: string) => {
     const remoteStatus = await sendMessage<
-      { remoteId: string; hostingId: string },
+      { remoteId: string; hostingId: string; accessToken: string },
       RemoteStatus
     >("remote-status", {
       remoteId,
       hostingId,
+      accessToken: session?.access_token,
     });
 
     return remoteStatus;
@@ -112,11 +145,12 @@ export const createUploadService = (hostingId: string) => {
 
   const remoteUploadVideo = async (url: string) => {
     const remoteId = await sendMessage<
-      { url: string; hostingId: string },
+      { url: string; hostingId: string; accessToken: string },
       string
     >("remote-upload", {
       url,
       hostingId,
+      accessToken: session?.access_token,
     });
 
     return remoteId;
@@ -126,6 +160,7 @@ export const createUploadService = (hostingId: string) => {
     getVideoStatus,
     getRemoteStatus,
     remoteUploadVideo,
+    uploadVideo,
   };
 };
 
