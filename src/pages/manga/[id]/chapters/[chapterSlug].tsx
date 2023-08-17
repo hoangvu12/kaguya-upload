@@ -135,7 +135,7 @@ const UploadChapterEditPage: NextPage<UploadChapterEditPageProps> = ({
             className="space-y-4"
           >
             <h1 className="text-2xl font-semibold">
-              Are you sure to delete the Anime?
+              Are you sure to delete the Manga?
             </h1>
 
             <p>
