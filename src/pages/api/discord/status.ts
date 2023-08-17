@@ -1,6 +1,6 @@
 import supabaseClient from "@/lib/supabase";
-import { NextApiRequest, NextApiResponse } from "next";
 import DiscordUpload from "@/utils/discord";
+import { NextApiRequest, NextApiResponse } from "next";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== "GET") {
@@ -10,24 +10,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       .json({ success: false, errorMessage: "Method not allowed" });
   }
 
-  const headers = req.headers;
-
-  if (!headers.authorization) {
-    return res
-      .status(401)
-      .json({ success: false, errorMessage: "Unauthorized" });
-  }
-
-  const accessToken = headers.authorization.split(" ")[1];
-
-  if (!accessToken) {
-    return res
-      .status(401)
-      .json({ success: false, errorMessage: "Unauthorized" });
-  }
-
-  const { data: user, error } = await supabaseClient.auth.api.getUser(
-    accessToken
+  const { data: user, error } = await supabaseClient.auth.api.getUserByCookie(
+    req
   );
 
   if (error || !user) {
