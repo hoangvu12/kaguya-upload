@@ -8,7 +8,6 @@ export type FileInfo = {
   size: number;
   name: string;
   converted: boolean;
-  progress?: number;
   thumbnail?: string;
   error?: boolean;
 };

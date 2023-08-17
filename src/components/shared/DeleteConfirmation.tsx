@@ -4,6 +4,7 @@ import { AiFillDelete } from "react-icons/ai";
 import Button from "./Button";
 import Input from "./Input";
 import Modal, { ModalRef } from "./Modal";
+import { isMobileOnly } from "react-device-detect";
 
 interface DeleteConfirmationProps extends React.HTMLAttributes<HTMLDivElement> {
   confirmString?: string;
@@ -27,7 +28,7 @@ const DeleteConfirmation: React.FC<DeleteConfirmationProps> = (props) => {
         isLoading={isLoading}
         className="text-red-500 bg-red-500/20 hover:text-white hover:bg-red-500/80"
       >
-        Delete
+        <p className="hidden md:block">Delete</p>
       </Button>
     ),
     className,

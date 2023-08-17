@@ -1,5 +1,4 @@
 import EpisodeUpdate from "@/components/features/EpisodeUpdate";
-import EpisodeTitleUpdate from "@/components/features/EpisodeUpdate";
 import FontUpdate from "@/components/features/FontUpdate";
 import SubtitleUpdate from "@/components/features/SubtitleUpdate";
 import UploadContainer from "@/components/features/UploadContainer";
@@ -28,6 +27,12 @@ import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 import { useQueryClient } from "react-query";
+import { BsPlayFill } from "react-icons/bs";
+import { isMobileOnly } from "react-device-detect";
+import { AiOutlinePlus } from "react-icons/ai";
+import Select from "@/components/shared/Select";
+import useUploadedEpisodes from "@/hooks/useUploadedEpisodes";
+import { sortMediaUnit } from "@/types/data";
 
 interface UploadEpisodeEditPageProps {
   user: User;
@@ -50,6 +55,22 @@ const UploadEpisodeEditPage: NextPage<UploadEpisodeEditPageProps> = ({
     data?.video?.video?.id,
     data?.video?.hostingId
   );
+
+  const { data: uploadedEpisodes, isLoading: episodesLoading } =
+    useUploadedEpisodes({
+      mediaId,
+      sourceId,
+    });
+
+  const sortedEpisodes = useMemo(() => {
+    if (episodesLoading) return [];
+
+    return sortMediaUnit(uploadedEpisodes);
+  }, [episodesLoading, uploadedEpisodes]);
+
+  const currentEpisode = useMemo(() => {
+    return sortedEpisodes.find((episode) => episode.slug === episodeSlug);
+  }, [episodeSlug, sortedEpisodes]);
 
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -162,16 +183,63 @@ const UploadEpisodeEditPage: NextPage<UploadEpisodeEditPageProps> = ({
             </p>
           </DeleteConfirmation>
 
-          <div className="flex gap-2 items-center">
-            <p>
-              Episode status:{" "}
-              {data.published ? "Published" : "Not yet published"}
-            </p>
+          <div className="flex gap-2 justify-end items-center mx-2 w-full">
+            <p className="hidden md:block">Episodes: </p>
 
+            <Select
+              styles={{
+                container: (provided) => ({
+                  ...provided,
+                  backgroundColor: "#1a1a1a",
+                  ...(isMobileOnly
+                    ? {
+                        width: "100%",
+                      }
+                    : {
+                        minWidth: "12rem",
+                        maxWidth: "14rem",
+                      }),
+                }),
+                control: (provided) => ({
+                  ...provided,
+                  backgroundColor: "#1a1a1a",
+                  ...(isMobileOnly
+                    ? {
+                        width: "100%",
+                      }
+                    : {
+                        minWidth: "12rem",
+                        maxWidth: "14rem",
+                      }),
+                }),
+              }}
+              options={sortedEpisodes.map((episode) => ({
+                value: episode.slug,
+                label: episode.number,
+              }))}
+              onChange={({ value }) => {
+                router.replace(`/anime/${mediaId}/episodes/${value}`);
+              }}
+              menuPlacement="top"
+              value={{
+                value: currentEpisode.slug,
+                label: currentEpisode.number,
+              }}
+              isClearable={false}
+              isSearchable={false}
+            />
+          </div>
+
+          <div className="flex gap-2 items-center shrink-0">
             <Link href={`/anime/${mediaId}/episodes/create`}>
               <a>
-                <Button className="!bg-gray-600 hover:!bg-opacity-80">
-                  Create new episode
+                <Button
+                  LeftIcon={isMobileOnly ? AiOutlinePlus : null}
+                  className="!bg-gray-600 hover:!bg-opacity-80"
+                >
+                  <p className="hidden md:block text-white">
+                    Create new episode
+                  </p>
                 </Button>
               </a>
             </Link>
@@ -181,7 +249,9 @@ const UploadEpisodeEditPage: NextPage<UploadEpisodeEditPageProps> = ({
                 href={`https://${MAIN_WEBSITE_DOMAIN}/anime/watch/${mediaId}/${sourceId}/${episodeId}`}
               >
                 <a target="_blank" rel="noreferrer">
-                  <Button primary>Watch episode</Button>
+                  <Button LeftIcon={isMobileOnly ? BsPlayFill : null} primary>
+                    <p className="hidden md:block">Watch episode</p>
+                  </Button>
                 </a>
               </Link>
             ) : (
