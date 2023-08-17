@@ -4,7 +4,6 @@ import { AiFillDelete } from "react-icons/ai";
 import Button from "./Button";
 import Input from "./Input";
 import Modal, { ModalRef } from "./Modal";
-import { isMobileOnly } from "react-device-detect";
 
 interface DeleteConfirmationProps extends React.HTMLAttributes<HTMLDivElement> {
   confirmString?: string;

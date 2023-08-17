@@ -183,52 +183,54 @@ const UploadEpisodeEditPage: NextPage<UploadEpisodeEditPageProps> = ({
             </p>
           </DeleteConfirmation>
 
-          <div className="flex gap-2 justify-end items-center mx-2 w-full">
-            <p className="hidden md:block">Episodes: </p>
+          {!episodesLoading && (
+            <div className="flex gap-2 justify-end items-center mx-2 w-full">
+              <p className="hidden md:block">Episodes: </p>
 
-            <Select
-              styles={{
-                container: (provided) => ({
-                  ...provided,
-                  backgroundColor: "#1a1a1a",
-                  ...(isMobileOnly
-                    ? {
-                        width: "100%",
-                      }
-                    : {
-                        minWidth: "12rem",
-                        maxWidth: "14rem",
-                      }),
-                }),
-                control: (provided) => ({
-                  ...provided,
-                  backgroundColor: "#1a1a1a",
-                  ...(isMobileOnly
-                    ? {
-                        width: "100%",
-                      }
-                    : {
-                        minWidth: "12rem",
-                        maxWidth: "14rem",
-                      }),
-                }),
-              }}
-              options={sortedEpisodes.map((episode) => ({
-                value: episode.slug,
-                label: episode.number,
-              }))}
-              onChange={({ value }) => {
-                router.replace(`/anime/${mediaId}/episodes/${value}`);
-              }}
-              menuPlacement="top"
-              value={{
-                value: currentEpisode.slug,
-                label: currentEpisode.number,
-              }}
-              isClearable={false}
-              isSearchable={false}
-            />
-          </div>
+              <Select
+                styles={{
+                  container: (provided) => ({
+                    ...provided,
+                    backgroundColor: "#1a1a1a",
+                    ...(isMobileOnly
+                      ? {
+                          width: "100%",
+                        }
+                      : {
+                          minWidth: "12rem",
+                          maxWidth: "14rem",
+                        }),
+                  }),
+                  control: (provided) => ({
+                    ...provided,
+                    backgroundColor: "#1a1a1a",
+                    ...(isMobileOnly
+                      ? {
+                          width: "100%",
+                        }
+                      : {
+                          minWidth: "12rem",
+                          maxWidth: "14rem",
+                        }),
+                  }),
+                }}
+                options={sortedEpisodes.map((episode) => ({
+                  value: episode.slug,
+                  label: episode.number,
+                }))}
+                onChange={({ value }) => {
+                  router.replace(`/anime/${mediaId}/episodes/${value}`);
+                }}
+                menuPlacement="top"
+                value={{
+                  value: currentEpisode.slug,
+                  label: currentEpisode.number,
+                }}
+                isClearable={false}
+                isSearchable={false}
+              />
+            </div>
+          )}
 
           <div className="flex gap-2 items-center shrink-0">
             <Link href={`/anime/${mediaId}/episodes/create`}>

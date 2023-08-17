@@ -9,17 +9,23 @@ import DeleteConfirmation from "@/components/shared/DeleteConfirmation";
 import Link from "@/components/shared/Link";
 import Loading from "@/components/shared/Loading";
 import Section from "@/components/shared/Section";
+import Select from "@/components/shared/Select";
 import { MAIN_WEBSITE_DOMAIN, supportedUploadImageFormats } from "@/constants";
 import { UploadMediaProvider } from "@/contexts/UploadMediaContext";
 import withUser from "@/hocs/withUser";
 import useChapterDelete from "@/hooks/useChapterDelete";
 import usePublishChapter from "@/hooks/usePublishChapter";
 import useUploadedChapter from "@/hooks/useUploadedChapter";
+import useUploadedChapters from "@/hooks/useUploadedChapters";
 import { Source } from "@/types";
+import { sortMediaUnit } from "@/types/data";
 import { User, supabaseClient } from "@supabase/auth-helpers-nextjs";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
+import { isMobileOnly } from "react-device-detect";
+import { AiOutlinePlus } from "react-icons/ai";
+import { BsPlayFill } from "react-icons/bs";
 import { useQueryClient } from "react-query";
 
 interface UploadChapterEditPageProps {
@@ -44,6 +50,22 @@ const UploadChapterEditPage: NextPage<UploadChapterEditPageProps> = ({
 
   const router = useRouter();
   const queryClient = useQueryClient();
+
+  const { data: uploadedChapters, isLoading: chaptersLoading } =
+    useUploadedChapters({
+      mediaId,
+      sourceId,
+    });
+
+  const sortedChapters = useMemo(() => {
+    if (chaptersLoading) return [];
+
+    return sortMediaUnit(uploadedChapters);
+  }, [chaptersLoading, uploadedChapters]);
+
+  const currentChapter = useMemo(() => {
+    return sortedChapters.find((chapter) => chapter.slug === chapterSlug);
+  }, [chapterSlug, sortedChapters]);
 
   const handleDelete = () => {
     deleteChapter(null, {
@@ -122,10 +144,66 @@ const UploadChapterEditPage: NextPage<UploadChapterEditPageProps> = ({
             </p>
           </DeleteConfirmation>
 
-          <div className="flex gap-2 items-center">
+          {!chaptersLoading && (
+            <div className="flex gap-2 justify-end items-center mx-2 w-full">
+              <p className="hidden md:block">Chapters: </p>
+
+              <Select
+                styles={{
+                  container: (provided) => ({
+                    ...provided,
+                    backgroundColor: "#1a1a1a",
+                    ...(isMobileOnly
+                      ? {
+                          width: "100%",
+                        }
+                      : {
+                          minWidth: "12rem",
+                          maxWidth: "14rem",
+                        }),
+                  }),
+                  control: (provided) => ({
+                    ...provided,
+                    backgroundColor: "#1a1a1a",
+                    ...(isMobileOnly
+                      ? {
+                          width: "100%",
+                        }
+                      : {
+                          minWidth: "12rem",
+                          maxWidth: "14rem",
+                        }),
+                  }),
+                }}
+                options={sortedChapters.map((chapter) => ({
+                  value: chapter.slug,
+                  label: chapter.number,
+                }))}
+                onChange={({ value }) => {
+                  router.replace(`/anime/${mediaId}/episodes/${value}`);
+                }}
+                menuPlacement="top"
+                value={{
+                  value: currentChapter.slug,
+                  label: currentChapter.number,
+                }}
+                isClearable={false}
+                isSearchable={false}
+              />
+            </div>
+          )}
+
+          <div className="flex gap-2 items-center shrink-0">
             <Link href={`/manga/${mediaId}/chapters/create`}>
               <a>
-                <Button secondary>Create new chapter</Button>
+                <Button
+                  LeftIcon={isMobileOnly ? AiOutlinePlus : null}
+                  className="!bg-gray-600 hover:!bg-opacity-80"
+                >
+                  <p className="hidden md:block text-white">
+                    Create new chapter
+                  </p>
+                </Button>
               </a>
             </Link>
 
@@ -134,7 +212,9 @@ const UploadChapterEditPage: NextPage<UploadChapterEditPageProps> = ({
                 href={`https://${MAIN_WEBSITE_DOMAIN}/manga/read/${mediaId}/${sourceId}/${chapterId}`}
               >
                 <a target="_blank" rel="noreferrer">
-                  <Button primary>Read chapter</Button>
+                  <Button LeftIcon={isMobileOnly ? BsPlayFill : null} primary>
+                    <p className="hidden md:block">Reac chapter</p>
+                  </Button>{" "}
                 </a>
               </Link>
             ) : (
