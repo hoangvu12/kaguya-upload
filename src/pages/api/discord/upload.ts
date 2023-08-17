@@ -14,7 +14,9 @@ export const config = {
 const parseFiles = (
   req: NextApiRequest
 ): Promise<{ files: File[]; body: Fields }> => {
-  const form = new IncomingForm();
+  const form = new IncomingForm({
+    maxFileSize: 4 * 1024 * 1024 * 1024,
+  });
 
   return new Promise((resolve, reject) => {
     const finalFiles: File[] = [];

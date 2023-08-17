@@ -193,6 +193,7 @@ class DiscordUpload {
             "-hls_list_size 0",
             "-f hls",
             `-hls_segment_filename ${dir}/%05d.html`,
+            "-sn",
           ])
           .output(path.join(dir, "./output.m3u8"))
           .on("end", () => {
@@ -203,7 +204,7 @@ class DiscordUpload {
             resolve(null);
           })
           .on("error", (err) => {
-            console.error("Error converting file:", err.message);
+            console.error("Error converting file:", err);
 
             reject(err);
           })
