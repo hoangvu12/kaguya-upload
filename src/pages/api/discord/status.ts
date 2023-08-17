@@ -1,5 +1,6 @@
 import supabaseClient from "@/lib/supabase";
 import { NextApiRequest, NextApiResponse } from "next";
+import DiscordUpload from "@/utils/discord";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== "GET") {
@@ -35,12 +36,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       .json({ success: false, errorMessage: "Unauthorized" });
   }
 
-  const DiscordUpload = global.DiscordUpload;
-
-  if (!DiscordUpload) {
-    return res
-      .status(500)
-      .json({ success: false, errorMessage: "DiscordUpload not initialized" });
+  if (!global.DiscordUpload) {
+    global.DiscordUpload = DiscordUpload;
   }
 
   try {
@@ -52,7 +49,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         .json({ success: false, errorMessage: "Bad request" });
     }
 
-    const queue = await DiscordUpload.status(
+    const queue = await global.DiscordUpload.status(
       typeof queueId === "string" ? queueId : queueId[0]
     );
 

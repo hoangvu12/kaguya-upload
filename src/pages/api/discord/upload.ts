@@ -76,14 +76,16 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       .json({ success: false, errorMessage: "Unauthorized" });
   }
 
-  global.DiscordUpload = DiscordUpload;
+  if (!global.DiscordUpload) {
+    global.DiscordUpload = DiscordUpload;
+  }
 
   try {
     const { files } = await parseFiles(req);
 
     const file = files[0];
 
-    const queueId = await DiscordUpload.add(file, user);
+    const queueId = await global.DiscordUpload.add(file, user);
 
     res.status(200).json({
       success: true,
