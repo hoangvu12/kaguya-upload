@@ -69,7 +69,7 @@ const UploadEpisodeEditPage: NextPage<UploadEpisodeEditPageProps> = ({
   }, [episodesLoading, uploadedEpisodes]);
 
   const currentEpisode = useMemo(() => {
-    return sortedEpisodes.find((episode) => episode.slug === episodeSlug);
+    return sortedEpisodes.find((episode) => episode?.slug === episodeSlug);
   }, [episodeSlug, sortedEpisodes]);
 
   const router = useRouter();
@@ -183,7 +183,7 @@ const UploadEpisodeEditPage: NextPage<UploadEpisodeEditPageProps> = ({
             </p>
           </DeleteConfirmation>
 
-          {!episodesLoading && (
+          {!episodesLoading && currentEpisode && (
             <div className="flex gap-2 justify-end items-center mx-2 w-full">
               <p className="hidden md:block">Episodes: </p>
 
