@@ -64,7 +64,7 @@ const UploadChapterEditPage: NextPage<UploadChapterEditPageProps> = ({
   }, [chaptersLoading, uploadedChapters]);
 
   const currentChapter = useMemo(() => {
-    return sortedChapters.find((chapter) => chapter.slug === chapterSlug);
+    return sortedChapters.find((chapter) => chapter?.slug === chapterSlug);
   }, [chapterSlug, sortedChapters]);
 
   const handleDelete = () => {
@@ -144,7 +144,7 @@ const UploadChapterEditPage: NextPage<UploadChapterEditPageProps> = ({
             </p>
           </DeleteConfirmation>
 
-          {!chaptersLoading && (
+          {!chaptersLoading && currentChapter && (
             <div className="flex gap-2 justify-end items-center mx-2 w-full">
               <p className="hidden md:block">Chapters: </p>
 
