@@ -8,6 +8,8 @@ const useVideoStatus = (fileId: string, hostingId: string) => {
     enabled: !!fileId,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
+    staleTime: 5000,
+    refetchOnReconnect: true,
     onError: console.error,
   });
 };
