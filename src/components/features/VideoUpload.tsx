@@ -5,7 +5,7 @@ import Select from "@/components/shared/Select";
 import { supportedUploadVideoFormats } from "@/constants";
 import useHostings from "@/hooks/useHostings";
 import { UploadType } from "@/types";
-import { useMemo, useRef, useState } from "react";
+import { memo, useMemo, useRef, useState } from "react";
 import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 
@@ -139,4 +139,4 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ onChange }) => {
   );
 };
 
-export default VideoUpload;
+export default memo(VideoUpload);

@@ -1,7 +1,8 @@
 import supabaseClient from "@/lib/supabase";
 import DiscordUpload from "@/utils/discord";
-import { Fields, File, IncomingForm } from "formidable";
+import uploader from "huge-uploader-nodejs";
 import { NextApiRequest, NextApiResponse } from "next";
+import os from "os";
 
 export const config = {
   api: {
@@ -11,39 +12,8 @@ export const config = {
   },
 };
 
-const parseFiles = (
-  req: NextApiRequest
-): Promise<{ files: File[]; body: Fields }> => {
-  const form = new IncomingForm({
-    maxFileSize: 4 * 1024 * 1024 * 1024,
-  });
-
-  return new Promise((resolve, reject) => {
-    const finalFiles: File[] = [];
-
-    form.parse(req, (err, fields, files) => {
-      if (err) {
-        console.log(err);
-
-        reject(err);
-      } else {
-        for (const fileField in files) {
-          const file = files[fileField];
-
-          const isArray = Array.isArray(file);
-
-          if (isArray) {
-            finalFiles.push(...file);
-          } else {
-            finalFiles.push(file);
-          }
-        }
-
-        resolve({ files: finalFiles, body: fields });
-      }
-    });
-  });
-};
+const MAX_FILE_SIZE = 4000; // 4gb
+const MAX_CHUNK_FILE = 10; // 10mb
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== "POST") {
@@ -67,23 +37,83 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   try {
-    const { files } = await parseFiles(req);
+    const assembleChunks = await uploader(
+      req,
+      os.tmpdir(),
+      MAX_FILE_SIZE,
+      MAX_CHUNK_FILE
+    );
 
-    const file = files[0];
+    // on last chunk, assembleChunks function is returned
+    // the response is already sent to the browser because it can take some time if the file is huge
+    if (assembleChunks) {
+      try {
+        const data = await assembleChunks();
 
-    const queueId = await global.DiscordUpload.add(file, user);
+        const queueId = await global.DiscordUpload.add(data.filePath, user);
 
-    res.status(200).json({
-      success: true,
-      queueId,
-    });
+        res.status(200).json({ success: true, queueId });
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      // chunk written to disk
+      res.writeHead(204, "No Content");
+      res.end();
+    }
   } catch (err) {
-    console.log("Discord upload", err);
+    if (err.message === "Missing header(s)") {
+      return res.status(400).json({
+        success: false,
+        errorMessage: "Missing header(s)",
+      });
+    }
 
-    res.status(500).json({
-      success: false,
-      errorMessage: err.message,
-    });
+    if (err.message === "Missing Content-Type") {
+      return res.status(400).json({
+        success: false,
+        errorMessage: "Missing Content-Type",
+      });
+    }
+
+    if (err.message.includes("Unsupported content type")) {
+      res.status(400).json({ error: "Unsupported content type" });
+      return;
+    }
+
+    if (err.message === "Chunk is out of range") {
+      res.status(400).json({
+        success: true,
+        errorMessage:
+          "Chunk number must be between 0 and total chunks - 1 (0 indexed)",
+      });
+      return;
+    }
+
+    if (err.message === "File is above size limit") {
+      res.status(413).json({
+        success: true,
+        errorMessage: `File is too large. Max fileSize is: ${MAX_FILE_SIZE}MB`,
+      });
+      return;
+    }
+
+    if (err.message === "Chunk is above size limit") {
+      res.status(413).json({
+        success: true,
+        errorMessage: `Chunk is too large. Max chunkSize is: ${MAX_CHUNK_FILE}MB`,
+      });
+      return;
+    }
+
+    if (err && err.message === "Upload has expired") {
+      res
+        .status(410)
+        .json({ success: true, errorMessage: "Upload has expired" });
+      return;
+    }
+
+    res.status(500).json({ success: true, errorMessage: err.message });
   }
 };
 

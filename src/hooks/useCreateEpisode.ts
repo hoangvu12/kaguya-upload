@@ -118,7 +118,15 @@ const useCreateEpisode = (args: UseCreateEpisodeArgs) => {
 
         uploadedVideo = await getVideoStatus(remoteStatus.fileId);
       } else if (video instanceof File) {
-        uploadedVideo = await uploadVideo(video);
+        uploadedVideo = await uploadVideo(video, (progress) => {
+          toast.update(id, {
+            render: `Uploading video to server... ${
+              progress >= 0 && `(${progress}%)`
+            }`,
+            progress: progress / 100,
+            isLoading: true,
+          });
+        });
       }
 
       if (!uploadedVideo) {

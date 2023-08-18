@@ -41,7 +41,7 @@ export type DiscordFile = {
 };
 
 export type DiscordQueue = {
-  file: File;
+  filePath: string;
   id: string;
   user: User;
   percent: number;
@@ -126,11 +126,11 @@ class DiscordUpload {
     this.totalQueues = [];
   }
 
-  async add(file: File, user: any) {
+  async add(filePath, user: any) {
     const id = generateId();
 
     const queue: DiscordQueue = {
-      file,
+      filePath,
       user,
       id,
       status: "initial",
@@ -168,7 +168,7 @@ class DiscordUpload {
     try {
       if (!this.currentQueue) return;
 
-      const { file } = this.currentQueue;
+      const { filePath } = this.currentQueue;
 
       this.currentQueue.status = "processing";
 
@@ -176,8 +176,6 @@ class DiscordUpload {
       console.time(this.currentQueue.id);
 
       await this.syncQueueToDatabase();
-
-      const filePath = file.filepath;
 
       const dir = path.resolve(os.tmpdir(), "./kaguya");
 
@@ -376,28 +374,26 @@ class DiscordUpload {
       return databaseQueue.data;
     }
 
-    const { file, user, ...rest } = queue;
+    const { filePath, user, ...rest } = queue;
 
     return rest;
   }
 
   async syncQueueToDatabase() {
-    const { file, user, ...rest } = this.currentQueue;
-
-    const { error } = await supabaseAdminClient
-      .from("kaguya_discord_queue")
-      .upsert(
-        {
-          id: rest.id,
-          data: rest,
-          userId: user.id,
-        },
-        { returning: "minimal" }
-      );
-
-    if (error) {
-      console.error(error);
-    }
+    // const { filePath, user, ...rest } = this.currentQueue;
+    // const { error } = await supabaseAdminClient
+    //   .from("kaguya_discord_queue")
+    //   .upsert(
+    //     {
+    //       id: rest.id,
+    //       data: rest,
+    //       userId: user.id,
+    //     },
+    //     { returning: "minimal" }
+    //   );
+    // if (error) {
+    //   console.error(error);
+    // }
   }
 }
 

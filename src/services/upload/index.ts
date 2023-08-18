@@ -1,5 +1,6 @@
 import supabaseClient from "@/lib/supabase";
 import { SupabaseChapter, SupabaseEpisode } from "@/types";
+import { sleep } from "@/utils";
 import { sendMessage } from "@/utils/events";
 import axios from "axios";
 
@@ -85,7 +86,37 @@ export type UploadFileResponse = {
 export const createUploadService = (hostingId: string) => {
   const session = supabaseClient.auth.session();
 
-  const uploadVideo = async (file: File) => {
+  const uploadVideo = async (
+    file: File,
+    onProgress?: (progress: number) => void
+  ) => {
+    let isFinishedUploading = false;
+
+    async function checkProgress() {
+      await sleep(1000);
+
+      const progress = await sendMessage<{ hostingId: string }, number>(
+        "file-upload-progress",
+        {
+          hostingId,
+        }
+      );
+
+      console.log(progress);
+
+      onProgress(progress);
+
+      if (isFinishedUploading) {
+        return;
+      }
+
+      checkProgress();
+    }
+
+    if (onProgress) {
+      checkProgress();
+    }
+
     const fileId = await sendMessage<
       {
         file: {
@@ -106,6 +137,10 @@ export const createUploadService = (hostingId: string) => {
       hostingId,
       accessToken: session?.access_token,
     });
+
+    console.log(fileId);
+
+    isFinishedUploading = true;
 
     if (!fileId) {
       throw new Error("Upload video failed");

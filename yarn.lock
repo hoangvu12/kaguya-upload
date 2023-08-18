@@ -1528,6 +1528,14 @@ bufferutil@^4.0.1:
   dependencies:
     node-gyp-build "^4.3.0"
 
+busboy@^0.2.14:
+  version "0.2.14"
+  resolved "https://registry.yarnpkg.com/busboy/-/busboy-0.2.14.tgz#6c2a622efcf47c57bbbe1e2a9c37ad36c7925453"
+  integrity sha512-InWFDomvlkEj+xWLBfU3AvnbVYqeTWmQopiW0tWWEy5yehYm2YkGEc59sUmw/4ty5Zj/b0WHGs1LgecuBSBGrg==
+  dependencies:
+    dicer "0.2.5"
+    readable-stream "1.1.x"
+
 bytes@3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/bytes/-/bytes-3.0.0.tgz#d32815404d689699f85a4ea4fa8755dd13a96048"
@@ -2085,6 +2093,14 @@ dezalgo@^1.0.4:
   dependencies:
     asap "^2.0.0"
     wrappy "1"
+
+dicer@0.2.5:
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/dicer/-/dicer-0.2.5.tgz#5996c086bb33218c812c090bddc09cd12facb70f"
+  integrity sha512-FDvbtnq7dzlPz0wyYlOExifDEZcu8h+rErEXgfxqmLfRfC/kJidEFh4+effJRO3P0xmfqyPbSMG0LveNRfTKVg==
+  dependencies:
+    readable-stream "1.1.x"
+    streamsearch "0.1.2"
 
 didyoumean@^1.2.2:
   version "1.2.2"
@@ -3160,6 +3176,13 @@ http-errors@2.0.0:
     statuses "2.0.1"
     toidentifier "1.0.1"
 
+huge-uploader-nodejs@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/huge-uploader-nodejs/-/huge-uploader-nodejs-1.2.1.tgz#ad3239e11e3ed83ec16e8d948257fd4e30c30c38"
+  integrity sha512-rt5WZum8+MdD97vY9Mpx13aav7X3xWOl2XOBN8MQ1YDlh8lBYs2ILVZ1Ra20BFBpoTrKlv67RSHjXXtO5/1XNg==
+  dependencies:
+    busboy "^0.2.14"
+
 iconv-lite@0.4.23:
   version "0.4.23"
   resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.23.tgz#297871f63be507adcfbfca715d0cd0eed84e9a63"
@@ -3173,6 +3196,11 @@ iconv-lite@0.4.24:
   integrity sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==
   dependencies:
     safer-buffer ">= 2.1.2 < 3"
+
+idb-keyval@^6.2.1:
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/idb-keyval/-/idb-keyval-6.2.1.tgz#94516d625346d16f56f3b33855da11bfded2db33"
+  integrity sha512-8Sb3veuYCyrZL+VBt9LJfZjLUPWVvqn8tG28VqYNFCo43KHcKuq+b4EiXGeuaLAQWL2YmyDgMp2aSpH9JHsEQg==
 
 ieee754@^1.1.13:
   version "1.2.1"
@@ -4782,7 +4810,7 @@ read-cache@^1.0.0:
   dependencies:
     pify "^2.3.0"
 
-"readable-stream@1.x >=1.1.9":
+readable-stream@1.1.x, "readable-stream@1.x >=1.1.9":
   version "1.1.14"
   resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-1.1.14.tgz#7cf4c54ef648e3813084c636dd2079e166c081d9"
   integrity sha512-+MeVjFf4L44XUkhM1eYbD8fyEsxcV81pqMSR5gblfcLCHfZvbrqy4/qYHE+/R5HoBUT11WV5O08Cr1n3YXkWVQ==
@@ -5210,6 +5238,11 @@ stethoskop@1.0.0:
   integrity sha512-4JnZ+UmTs9SFfDjSHFlD/EoXcb1bfwntkt4h1ipNGrpxtRzmHTxOmdquCJvIrVu608Um7a09cGX0ZSOSllWJNQ==
   dependencies:
     node-statsd "0.1.1"
+
+streamsearch@0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/streamsearch/-/streamsearch-0.1.2.tgz#808b9d0e56fc273d809ba57338e929919a1a9f1a"
+  integrity sha512-jos8u++JKm0ARcSUTAZXOVC0mSox7Bhn6sBgty73P1f3JGf7yG2clTbBNHUdde/kdvP2FESam+vM6l8jBrNxHA==
 
 "string-width-cjs@npm:string-width@^4.2.0", string-width@^4.1.0, string-width@^4.2.3:
   version "4.2.3"

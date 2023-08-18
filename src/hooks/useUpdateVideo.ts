@@ -66,7 +66,17 @@ export const useUpdateVideo = (episodeSlug: string) => {
 
         uploadedVideo = await getVideoStatus(remoteStatus.fileId);
       } else if (video instanceof File) {
-        uploadedVideo = await uploadVideo(video);
+        uploadedVideo = await uploadVideo(video, (progress) => {
+          console.log("uploadedVideo progress", progress);
+
+          toast.update(id, {
+            render: `Uploading video to server... ${
+              progress >= 0 && `(${progress}%)`
+            }`,
+            progress: progress / 100,
+            isLoading: true,
+          });
+        });
       }
 
       const { error } = await supabaseClient
