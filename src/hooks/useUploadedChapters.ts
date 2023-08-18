@@ -1,6 +1,4 @@
-import { AnimeSourceConnection, MangaSourceConnection } from "@/types";
-import { MediaType } from "@/types/anilist";
-import { Chapter } from "@/types/core";
+import { MangaSourceConnection } from "@/types";
 import { supabaseClient } from "@supabase/auth-helpers-nextjs";
 import { useQuery, useQueryClient } from "react-query";
 
@@ -8,10 +6,6 @@ interface UseUploadedChaptersOptions {
   mediaId: number;
   sourceId: string;
 }
-
-type ChapterWithPublishStatus = Chapter & {
-  published: boolean;
-};
 
 const useUploadedChapters = ({
   mediaId,
