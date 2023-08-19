@@ -380,20 +380,20 @@ class DiscordUpload {
   }
 
   async syncQueueToDatabase() {
-    // const { filePath, user, ...rest } = this.currentQueue;
-    // const { error } = await supabaseAdminClient
-    //   .from("kaguya_discord_queue")
-    //   .upsert(
-    //     {
-    //       id: rest.id,
-    //       data: rest,
-    //       userId: user.id,
-    //     },
-    //     { returning: "minimal" }
-    //   );
-    // if (error) {
-    //   console.error(error);
-    // }
+    const { filePath, user, ...rest } = this.currentQueue;
+    const { error } = await supabaseAdminClient
+      .from("kaguya_discord_queue")
+      .upsert(
+        {
+          id: rest.id,
+          data: rest,
+          userId: user.id,
+        },
+        { returning: "minimal" }
+      );
+    if (error) {
+      console.error(error);
+    }
   }
 }
 
