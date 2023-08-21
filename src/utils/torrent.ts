@@ -151,6 +151,8 @@ class TorrentUpload {
   async status(queueId: string) {
     let queue = this.totalQueues.find((queue) => queue.id === queueId);
 
+    console.log(queue);
+
     if (!queue) {
       const { data: databaseQueue, error } = await supabaseAdminClient
         .from("kaguya_torrent_queue")
@@ -176,11 +178,13 @@ class TorrentUpload {
         global.DiscordUpload = DiscordUpload;
       }
 
-      const discordQueue = await global.DiscordUpload.status(
-        queue.discordQueueId
-      );
+      const discordQueue = await global.DiscordUpload.status(discordQueueId);
 
-      const percent = (discordQueue.percent / 2).toFixed(1);
+      if (!discordQueue) {
+        return null;
+      }
+
+      const percent = ((discordQueue.percent || 0) / 2).toFixed(1);
 
       torrentPercent = 50 + parseInt(percent);
 
@@ -192,7 +196,7 @@ class TorrentUpload {
   }
 
   async syncQueueToDatabase() {
-    const { torrentUrl, user, discordQueueId, ...rest } = this.currentQueue;
+    const { torrentUrl, user, ...rest } = this.currentQueue;
     const { error } = await supabaseAdminClient
       .from("kaguya_torrent_queue")
       .upsert(
