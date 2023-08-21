@@ -12,7 +12,7 @@ import { sleep } from ".";
 
 Ffmpeg.setFfmpegPath(ffmpegPath);
 
-const DISCORD_MAX_FILE_SIZE = 25 * 1024 * 1024;
+const DISCORD_MAX_FILE_SIZE = 20 * 1024 * 1024;
 const MAXIMUM_ATTACHMENTS = 10;
 
 const WEBHOOK_URL =
