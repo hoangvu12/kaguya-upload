@@ -172,6 +172,10 @@ class TorrentUpload {
     let torrentPercent = percent;
 
     if (torrentPercent >= 50) {
+      if (!global.DiscordUpload) {
+        global.DiscordUpload = DiscordUpload;
+      }
+
       const discordQueue = await global.DiscordUpload.status(
         queue.discordQueueId
       );
