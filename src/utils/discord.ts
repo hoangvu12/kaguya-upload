@@ -12,7 +12,7 @@ import { sleep } from ".";
 
 Ffmpeg.setFfmpegPath(ffmpegPath);
 
-const DISCORD_MAX_FILE_SIZE = 20 * 1024 * 1024;
+const DISCORD_MAX_FILE_SIZE = 25 * 1024 * 1024;
 const MAXIMUM_ATTACHMENTS = 10;
 
 const WEBHOOK_URL =
@@ -92,6 +92,8 @@ export const uploadFile = async (
 
       return attachments;
     } catch (e) {
+      console.log(file, formData.getHeaders());
+
       console.error("Upload discord", e.message);
 
       await sleep(5000);
@@ -189,7 +191,7 @@ class DiscordUpload {
           .outputOptions([
             "-codec: copy",
             "-start_number 0",
-            "-hls_time 10",
+            "-hls_time 6",
             "-hls_list_size 0",
             "-f hls",
             `-hls_segment_filename ${dir}/%05d.html`,
@@ -244,6 +246,10 @@ class DiscordUpload {
           };
         })
       );
+
+      if (segmentFiles.some((file) => file.size > DISCORD_MAX_FILE_SIZE)) {
+        throw new Error("File size too large, please try another video file");
+      }
 
       const sortedSegmentFiles = [...segmentFiles].sort(
         (a, b) => a.size - b.size
