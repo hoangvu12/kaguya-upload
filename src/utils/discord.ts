@@ -1,15 +1,14 @@
+import config from "@/config";
+import { path as ffmpegPath } from "@ffmpeg-installer/ffmpeg";
 import { User, createClient } from "@supabase/supabase-js";
 import axios from "axios";
 import Ffmpeg from "fluent-ffmpeg";
 import FormData from "form-data";
-import { File } from "formidable";
 import fs from "fs";
+import fsPromise from "fs/promises";
 import os from "os";
 import path from "path";
-import fsPromise from "fs/promises";
 import { sleep } from ".";
-import config from "@/config";
-import { path as ffmpegPath } from "@ffmpeg-installer/ffmpeg";
 
 Ffmpeg.setFfmpegPath(ffmpegPath);
 
@@ -213,7 +212,7 @@ class DiscordUpload {
             this.currentQueue.percent =
               progress.percent >= 50 ? 50 : progress.percent || 0;
 
-            console.log("Processing: " + progress.percent || 0 + "% done");
+            console.log("Processing: " + (progress.percent || 0) + "% done");
           })
           .run();
       });
