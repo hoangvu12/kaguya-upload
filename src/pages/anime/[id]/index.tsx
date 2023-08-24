@@ -27,6 +27,7 @@ import { AiFillDelete, AiOutlineClose } from "react-icons/ai";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { useQueryClient } from "react-query";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
+import useEpisodeDelete from "@/hooks/useEpisodeDelete";
 
 interface UploadAnimePageProps {
   user: User;
@@ -49,6 +50,7 @@ const UploadAnimePage: NextPage<UploadAnimePageProps> = ({
     useAnimeSourceDelete(`${sourceId}-${mediaId}`);
 
   const { mutate: deleteSubtitle } = useSubtitleDelete();
+  const { mutate: deleteEpisode } = useEpisodeDelete();
 
   const { data: uploadedEpisodes, isLoading: episodesLoading } =
     useUploadedEpisodes({
@@ -82,6 +84,17 @@ const UploadAnimePage: NextPage<UploadAnimePageProps> = ({
     deleteSubtitle(subtitleId, {
       onSuccess: () => {
         queryClient.invalidateQueries(["uploaded-subtitles", mediaId]);
+      },
+    });
+  };
+
+  const handleDeleteEpisode = async (episodeSlug: string) => {
+    deleteEpisode(episodeSlug, {
+      onSuccess: () => {
+        queryClient.invalidateQueries([
+          "uploaded-episodes",
+          { mediaId, sourceId },
+        ]);
       },
     });
   };
@@ -121,22 +134,47 @@ const UploadAnimePage: NextPage<UploadAnimePageProps> = ({
                     <p className="text-2xl text-center">No episodes</p>
                   ) : (
                     sortedEpisodes.map((episode) => (
-                      <Link
-                        key={episode.slug}
-                        href={`/anime/${mediaId}/episodes/${episode.slug}`}
-                      >
-                        <a className="relative block">
-                          <BaseButton className="p-3 w-full !bg-background-900 rounded-md">
-                            {episode.number} - {episode.title}
-                          </BaseButton>
+                      <div className="relative" key={episode.slug}>
+                        <Link
+                          href={`/anime/${mediaId}/episodes/${episode.slug}`}
+                        >
+                          <a className="relative block">
+                            <BaseButton className="p-3 w-full !bg-background-900 rounded-md">
+                              {episode.number} - {episode.title}
+                            </BaseButton>
 
-                          {!episode.published && (
-                            <span className="rounded-md top-1/2 -translate-y-1/2 px-2 py-1 bg-primary-700 absolute right-5">
-                              Not yet published
-                            </span>
-                          )}
-                        </a>
-                      </Link>
+                            {!episode.published && (
+                              <span className="rounded-md top-1/2 -translate-y-1/2 px-2 py-1 bg-primary-700 absolute right-5">
+                                Not yet published
+                              </span>
+                            )}
+                          </a>
+                        </Link>
+
+                        <DeleteConfirmation
+                          onConfirm={() => handleDeleteEpisode(episode.slug)}
+                          className="space-y-4"
+                          confirmString={episode.number.toString()}
+                          reference={
+                            <div className="flex gap-2 absolute -top-3 -right-3 -mr-1/2">
+                              <CircleButton
+                                secondary
+                                LeftIcon={AiOutlineClose}
+                                className="!bg-background-600 hover:!bg-background-700"
+                              ></CircleButton>
+                            </div>
+                          }
+                        >
+                          <h1 className="text-2xl font-semibold">
+                            Are you sure to delete this subtitle?
+                          </h1>
+
+                          <p>
+                            Once deleted, you cannot restore it. This will
+                            delete absolutely any data related to this subtitle.
+                          </p>
+                        </DeleteConfirmation>
+                      </div>
                     ))
                   )}
                 </TabPanel>

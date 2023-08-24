@@ -48,7 +48,7 @@ const UploadEpisodeEditPage: NextPage<UploadEpisodeEditPageProps> = ({
 }) => {
   const { data, isLoading } = useUploadedEpisode(episodeSlug);
   const { mutate: deleteEpisode, isLoading: deleteLoading } =
-    useEpisodeDelete(episodeSlug);
+    useEpisodeDelete();
   const { mutate: publishEpisode, isLoading: publishLoading } =
     usePublishEpisode(episodeSlug);
   const { data: videoStatus, isLoading: videoStatusLoading } = useVideoStatus(
@@ -78,7 +78,7 @@ const UploadEpisodeEditPage: NextPage<UploadEpisodeEditPageProps> = ({
   const episodeId = useMemo(() => episodeSlug.split("-")[1], [episodeSlug]);
 
   const handleDelete = () => {
-    deleteEpisode(null, {
+    deleteEpisode(episodeSlug, {
       onSuccess: () => {
         router.replace(`/anime/${mediaId}`);
       },
