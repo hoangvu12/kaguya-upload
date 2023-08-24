@@ -166,12 +166,12 @@ const UploadAnimePage: NextPage<UploadAnimePageProps> = ({
                           }
                         >
                           <h1 className="text-2xl font-semibold">
-                            Are you sure to delete this subtitle?
+                            Are you sure to delete this episode?
                           </h1>
 
                           <p>
                             Once deleted, you cannot restore it. This will
-                            delete absolutely any data related to this subtitle.
+                            delete absolutely any data related to this episode.
                           </p>
                         </DeleteConfirmation>
                       </div>
