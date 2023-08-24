@@ -84,7 +84,7 @@ const SubtitleUpload: React.FC<Partial<SubtitleUploadProps>> = ({
 
                   <div className="space-y-2 flex-1">
                     <div className="space-y-1">
-                      <label>Tên subtitle (VD: Tiếng Việt)</label>
+                      <label>Language (ex: English)</label>
 
                       <Input
                         onChange={(e) => {
@@ -98,27 +98,8 @@ const SubtitleUpload: React.FC<Partial<SubtitleUploadProps>> = ({
                         }}
                         containerClassName="w-full"
                         className="px-3 py-2"
-                        placeholder="Tên subtitle"
+                        placeholder="Language"
                         defaultValue={filesCtx[index].name}
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label>Ngôn ngữ (VD: vi hoặc en)</label>
-
-                      <Input
-                        onChange={(e) => {
-                          const target = e.target as HTMLInputElement;
-
-                          fileContext.locale = target.value;
-
-                          filesCtx[index] = fileContext;
-
-                          setFilesCtx(filesCtx);
-                        }}
-                        containerClassName="w-full"
-                        className="px-3 py-2"
-                        placeholder="Ngôn ngữ"
-                        defaultValue={filesCtx[index].locale}
                       />
                     </div>
                   </div>

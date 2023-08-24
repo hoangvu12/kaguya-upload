@@ -1,11 +1,21 @@
 import { Attachment, FileInfo } from "@/services/upload";
 import { MediaTitle as ALMediaTitle } from "./anilist";
+import { DiscordAttachment } from "@/utils/discord";
 
 export interface MediaTitle extends Partial<ALMediaTitle> {
   [key: string]: string;
 }
 
 export type MediaDescription = Record<string, string>;
+
+// Subtitles that applied for specific media, no matter what source it is.
+export type MediaSubtitle = {
+  file: DiscordAttachment;
+  language: string;
+  userId: string;
+  mediaId: number;
+  id: number;
+};
 
 export type SourceConnection = {
   sourceId: string;
