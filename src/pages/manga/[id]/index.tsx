@@ -3,12 +3,14 @@ import UploadContainer from "@/components/features/UploadContainer";
 import UploadLayout from "@/components/layouts/UploadLayout";
 import BaseButton from "@/components/shared/BaseButton";
 import Button from "@/components/shared/Button";
+import CircleButton from "@/components/shared/CircleButton";
 import DeleteConfirmation from "@/components/shared/DeleteConfirmation";
 import Link from "@/components/shared/Link";
 import Loading from "@/components/shared/Loading";
 import Section from "@/components/shared/Section";
 import { UploadMediaProvider } from "@/contexts/UploadMediaContext";
 import withUser from "@/hocs/withUser";
+import useChapterDelete from "@/hooks/useChapterDelete";
 import useMangaSourceDelete from "@/hooks/useMangaSourceDelete";
 import useMediaDetails from "@/hooks/useMediaDetails";
 import useUploadedChapters from "@/hooks/useUploadedChapters";
@@ -18,7 +20,7 @@ import { sortMediaUnit } from "@/types/data";
 import { User, supabaseClient } from "@supabase/auth-helpers-nextjs";
 import { NextPage } from "next";
 import React, { useMemo } from "react";
-import { AiFillDelete } from "react-icons/ai";
+import { AiFillDelete, AiOutlineClose } from "react-icons/ai";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { useQueryClient } from "react-query";
 
@@ -43,6 +45,8 @@ const UploadMangaPage: NextPage<UploadMangaPageProps> = ({
   const { mutate: mangaSourceDelete, isLoading: deleteLoading } =
     useMangaSourceDelete(`${sourceId}-${mediaId}`);
 
+  const { mutate: deleteChapter } = useChapterDelete();
+
   const { data: uploadedChapters, isLoading: chaptersLoading } =
     useUploadedChapters({
       mediaId,
@@ -57,6 +61,17 @@ const UploadMangaPage: NextPage<UploadMangaPageProps> = ({
 
   const handleConfirm = () => {
     mangaSourceDelete(null, {
+      onSuccess: () => {
+        queryClient.invalidateQueries([
+          "uploaded-chapters",
+          { mediaId, sourceId },
+        ]);
+      },
+    });
+  };
+
+  const handleDeleteChapter = (slug: string) => {
+    deleteChapter(slug, {
       onSuccess: () => {
         queryClient.invalidateQueries([
           "uploaded-chapters",
@@ -89,16 +104,39 @@ const UploadMangaPage: NextPage<UploadMangaPageProps> = ({
 
                 <div className="space-y-2">
                   {sortedChapters.map((chapter) => (
-                    <Link
-                      key={chapter.slug}
-                      href={`/manga/${mediaId}/chapters/${chapter.slug}`}
-                    >
-                      <a className="block">
-                        <BaseButton className="text-left p-3 w-full !bg-background-900 hover:!bg-white/20 rounded-md">
-                          {chapter.number} - {chapter.title}
-                        </BaseButton>
-                      </a>
-                    </Link>
+                    <div className="relative" key={chapter.slug}>
+                      <Link href={`/manga/${mediaId}/chapters/${chapter.slug}`}>
+                        <a className="block">
+                          <BaseButton className="text-left p-3 w-full !bg-background-900 hover:!bg-white/20 rounded-md">
+                            {chapter.number} - {chapter.title}
+                          </BaseButton>
+                        </a>
+                      </Link>
+
+                      <DeleteConfirmation
+                        onConfirm={() => handleDeleteChapter(chapter.slug)}
+                        className="space-y-4"
+                        confirmString={chapter.number.toString()}
+                        reference={
+                          <div className="flex gap-2 absolute -top-3 -right-3 -mr-1/2">
+                            <CircleButton
+                              secondary
+                              LeftIcon={AiOutlineClose}
+                              className="!bg-background-600 hover:!bg-background-700"
+                            ></CircleButton>
+                          </div>
+                        }
+                      >
+                        <h1 className="text-2xl font-semibold">
+                          Are you sure to delete this chapter?
+                        </h1>
+
+                        <p>
+                          Once deleted, you cannot restore it. This will delete
+                          absolutely any data related to this chapter.
+                        </p>
+                      </DeleteConfirmation>
+                    </div>
                   ))}
                 </div>
               </div>

@@ -2,9 +2,9 @@ import { supabaseClient } from "@supabase/auth-helpers-nextjs";
 import { useMutation } from "react-query";
 import { toast } from "react-toastify";
 
-const useChapterDelete = (slug: string) => {
-  return useMutation(
-    async () => {
+const useChapterDelete = () => {
+  return useMutation<any, any, string>(
+    async (slug) => {
       const { error } = await supabaseClient
         .from("kaguya_chapters")
         .delete()

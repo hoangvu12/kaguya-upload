@@ -42,7 +42,7 @@ const UploadChapterEditPage: NextPage<UploadChapterEditPageProps> = ({
 }) => {
   const { data, isLoading } = useUploadedChapter(chapterSlug);
   const { mutate: deleteChapter, isLoading: deleteLoading } =
-    useChapterDelete(chapterSlug);
+    useChapterDelete();
   const { mutate: publishChapter, isLoading: publishLoading } =
     usePublishChapter(chapterSlug);
 
@@ -68,7 +68,7 @@ const UploadChapterEditPage: NextPage<UploadChapterEditPageProps> = ({
   }, [chapterSlug, sortedChapters]);
 
   const handleDelete = () => {
-    deleteChapter(null, {
+    deleteChapter(chapterSlug, {
       onSuccess: () => {
         router.replace(`/manga/${mediaId}`);
       },
