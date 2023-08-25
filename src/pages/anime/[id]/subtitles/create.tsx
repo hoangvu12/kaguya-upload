@@ -15,13 +15,13 @@ import { User, supabaseClient } from "@supabase/auth-helpers-nextjs";
 import { NextPage } from "next";
 import React, { useState } from "react";
 
-interface UploadCreateEpisodePageProps {
+interface UploadCreateSubtitlePageProps {
   user: User;
   sourceId: string;
   mediaId: number;
 }
 
-const UploadCreateEpisodePage: NextPage<UploadCreateEpisodePageProps> = ({
+const UploadCreateSubtitlePage: NextPage<UploadCreateSubtitlePageProps> = ({
   mediaId,
   sourceId,
 }) => {
@@ -81,7 +81,7 @@ const UploadCreateEpisodePage: NextPage<UploadCreateEpisodePageProps> = ({
   );
 };
 
-export default UploadCreateEpisodePage;
+export default UploadCreateSubtitlePage;
 
 export const getServerSideProps = withUser({
   async getServerSideProps(ctx, user) {
@@ -105,6 +105,6 @@ export const getServerSideProps = withUser({
 });
 
 // @ts-ignore
-UploadCreateEpisodePage.getLayout = (children) => (
+UploadCreateSubtitlePage.getLayout = (children) => (
   <UploadLayout>{children}</UploadLayout>
 );
