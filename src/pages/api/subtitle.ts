@@ -22,7 +22,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       `
         file,
         language,
-        fonts
+        fonts,
+        source:kaguya_sources(name)
       `
     )
     .eq("mediaId", mediaId);
