@@ -1,3 +1,4 @@
+import { FontFile } from "@/components/features/FontUpload";
 import { useUser } from "@/contexts/AuthContext";
 import { Attachment, uploadFile } from "@/services/upload";
 import { UploadSubtitle } from "@/types";
@@ -13,7 +14,7 @@ interface UseCreateSubtitleArgs {
 
 interface CreateSubtitleInput {
   subtitles: UploadSubtitle[];
-  fonts: File[];
+  fonts: FontFile[];
 }
 
 const useCreateSubtitle = (args: UseCreateSubtitleArgs) => {
@@ -56,7 +57,12 @@ const useCreateSubtitle = (args: UseCreateSubtitleArgs) => {
           isLoading: true,
         });
 
-        uploadedFonts = await uploadFile(fonts);
+        uploadedFonts = await uploadFile(
+          fonts.map((font) => font.file),
+          fonts.map((subtitle) => ({
+            name: subtitle.name,
+          }))
+        );
       }
 
       if (subtitles?.length && !uploadedSubtitles.length) {

@@ -1,3 +1,4 @@
+import { FontFile } from "@/components/features/FontUpload";
 import { Attachment, uploadFile } from "@/services/upload";
 import { supabaseClient } from "@supabase/auth-helpers-nextjs";
 import { useMutation } from "react-query";
@@ -6,7 +7,7 @@ import { toast } from "react-toastify";
 const useUpdateFonts = (episodeSlug: string) => {
   const id = "update-fonts-id";
 
-  return useMutation<Attachment[], Error, File[]>(
+  return useMutation<Attachment[], Error, FontFile[]>(
     async (fonts) => {
       if (!fonts?.length) {
         const { error } = await supabaseClient
@@ -23,8 +24,12 @@ const useUpdateFonts = (episodeSlug: string) => {
 
       toast.loading("Uploading fonts...", { toastId: id });
 
-      const attachments = await uploadFile(fonts);
-
+      const attachments = await uploadFile(
+        fonts.map((font) => font.file),
+        fonts.map((font) => ({
+          name: font.name,
+        }))
+      );
       toast.update(id, {
         render: "Updating fonts...",
       });

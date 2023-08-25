@@ -5,7 +5,7 @@ import { Attachment } from "@/services/upload";
 import { createFileFromUrl } from "@/utils";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
-import FontUpload from "./FontUpload";
+import FontUpload, { FontFile } from "./FontUpload";
 
 interface FontUpdateProps {
   initialFonts?: Attachment[];
@@ -16,15 +16,22 @@ const FontUpdate: React.FC<FontUpdateProps> = ({
   initialFonts,
   episodeSlug,
 }) => {
-  const [files, setFiles] = useState<File[]>([]);
+  const [files, setFiles] = useState<FontFile[]>([]);
 
   const { data: initialFiles, isLoading: initialFilesLoading } = useQuery<
-    File[]
+    FontFile[]
   >(["uploaded-font-files", initialFonts], async () => {
     if (!initialFonts?.length) return [];
 
-    return Promise.all<File>(
-      initialFonts.map((file) => createFileFromUrl(file.url, file.filename))
+    return Promise.all<FontFile>(
+      initialFonts.map(async (file) => {
+        const fileObj = await createFileFromUrl(file.url, file.filename);
+
+        return {
+          file: fileObj,
+          name: file.ctx.name,
+        };
+      })
     );
   });
 
@@ -39,7 +46,7 @@ const FontUpdate: React.FC<FontUpdateProps> = ({
     <Loading />
   ) : (
     <div className="space-y-2">
-      <FontUpload onChange={setFiles} initialFiles={initialFiles} />
+      <FontUpload onChange={setFiles} initialFonts={initialFiles} />
 
       <Button
         isLoading={updateLoading}

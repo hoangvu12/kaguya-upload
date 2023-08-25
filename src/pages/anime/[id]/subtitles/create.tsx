@@ -1,4 +1,4 @@
-import FontUpload from "@/components/features/FontUpload";
+import FontUpload, { FontFile } from "@/components/features/FontUpload";
 import SubtitleUpload, {
   SubtitleFile,
 } from "@/components/features/SubtitleUpload";
@@ -29,7 +29,7 @@ const UploadCreateSubtitlePage: NextPage<UploadCreateSubtitlePageProps> = ({
   sourceId,
 }) => {
   const [subtitles, setSubtitles] = useState<SubtitleFile[]>([]);
-  const [fonts, setFonts] = useState<File[]>([]);
+  const [fonts, setFonts] = useState<FontFile[]>([]);
 
   const { mutate: createSubtitle } = useCreateSubtitle({
     mediaId,
