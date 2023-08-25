@@ -1,28 +1,19 @@
-import EpisodeTitleUpload from "@/components/features/EpisodeTitleUpload";
-import EpisodeNumberUpload from "@/components/features/EpisodeNumberUpload";
 import FontUpload from "@/components/features/FontUpload";
 import SubtitleUpload, {
   SubtitleFile,
 } from "@/components/features/SubtitleUpload";
 import UploadContainer from "@/components/features/UploadContainer";
 import UploadSection from "@/components/features/UploadSection";
-import VideoUpload, { VideoState } from "@/components/features/VideoUpload";
 import UploadLayout from "@/components/layouts/UploadLayout";
 import Button from "@/components/shared/Button";
 import Section from "@/components/shared/Section";
-import {
-  supportedUploadSubtitleFormats,
-  supportedUploadVideoFormats,
-} from "@/constants";
+import { supportedUploadSubtitleFormats } from "@/constants";
 import withUser from "@/hocs/withUser";
-import useCreateEpisode from "@/hooks/useCreateEpisode";
+import useCreateSubtitle from "@/hooks/useCreateSubtitle";
 import { Source } from "@/types";
 import { User, supabaseClient } from "@supabase/auth-helpers-nextjs";
 import { NextPage } from "next";
 import React, { useState } from "react";
-import EpisodeDescriptionUpload from "@/components/features/EpisodeDescriptionUpload";
-import EpisodeThumbnailUpload from "@/components/features/EpisodeThumbnailUpload";
-import useCreateSubtitle from "@/hooks/useCreateSubtitle";
 
 interface UploadCreateEpisodePageProps {
   user: User;
@@ -39,6 +30,7 @@ const UploadCreateEpisodePage: NextPage<UploadCreateEpisodePageProps> = ({
 
   const { mutate: createSubtitle } = useCreateSubtitle({
     mediaId,
+    sourceId,
   });
 
   const onSubmit = () => {

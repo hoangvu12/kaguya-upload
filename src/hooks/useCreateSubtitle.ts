@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 
 interface UseCreateSubtitleArgs {
   mediaId: number;
+  sourceId: string;
 }
 
 interface CreateSubtitleInput {
@@ -16,7 +17,7 @@ interface CreateSubtitleInput {
 }
 
 const useCreateSubtitle = (args: UseCreateSubtitleArgs) => {
-  const { mediaId } = args;
+  const { mediaId, sourceId } = args;
 
   const user = useUser();
   const router = useRouter();
@@ -78,12 +79,14 @@ const useCreateSubtitle = (args: UseCreateSubtitleArgs) => {
         language: string;
         fonts: Attachment[];
         mediaId: number;
+        sourceId: string;
       }[] = uploadedSubtitles.map((subtitle) => ({
         file: subtitle,
         fonts: uploadedFonts,
         language: subtitle.ctx.name,
         mediaId,
         userId: user.id,
+        sourceId,
       }));
 
       const { error } = await supabaseClient
