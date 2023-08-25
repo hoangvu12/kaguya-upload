@@ -1,3 +1,4 @@
+import { FontFile } from "@/components/features/FontUpload";
 import { useUser } from "@/contexts/AuthContext";
 import {
   Attachment,
@@ -22,7 +23,7 @@ interface UseCreateEpisodeArgs {
 interface CreateEpisodeInput {
   video: string | File;
   subtitles: UploadSubtitle[];
-  fonts: File[];
+  fonts: FontFile[];
   episode: {
     title: string;
     number: number;
@@ -159,7 +160,12 @@ const useCreateEpisode = (args: UseCreateEpisodeArgs) => {
           isLoading: true,
         });
 
-        uploadedFonts = await uploadFile(fonts);
+        uploadedFonts = await uploadFile(
+          fonts.map((font) => font.file),
+          fonts.map((font) => ({
+            name: font.name,
+          }))
+        );
       }
 
       if (subtitles?.length && !uploadedSubtitles.length) {

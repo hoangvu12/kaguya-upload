@@ -1,6 +1,6 @@
 import EpisodeTitleUpload from "@/components/features/EpisodeTitleUpload";
 import EpisodeNumberUpload from "@/components/features/EpisodeNumberUpload";
-import FontUpload from "@/components/features/FontUpload";
+import FontUpload, { FontFile } from "@/components/features/FontUpload";
 import SubtitleUpload, {
   SubtitleFile,
 } from "@/components/features/SubtitleUpload";
@@ -36,7 +36,7 @@ const UploadCreateEpisodePage: NextPage<UploadCreateEpisodePageProps> = ({
 }) => {
   const [videoState, setVideoState] = useState<VideoState>(null);
   const [subtitles, setSubtitles] = useState<SubtitleFile[]>([]);
-  const [fonts, setFonts] = useState<File[]>([]);
+  const [fonts, setFonts] = useState<FontFile[]>([]);
   const [episodeTitle, setEpisodeTitle] = useState("");
   const [episodeNumber, setEpisodeNumber] = useState<number>(null);
   const [episodeThumbnail, setEpisodeThumbnail] = useState("");
