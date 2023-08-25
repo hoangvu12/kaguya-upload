@@ -11,6 +11,7 @@ import UploadLayout from "@/components/layouts/UploadLayout";
 import Button from "@/components/shared/Button";
 import Section from "@/components/shared/Section";
 import {
+  supportedUploadFontFormats,
   supportedUploadSubtitleFormats,
   supportedUploadVideoFormats,
 } from "@/constants";
@@ -115,7 +116,8 @@ const UploadCreateEpisodePage: NextPage<UploadCreateEpisodePageProps> = ({
             <UploadSection.Left>
               <label className="font-semibold text-2xl">Fonts</label>
               <p className="text-sm text-gray-300">
-                Only .ass subtitles supported
+                Support {supportedUploadFontFormats.slice(0, 6).join(", ")},
+                etc...
               </p>
             </UploadSection.Left>
 

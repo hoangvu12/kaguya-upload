@@ -7,7 +7,10 @@ import UploadSection from "@/components/features/UploadSection";
 import UploadLayout from "@/components/layouts/UploadLayout";
 import Button from "@/components/shared/Button";
 import Section from "@/components/shared/Section";
-import { supportedUploadSubtitleFormats } from "@/constants";
+import {
+  supportedUploadFontFormats,
+  supportedUploadSubtitleFormats,
+} from "@/constants";
 import withUser from "@/hocs/withUser";
 import useCreateSubtitle from "@/hooks/useCreateSubtitle";
 import { Source } from "@/types";
@@ -61,7 +64,8 @@ const UploadCreateSubtitlePage: NextPage<UploadCreateSubtitlePageProps> = ({
             <UploadSection.Left>
               <label className="font-semibold text-2xl">Fonts</label>
               <p className="text-sm text-gray-300">
-                Only .ass subtitles supported
+                Support {supportedUploadFontFormats.slice(0, 6).join(", ")},
+                etc...
               </p>
             </UploadSection.Left>
 
