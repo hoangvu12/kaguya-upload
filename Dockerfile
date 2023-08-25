@@ -1,6 +1,6 @@
 # Install dependencies only when needed
 FROM node:16-alpine AS deps
-RUN apk add --no-cache libc6-compat ffmpeg
+RUN apk add --no-cache libc6-compat ffmpeg g++ make py3-pip
 WORKDIR /app
 COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile
